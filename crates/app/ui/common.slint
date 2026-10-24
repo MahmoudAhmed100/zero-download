@@ -141,6 +141,14 @@ export component Glyph inherits Rectangle {
     in property <color> tint: Theme.accent;
     width: 16px;
     height: 16px;
+    if root.kind == "shield": Path {
+        viewbox-width: 16;
+        viewbox-height: 16;
+        stroke: root.tint;
+        stroke-width: 1.4px;
+        fill: transparent;
+        commands: "M 8 2 L 13 4 L 13 8 C 13 11.5 8 14 8 14 C 8 14 3 11.5 3 8 L 3 4 Z";
+    }
     if root.kind == "play": Path {
         viewbox-width: 16;
         viewbox-height: 16;

@@ -219,6 +219,15 @@ impl Manager {
 
     /// Look at a URL without downloading it (for the "add" dialog).
     pub async fn probe(&self, url: &str, headers: &RequestHeaders) -> anyhow::Result<ProbeResult> {
+        let (ua, headers) = {
+            let s = self.settings.read().unwrap();
+            (s.user_agent.clone(), with_login(&s, url, headers))
+        };
+        if crate::cloud::is_gdrive_url(url) {
+            if let Ok(resolved) = crate::cloud::resolve_gdrive(&self.shared.client(), url).await {
+                return http::probe(&self.shared.client(), &resolved.direct_url, &headers, &ua).await;
+            }
+        }
         if crate::torrent::is_magnet_url(url) {
             let mag = crate::torrent::parse_magnet(url).unwrap_or_else(|| crate::torrent::MagnetInfo {
                 info_hash: "MAGNET".into(),
@@ -237,10 +246,6 @@ impl Manager {
                 headers_used: None,
             });
         }
-        let (ua, headers) = {
-            let s = self.settings.read().unwrap();
-            (s.user_agent.clone(), with_login(&s, url, headers))
-        };
         http::probe(&self.shared.client(), url, &headers, &ua).await
     }
 

@@ -1269,3 +1269,9 @@ msgstr "تحميل الترجمة (عربي / إنجليزي)"
 
 msgid "Preview"
 msgstr "معاينة"
+
+msgid "Check file (SHA-256 / MD5)"
+msgstr "فحص سلامة الملف (SHA-256 / MD5)"
+
+msgid "Scan with Windows Defender"
+msgstr "فحص الفيروسات (Windows Defender)"

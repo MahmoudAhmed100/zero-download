@@ -8,6 +8,7 @@
 //! The UI only needs [`Manager`].
 
 pub mod category;
+pub mod cloud;
 pub mod config;
 pub mod ef2;
 pub mod fileio;
@@ -21,6 +22,7 @@ pub mod m3u8;
 pub mod manager;
 pub mod model;
 pub mod mux;
+pub mod security;
 pub mod segments;
 pub mod selfupdate;
 pub mod store;

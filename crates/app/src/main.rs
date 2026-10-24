@@ -2098,16 +2098,48 @@ fn row_action(ui: &Ui, id: u64, action: &str) {
         "sha256" => {
             let path = v.save_path.clone();
             let name = v.file_name.clone();
+            let clip_text = arboard::Clipboard::new().ok().and_then(|mut c| c.get_text().ok());
             std::thread::spawn(move || {
-                let text = match sha256_of(&path) {
-                    Ok(hash) => {
-                        let shown = tf("SHA-256 of {}:\n\n{}\n\n(copied to the clipboard)", &[&name, &hash]);
-                        if let Ok(mut c) = arboard::Clipboard::new() {
-                            let _ = c.set_text(hash);
+                let text = match swiftget_engine::security::compute_checksums(&path, clip_text.as_deref()) {
+                    Ok(rep) => {
+                        if let Some(m) = rep.matched_clipboard {
+                            tf(
+                                "✅ Verified authentic!\nMatches {} in clipboard:\n\nSHA-256: {}\nMD5: {}",
+                                &[&m, &rep.sha256, &rep.md5],
+                            )
+                        } else {
+                            if let Ok(mut c) = arboard::Clipboard::new() {
+                                let _ = c.set_text(rep.sha256.clone());
+                            }
+                            tf(
+                                "Checksums of {}:\n\nSHA-256: {}\nMD5: {}\n\n(SHA-256 copied to clipboard)",
+                                &[&name, &rep.sha256, &rep.md5],
+                            )
                         }
-                        shown
                     }
                     Err(e) => tf("Could not read the file: {}", &[&e]),
+                };
+                let _ = slint::invoke_from_event_loop(move || message(&text));
+            });
+        }
+        "scan" => {
+            let path = v.save_path.clone();
+            let name = v.file_name.clone();
+            std::thread::spawn(move || {
+                let res = swiftget_engine::security::scan_file(&path);
+                let text = match res {
+                    swiftget_engine::security::ScanStatus::Clean => {
+                        tf("✅ Windows Defender Scan:\n\n“{}” is safe and clean! No threats found.", &[&name])
+                    }
+                    swiftget_engine::security::ScanStatus::ThreatFound(info) => {
+                        tf("⚠️ Security Alert!\nWindows Defender detected a potential threat in “{}”:\n\n{}", &[&name, &info])
+                    }
+                    swiftget_engine::security::ScanStatus::NotAvailable => {
+                        t("Windows Defender command line tool is not available on this machine.")
+                    }
+                    swiftget_engine::security::ScanStatus::Error(e) => {
+                        tf("Antivirus scan failed: {}", &[&e])
+                    }
                 };
                 let _ = slint::invoke_from_event_loop(move || message(&text));
             });

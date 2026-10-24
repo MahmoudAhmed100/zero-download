@@ -190,11 +190,20 @@ component DownloadItem inherits Rectangle {
                     }
                 }
                 MenuEntry {
-                    text: @tr("Check file (SHA-256)");
+                    text: @tr("Check file (SHA-256 / MD5)");
                     glyph: "hash";
                     enabled: root.done;
                     clicked => {
                         root.action("sha256");
+                    }
+                }
+                MenuEntry {
+                    text: @tr("Scan with Windows Defender");
+                    glyph: "shield";
+                    glyph-color: #2e9e5b;
+                    enabled: root.done;
+                    clicked => {
+                        root.action("scan");
                     }
                 }
                 MenuEntry {
