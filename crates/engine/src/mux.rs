@@ -83,7 +83,7 @@ pub fn merge(video: &Path, audio: &Path, output: &Path, final_name: &str) -> any
     Ok(())
 }
 
-pub(crate) fn hide_window(cmd: &mut Command) {
+pub fn hide_window(cmd: &mut Command) {
     #[cfg(windows)]
     {
         use std::os::windows::process::CommandExt;
