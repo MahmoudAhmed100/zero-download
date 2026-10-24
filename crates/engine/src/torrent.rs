@@ -42,7 +42,8 @@ pub fn parse_magnet(uri: &str) -> Option<MagnetInfo> {
         let mut parts = param.splitn(2, '=');
         let key = parts.next().unwrap_or("");
         let val = parts.next().unwrap_or("");
-        let decoded = percent_encoding::percent_decode_str(val).decode_utf8_lossy().to_string();
+        let val_clean = val.replace('+', " ");
+        let decoded = percent_encoding::percent_decode_str(&val_clean).decode_utf8_lossy().to_string();
 
         match key {
             "xt" => {

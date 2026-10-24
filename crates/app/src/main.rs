@@ -2262,21 +2262,6 @@ fn row_action(ui: &Ui, id: u64, action: &str) {
     }
 }
 
-fn sha256_of(path: &Path) -> std::io::Result<String> {
-    use sha2::{Digest, Sha256};
-    use std::io::Read;
-    let mut f = std::fs::File::open(path)?;
-    let mut hasher = Sha256::new();
-    let mut buf = vec![0u8; 1 << 20];
-    loop {
-        let n = f.read(&mut buf)?;
-        if n == 0 {
-            break;
-        }
-        hasher.update(&buf[..n]);
-    }
-    Ok(hasher.finalize().iter().map(|b| format!("{b:02x}")).collect())
-}
 
 pub(crate) fn open_with(path: &Path) {
     #[cfg(windows)]

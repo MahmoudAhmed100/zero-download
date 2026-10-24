@@ -1,5 +1,5 @@
 // Zero Download - Video overlay & page grabber
-// Shows a draggable download pill on EVERY video on the page.
+// Shows a draggable download pill on video players on the page.
 (() => {
   if (window.top !== window && !window.location.href.includes("youtube.com/embed")) return;
 
@@ -37,6 +37,12 @@
   const cleanTitle = () =>
     (document.title || "video").replace(/[<>:"/\\|?*\u0000-\u001f]/g, "_").trim().slice(0, 120) || "video";
 
+  // Clean up legacy viewport-level offsets that caused pills to snap to (10px, 10px)
+  try {
+    localStorage.removeItem("zd_pill_ox");
+    localStorage.removeItem("zd_pill_oy");
+  } catch (_) {}
+
   // Configuration
   let config = {
     enabled: true,
@@ -54,22 +60,68 @@
   const activeOverlays = new Map(); // video -> overlay data
   let globalItems = [];
 
-  // Drag offsets saved by user
-  let userOffset = {
-    x: Number(localStorage.getItem("zd_pill_ox")) || 0,
-    y: Number(localStorage.getItem("zd_pill_oy")) || 0
-  };
+  function isValidVideo(video) {
+    if (!video || !video.isConnected) return false;
+
+    // Filter out thumbnail hover previews and mini sidebars
+    if (video.closest("ytd-thumbnail, ytd-moving-thumbnail-renderer, .ytd-thumbnail, [class*='thumbnail'], [class*='preview']")) {
+      return false;
+    }
+
+    // Must have real dimensions
+    const rect = video.getBoundingClientRect();
+    if (rect.width < 240 || rect.height < 140) return false;
+
+    // Must be visible
+    if (video.offsetParent === null && video.style.position !== "fixed") return false;
+    const cs = window.getComputedStyle(video);
+    if (cs.display === "none" || cs.visibility === "hidden" || cs.opacity === "0") return false;
+
+    // On YouTube specifically: must be part of the player or shorts
+    if (location.hostname.includes("youtube.com")) {
+      const isPlayer = video.classList.contains("video-stream") ||
+                       video.closest("#movie_player, ytd-player, ytd-reel-video-renderer, #player");
+      if (!isPlayer) return false;
+    }
+
+    return true;
+  }
+
+  function findVideoContainer(video) {
+    // 1. YouTube desktop & embed players
+    const yt = video.closest("#movie_player, .html5-video-player, ytd-player, #player-container, ytd-reel-video-renderer");
+    if (yt) return yt;
+
+    // 2. Standard video containers on modern web
+    const player = video.closest(".video-js, [class*='player-container'], [class*='video-player'], [class*='Player_'], figure, .player");
+    if (player) return player;
+
+    // 3. Fallback to immediate parent
+    return video.parentElement || document.body;
+  }
 
   function createOverlay(video) {
     if (activeOverlays.has(video)) return;
-    if (video.offsetWidth < 120 || video.offsetHeight < 70) return;
+    if (!isValidVideo(video)) return;
+
+    const container = findVideoContainer(video);
+    if (!container) return;
+
+    const cs = window.getComputedStyle(container);
+    if (cs.position === "static") {
+      container.style.position = "relative";
+    }
 
     const host = document.createElement("div");
-    host.style.position = "fixed";
+    host.style.position = "absolute";
     host.style.zIndex = "2147483647";
     host.style.all = "initial";
-    host.style.display = "none";
+    host.style.display = "block";
     host.style.pointerEvents = "auto";
+    host.style.top = "14px";
+    host.style.right = "14px";
+    host.style.left = "auto";
+    host.style.bottom = "auto";
 
     const root = host.attachShadow({ mode: "closed" });
     root.innerHTML = `
@@ -82,32 +134,35 @@
           gap: 6px;
           background: linear-gradient(135deg, #1d4ed8, #2563eb);
           color: #ffffff;
-          padding: 6px 10px;
+          padding: 6px 11px;
           border-radius: 8px;
           font-size: 12px;
           font-weight: 600;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
           cursor: pointer;
-          border: 1px solid rgba(255, 255, 255, 0.15);
+          border: 1px solid rgba(255, 255, 255, 0.2);
           transition: transform 0.1s, box-shadow 0.15s, background 0.15s;
+          pointer-events: auto;
         }
         .pill:hover {
           background: linear-gradient(135deg, #2563eb, #3b82f6);
-          box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
+          box-shadow: 0 6px 18px rgba(37, 99, 235, 0.55);
         }
         .drag-handle {
           cursor: grab;
           display: flex;
           align-items: center;
-          opacity: 0.7;
-          padding: 0 2px;
+          opacity: 0.8;
+          padding: 2px 4px;
+          touch-action: none;
         }
+        .drag-handle:hover { opacity: 1; }
         .drag-handle:active { cursor: grabbing; }
         .ico { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
         .btn-text { font-size: 11px; white-space: nowrap; }
         .badge {
-          background: rgba(0,0,0,0.3);
-          padding: 1px 5px;
+          background: rgba(0,0,0,0.35);
+          padding: 1px 6px;
           border-radius: 4px;
           font-size: 10px;
           font-weight: 700;
@@ -117,7 +172,7 @@
           margin-left: 2px;
           font-size: 11px;
           opacity: 0.6;
-          padding: 0 3px;
+          padding: 0 4px;
           cursor: pointer;
         }
         .close-btn:hover { opacity: 1; color: #fca5a5; }
@@ -130,15 +185,15 @@
           background: #0f172a;
           border: 1px solid #334155;
           border-radius: 10px;
-          box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-          width: 220px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+          width: 230px;
           overflow: hidden;
-          z-index: 1000;
+          z-index: 2147483647;
           display: none;
         }
         .menu.show { display: block; }
         .menu-item {
-          padding: 8px 12px;
+          padding: 9px 12px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -150,11 +205,11 @@
         }
         .menu-item:hover { background: #1e293b; color: #60a5fa; }
         .menu-item:last-child { border-bottom: none; }
-        .msg { padding: 8px 12px; font-size: 11px; color: #10b981; text-align: center; }
+        .msg { padding: 9px 12px; font-size: 11px; color: #10b981; text-align: center; font-weight: 600; }
       </style>
       <div class="pill-wrap">
         <div class="pill" id="pill">
-          <span class="drag-handle" id="drag" title="اسحب الزر لأي مكان">⠿</span>
+          <span class="drag-handle" id="drag" title="اسحب الزر لأي مكان على الفيديو">⠿</span>
           <svg class="ico" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14l-4-4 1.41-1.41L11 13.17V7h2v6.17l2.59-2.58L17 12l-5 4z"/></svg>
           <span class="btn-text">تحميل</span>
           <span class="badge" id="quality">HD</span>
@@ -164,7 +219,7 @@
       </div>
     `;
 
-    document.documentElement.appendChild(host);
+    container.appendChild(host);
 
     const pill = root.getElementById("pill");
     const dragHandle = root.getElementById("drag");
@@ -175,55 +230,95 @@
     let isMenuOpen = false;
     let isDismissed = false;
 
-    // Draggable Logic
-    let dragging = false;
+    // Smooth Dragging with Pointer Capture
+    let isDragging = false;
+    let hasMoved = false;
     let startX = 0, startY = 0;
-    let origOx = userOffset.x, origOy = userOffset.y;
+    let initialLeft = 0, initialTop = 0;
 
     function onPointerDown(e) {
       if (e.target === closeBtn) return;
-      if (e.target === dragHandle || config.draggablePill) {
-        dragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        origOx = userOffset.x;
-        origOy = userOffset.y;
-        e.preventDefault();
-        window.addEventListener("pointermove", onPointerMove);
-        window.addEventListener("pointerup", onPointerUp);
-      }
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
+      isDragging = true;
+      hasMoved = false;
+      startX = e.clientX;
+      startY = e.clientY;
+
+      try { dragHandle.setPointerCapture(e.pointerId); } catch (_) {}
+
+      const hostRect = host.getBoundingClientRect();
+      const contRect = container.getBoundingClientRect();
+      initialLeft = hostRect.left - contRect.left;
+      initialTop = hostRect.top - contRect.top;
+
+      dragHandle.addEventListener("pointermove", onPointerMove);
+      dragHandle.addEventListener("pointerup", onPointerUp);
+      dragHandle.addEventListener("pointercancel", onPointerUp);
     }
 
     function onPointerMove(e) {
-      if (!dragging) return;
+      if (!isDragging) return;
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
-      userOffset.x = origOx + dx;
-      userOffset.y = origOy + dy;
-      updatePosition();
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+        hasMoved = true;
+      }
+
+      const contRect = container.getBoundingClientRect();
+      const hostW = host.offsetWidth || 140;
+      const hostH = host.offsetHeight || 36;
+
+      const minX = 6;
+      const maxX = Math.max(6, contRect.width - hostW - 6);
+      const minY = 6;
+      const maxY = Math.max(6, contRect.height - hostH - 6);
+
+      const newX = Math.max(minX, Math.min(maxX, initialLeft + dx));
+      const newY = Math.max(minY, Math.min(maxY, initialTop + dy));
+
+      host.style.left = `${newX}px`;
+      host.style.top = `${newY}px`;
+      host.style.right = "auto";
+      host.style.bottom = "auto";
     }
 
-    function onPointerUp() {
-      if (dragging) {
-        dragging = false;
-        localStorage.setItem("zd_pill_ox", userOffset.x);
-        localStorage.setItem("zd_pill_oy", userOffset.y);
-        window.removeEventListener("pointermove", onPointerMove);
-        window.removeEventListener("pointerup", onPointerUp);
+    function onPointerUp(e) {
+      if (isDragging) {
+        isDragging = false;
+        try { dragHandle.releasePointerCapture(e.pointerId); } catch (_) {}
+        dragHandle.removeEventListener("pointermove", onPointerMove);
+        dragHandle.removeEventListener("pointerup", onPointerUp);
+        dragHandle.removeEventListener("pointercancel", onPointerUp);
       }
     }
 
-    pill.addEventListener("pointerdown", onPointerDown);
+    dragHandle.addEventListener("pointerdown", onPointerDown);
 
     closeBtn.addEventListener("click", (e) => {
+      e.preventDefault();
       e.stopPropagation();
+      e.stopImmediatePropagation();
       isDismissed = true;
       host.style.display = "none";
     });
 
     pill.addEventListener("click", (e) => {
-      if (e.target === closeBtn || dragging) return;
-      // If menu has items, toggle dropdown
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
+      if (e.target === closeBtn || hasMoved) {
+        hasMoved = false;
+        return;
+      }
+
       if (globalItems.length > 1) {
         isMenuOpen = !isMenuOpen;
         menu.classList.toggle("show", isMenuOpen);
@@ -239,7 +334,8 @@
         const item = document.createElement("div");
         item.className = "menu-item";
         item.textContent = "تحميل الفيديو الأصلي";
-        item.addEventListener("click", () => {
+        item.addEventListener("click", (e) => {
+          e.stopPropagation();
           triggerDownload(video);
           menu.classList.remove("show");
         });
@@ -251,7 +347,8 @@
         const row = document.createElement("div");
         row.className = "menu-item";
         row.innerHTML = `<span>${m.label || "فيديو"}</span><small style="opacity:0.6">${m.ext ? m.ext.toUpperCase() : ""}</small>`;
-        row.addEventListener("click", () => {
+        row.addEventListener("click", (e) => {
+          e.stopPropagation();
           chrome.runtime.sendMessage({
             type: "swiftget-download",
             item: m,
@@ -268,47 +365,14 @@
     function flashMsg(msg) {
       menu.innerHTML = `<div class="msg">${msg}</div>`;
       menu.classList.add("show");
-      setTimeout(() => menu.classList.remove("show"), 2000);
+      setTimeout(() => menu.classList.remove("show"), 2200);
     }
 
-    function updatePosition() {
-      if (isDismissed || !config.showVideoPill) {
-        host.style.display = "none";
-        return;
-      }
-
-      const rect = video.getBoundingClientRect();
-      // Only show if video is visible on screen
-      if (rect.width < 120 || rect.height < 70 || rect.bottom <= 0 || rect.top >= window.innerHeight || rect.right <= 0 || rect.left >= window.innerWidth) {
-        host.style.display = "none";
-        return;
-      }
-
-      host.style.display = "block";
-
-      let baseX = rect.right - 140;
-      let baseY = rect.top + 10;
-
-      if (config.pillPosition === "top-left") {
-        baseX = rect.left + 10;
-        baseY = rect.top + 10;
-      } else if (config.pillPosition === "bottom-right") {
-        baseX = rect.right - 140;
-        baseY = rect.bottom - 44;
-      } else if (config.pillPosition === "bottom-left") {
-        baseX = rect.left + 10;
-        baseY = rect.bottom - 44;
-      }
-
-      const finalX = Math.max(10, Math.min(window.innerWidth - 150, baseX + userOffset.x));
-      const finalY = Math.max(10, Math.min(window.innerHeight - 50, baseY + userOffset.y));
-
-      host.style.left = `${finalX}px`;
-      host.style.top = `${finalY}px`;
-    }
-
-    activeOverlays.set(video, { host, updatePosition, setQuality: (q) => qualityEl.textContent = q });
-    updatePosition();
+    activeOverlays.set(video, {
+      host,
+      container,
+      setQuality: (q) => { if (qualityEl) qualityEl.textContent = q; }
+    });
   }
 
   function triggerDownload(video) {
@@ -319,8 +383,7 @@
       pageUrl,
       title,
       currentSrc: video.currentSrc || video.src
-    }, (res) => {
-      // Notification
+    }, () => {
       const data = activeOverlays.get(video);
       if (data) {
         const m = data.host.shadowRoot?.getElementById("menu");
@@ -334,38 +397,36 @@
   }
 
   function scanVideos() {
+    if (!config.showVideoPill || !config.enabled) {
+      activeOverlays.forEach((d) => { d.host.style.display = "none"; });
+      return;
+    }
+
     const videos = document.querySelectorAll("video");
     videos.forEach((v) => {
-      if (!activeOverlays.has(v)) {
+      if (isValidVideo(v) && !activeOverlays.has(v)) {
         createOverlay(v);
       }
     });
 
-    // Cleanup detached videos
+    // Cleanup detached or invalid videos
     for (const [v, data] of activeOverlays.entries()) {
-      if (!document.contains(v)) {
+      if (!document.contains(v) || !isValidVideo(v)) {
         data.host.remove();
         activeOverlays.delete(v);
-      } else {
-        data.updatePosition();
       }
     }
   }
 
-  // Periodic position updates & scroll listener
-  window.addEventListener("scroll", () => {
-    activeOverlays.forEach((d) => d.updatePosition());
-  }, { passive: true });
+  // Periodic video scanner
+  setInterval(scanVideos, 1500);
 
-  window.addEventListener("resize", () => {
-    activeOverlays.forEach((d) => d.updatePosition());
-  }, { passive: true });
-
-  setInterval(scanVideos, 1200);
-
-  // MutationObserver for dynamic infinite scrolls
+  // MutationObserver for infinite scrolls & SPA navigation
   const observer = new MutationObserver(() => scanVideos());
   observer.observe(document.documentElement, { childList: true, subtree: true });
+
+  // YouTube navigation event
+  window.addEventListener("yt-navigate-finish", () => setTimeout(scanVideos, 400));
 
   // Handle messages from background worker
   chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
@@ -404,5 +465,5 @@
   }
 
   // Initial scan
-  setTimeout(scanVideos, 500);
+  setTimeout(scanVideos, 600);
 })();
