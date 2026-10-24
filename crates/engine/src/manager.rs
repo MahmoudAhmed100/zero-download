@@ -219,6 +219,24 @@ impl Manager {
 
     /// Look at a URL without downloading it (for the "add" dialog).
     pub async fn probe(&self, url: &str, headers: &RequestHeaders) -> anyhow::Result<ProbeResult> {
+        if crate::torrent::is_magnet_url(url) {
+            let mag = crate::torrent::parse_magnet(url).unwrap_or_else(|| crate::torrent::MagnetInfo {
+                info_hash: "MAGNET".into(),
+                name: "torrent_download".into(),
+                trackers: Vec::new(),
+                exact_length: None,
+            });
+            return Ok(ProbeResult {
+                final_url: url.to_string(),
+                file_name: mag.name,
+                total_size: mag.exact_length,
+                resumable: true,
+                content_type: Some("application/x-bittorrent".into()),
+                kind: DownloadKind::Torrent,
+                last_modified: None,
+                headers_used: None,
+            });
+        }
         let (ua, headers) = {
             let s = self.settings.read().unwrap();
             (s.user_agent.clone(), with_login(&s, url, headers))
@@ -241,6 +259,7 @@ impl Manager {
             .filter(|s| !s.trim().is_empty())
             .map(filename::sanitize)
             .or_else(|| probe.as_ref().map(|p| p.file_name.clone()))
+            .or_else(|| crate::torrent::parse_magnet(&req.url).map(|m| filename::sanitize(&m.name)))
             .or_else(|| filename::from_url(&req.url).map(|n| filename::sanitize(&n)))
             .unwrap_or_else(|| "download".into());
         let category = settings.category_of(&wanted, &req.url);
@@ -260,6 +279,8 @@ impl Manager {
         let audio_url = req.audio_url.clone().filter(|u| !u.trim().is_empty());
         let kind = if audio_url.is_some() {
             DownloadKind::Dash
+        } else if crate::torrent::is_magnet_url(&req.url) || req.url.to_ascii_lowercase().ends_with(".torrent") {
+            DownloadKind::Torrent
         } else {
             probe.as_ref().map(|p| p.kind).unwrap_or_else(|| {
             if req.url.to_ascii_lowercase().split('?').next().unwrap_or("").ends_with(".m3u8") {
@@ -792,6 +813,11 @@ impl Manager {
         self.inner.lock().unwrap().entries.get(&id).map(make_view)
     }
 
+    /// Full record of one download (paths, segments, options).
+    pub fn get_record(&self, id: DownloadId) -> Option<DownloadRecord> {
+        self.inner.lock().unwrap().entries.get(&id).map(|e| e.rec.clone())
+    }
+
     /// Downloads that finished since the last call (for the "complete" popup).
     pub fn take_completed(&self) -> Vec<DownloadId> {
         std::mem::take(&mut self.inner.lock().unwrap().completed)
@@ -1192,6 +1218,16 @@ impl Manager {
                 hls::run(self.shared.clone(), job, progress, cancel).await?;
             }
             DownloadKind::Dash => unreachable!("handled by run_dash"),
+            DownloadKind::Torrent => {
+                let job = crate::torrent::TorrentJob {
+                    uri_or_file: rec.request_url().to_string(),
+                    output_dir: rec.save_dir.clone(),
+                    file_name: Some(rec.file_name.clone()),
+                    connections: rec.connections,
+                    limiter: limiter.clone(),
+                };
+                crate::torrent::run_torrent(job, progress, cancel.clone()).await?;
+            }
         }
         self.finish_file(id, &rec)
     }

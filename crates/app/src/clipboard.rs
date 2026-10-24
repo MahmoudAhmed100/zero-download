@@ -16,6 +16,9 @@ pub fn downloadable_url(text: &str) -> Option<String> {
     if t.is_empty() || t.len() > 4096 || t.contains(char::is_whitespace) {
         return None;
     }
+    if t.starts_with("magnet:?") {
+        return Some(t.to_string());
+    }
     let u = url::Url::parse(t).ok()?;
     if u.scheme() != "http" && u.scheme() != "https" {
         return None;

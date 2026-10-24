@@ -24,6 +24,8 @@ pub mod mux;
 pub mod segments;
 pub mod selfupdate;
 pub mod store;
+pub mod subtitles;
+pub mod torrent;
 pub mod system;
 pub mod tools;
 pub mod ytdlp;

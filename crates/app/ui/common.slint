@@ -534,10 +534,16 @@ export component TypeIcon inherits Rectangle {
         : root.kind == "exe" ? #4a5568
         : root.kind == "apk" ? #2e9e5b
         : root.kind == "disc" ? #5b7083
+        : root.kind == "torrent" ? #0284c7
         : root.kind == "image" ? #12a594
         : #8a94a0;
     border-radius: self.width * 0.22;
     background: @linear-gradient(180deg, root.base.brighter(25%) 0%, root.base 100%);
+    if root.kind == "torrent": G {
+        stroke: white;
+        stroke-width: 1.4px;
+        commands: "M 5 4 L 5 9 A 3 3 0 0 0 11 9 L 11 4";
+    }
     if root.kind == "video": G {
         fill: white;
         commands: "M 6 4.5 L 12 8 L 6 11.5 Z";

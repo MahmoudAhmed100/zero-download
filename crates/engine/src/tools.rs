@@ -243,12 +243,54 @@ fn find_file(dir: &Path, name: &str) -> Option<PathBuf> {
 
 /// Check both tools now (only does work when a day has passed or one is
 /// missing). Never shows anything; errors just mean "try again later".
+
+async fn aria2(client: &reqwest::Client, data_dir: &Path) -> anyhow::Result<()> {
+    if !cfg!(windows) {
+        return Ok(());
+    }
+    let present = bundled("aria2c");
+    let stamp = data_dir.join("aria2-checked");
+    if present.is_some() && !due(&stamp, Duration::from_secs(24 * 3600)) {
+        return Ok(());
+    }
+    let zip_url = "https://github.com/aria2/aria2/releases/download/release-1.37.0/aria2-1.37.0-win-64bit-build1.zip";
+    let Some(dir) = writable_dir("aria2c") else { return Ok(()) };
+    let work = std::env::temp_dir().join(format!("zero-aria2-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&work);
+    std::fs::create_dir_all(&work)?;
+    let zip = work.join("aria2.zip");
+    download(client, zip_url, &zip).await?;
+    let (zip2, work2) = (zip.clone(), work.clone());
+    let unpacked = tokio::task::spawn_blocking(move || {
+        let mut cmd = Command::new("tar");
+        cmd.arg("-xf").arg(&zip2).arg("-C").arg(&work2);
+        hide_window(&mut cmd);
+        cmd.output().map(|o| o.status.success()).unwrap_or(false)
+    })
+    .await
+    .unwrap_or(false);
+    let found = unpacked.then(|| find_file(&work, &exe("aria2c"))).flatten();
+    let result = match found {
+        Some(f) => {
+            let staged = dir.join("aria2c.new");
+            std::fs::copy(&f, &staged)?;
+            replace(&staged, &dir.join(exe("aria2c")))?;
+            let _ = std::fs::write(&stamp, b"ok");
+            Ok(())
+        }
+        None => Err(anyhow::anyhow!("aria2c.exe was not found in the download")),
+    };
+    let _ = std::fs::remove_dir_all(&work);
+    result
+}
+
 pub async fn update_all(client: reqwest::Client, data_dir: PathBuf) {
+    let _ = aria2(&client, &data_dir).await;
     yt_dlp(&client, &data_dir).await;
     let _ = ffmpeg(&client, &data_dir).await;
     // leftovers of earlier updates
     for dir in tool_dirs() {
-        for name in ["yt-dlp", "ffmpeg"] {
+        for name in ["yt-dlp", "ffmpeg", "aria2c"] {
             let _ = std::fs::remove_file(dir.join(exe(name)).with_extension("old"));
         }
     }

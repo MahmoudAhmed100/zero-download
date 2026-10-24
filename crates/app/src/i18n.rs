@@ -64,6 +64,14 @@ fn lookup(en: &str) -> Option<&'static str> {
 }
 
 const AR: &[(&str, &str)] = &[
+    ("Could not find matching subtitles for this video.", "تعذر العثور على ترجمة متوافقة لهذا الفيديو."),
+    ("Subtitles downloaded successfully and saved next to video!", "تم بنجاح جلب ملف الترجمة وحفظه بجانب الفيديو!"),
+    ("Video is still buffering. Please wait a few moments until the first segments are downloaded.", "الفيديو لا يزال قيد التخزين المؤقت، يرجى الانتظار بضع ثوانٍ لتجميع الحزم الأولى للمعاينة."),
+    ("Video is still buffering. Please wait a few moments until downloading starts.", "الفيديو لا يزال في مرحلة التخزين المؤقت، يرجى الانتظار بضع ثوانٍ حتى يبدأ التحميل."),
+    ("This file type does not support media preview.", "هذا النوع من الملفات لا يدعم معاينة الوسائط."),
+    ("Preview", "معاينة"),
+    ("Download subtitles (Arabic / English)", "تحميل الترجمة (عربي / إنجليزي)"),
+    ("Preview video", "معاينة وتشغيل الفيديو"),
     // statuses
     ("Queued", "في الانتظار"),
     ("Connecting…", "جارٍ الاتصال…"),

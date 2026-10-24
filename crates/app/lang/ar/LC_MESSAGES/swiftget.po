@@ -1260,3 +1260,12 @@ msgstr "الإصدار {}"
 
 msgid "Developed by Mahmoud"
 msgstr "برمجة وتطوير: Mahmoud"
+
+msgid "Preview video"
+msgstr "معاينة وتشغيل الفيديو"
+
+msgid "Download subtitles (Arabic / English)"
+msgstr "تحميل الترجمة (عربي / إنجليزي)"
+
+msgid "Preview"
+msgstr "معاينة"

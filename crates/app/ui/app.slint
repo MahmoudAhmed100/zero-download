@@ -90,6 +90,22 @@ component DownloadItem inherits Rectangle {
                     }
                 }
                 MenuEntry {
+                    text: @tr("Preview video");
+                    glyph: "play";
+                    enabled: root.data.kind == "video" || root.data.kind == "audio";
+                    clicked => {
+                        root.action("preview");
+                    }
+                }
+                MenuEntry {
+                    text: @tr("Download subtitles (Arabic / English)");
+                    glyph: "globe";
+                    enabled: root.data.kind == "video";
+                    clicked => {
+                        root.action("subtitles");
+                    }
+                }
+                MenuEntry {
                     text: @tr("Open with…");
                     glyph: "openwith";
                     enabled: root.done;
@@ -635,6 +651,20 @@ export component MainWindow inherits ThemedWindow {
                 }
             }
             MenuSeparator { }
+            MenuItem {
+                title: @tr("Preview video");
+                enabled: root.selected-id >= 0;
+                activated => {
+                    root.row-action(root.selected-id, "preview");
+                }
+            }
+            MenuItem {
+                title: @tr("Download subtitles (Arabic / English)");
+                enabled: root.selected-id >= 0;
+                activated => {
+                    root.row-action(root.selected-id, "subtitles");
+                }
+            }
             MenuItem {
                 title: @tr("Open");
                 enabled: root.selected-state == 3;
@@ -2254,6 +2284,7 @@ export component DetailsDialog inherits ThemedWindow {
 
     callback pause();
     callback resume();
+    callback preview();
     callback cancel-download();
     callback close-window();
     callback limit-changed();
@@ -2549,6 +2580,12 @@ export component DetailsDialog inherits ThemedWindow {
             }
             Rectangle {
                 horizontal-stretch: 1;
+            }
+            if root.kind == "video" || root.kind == "audio": Button {
+                text: @tr("Preview");
+                clicked => {
+                    root.preview();
+                }
             }
             if root.state == 0 || root.state == 1: Button {
                 text: @tr("Pause");

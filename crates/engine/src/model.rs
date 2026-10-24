@@ -44,6 +44,8 @@ pub enum DownloadKind {
     /// Separate video and audio streams (YouTube style, "DASH"):
     /// both are downloaded, then merged into one file with ffmpeg
     Dash,
+    /// BitTorrent / Magnet link download
+    Torrent,
 }
 
 /// Extra request data, usually handed over by the browser extension so that

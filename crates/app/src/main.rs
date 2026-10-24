@@ -1390,6 +1390,9 @@ pub(crate) fn ask(text: &str) -> bool {
 
 fn is_http_url(t: &str) -> Option<String> {
     let t = t.trim();
+    if t.starts_with("magnet:?") {
+        return Some(t.to_string());
+    }
     (t.starts_with("http://") || t.starts_with("https://"))
         .then(|| t.to_string())
         .filter(|s| !s.contains(char::is_whitespace))
@@ -1406,6 +1409,9 @@ pub(crate) fn extract_links(text: &str) -> Vec<String> {
 
 /// File-type icon for a file name.
 pub(crate) fn kind_for(name: &str) -> &'static str {
+    if name.starts_with("magnet:?") || name.to_ascii_lowercase().ends_with(".torrent") {
+        return "torrent";
+    }
     match filename::extension(name).as_str() {
         "mp4" | "mkv" | "avi" | "mov" | "wmv" | "flv" | "webm" | "m4v" | "ts" | "3gp" | "mpg" | "mpeg" | "vob"
         | "rm" | "rmvb" | "ogv" | "asf" => "video",
@@ -1932,6 +1938,124 @@ pub(crate) fn show_progress_for_start(ui: &Ui, id: u64) {
     }
 }
 
+
+pub(crate) fn is_media_type(name: &str) -> bool {
+    matches!(
+        filename::extension(name).as_str(),
+        "mp4" | "mkv" | "avi" | "mov" | "wmv" | "flv" | "webm" | "m4v" | "ts" | "3gp" | "mpg" | "mpeg" | "vob"
+            | "mp3" | "wav" | "flac" | "aac" | "ogg" | "m4a" | "wma" | "opus"
+    )
+}
+
+pub(crate) fn find_vlc() -> Option<PathBuf> {
+    #[cfg(windows)]
+    {
+        for p in [
+            r"C:\Program Files\VideoLAN\VLC\vlc.exe",
+            r"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe",
+        ] {
+            let path = PathBuf::from(p);
+            if path.exists() {
+                return Some(path);
+            }
+        }
+    }
+    None
+}
+
+pub(crate) fn preview_download(ui: &Ui, id: u64) {
+    let Some(v) = ui.ctx.mgr.get(id) else { return };
+    let is_media = is_media_type(&v.file_name) || v.category == "Video" || v.category == "Music";
+    if !is_media {
+        message(&t("This file type does not support media preview."));
+        return;
+    }
+
+    if v.status == Status::Completed {
+        let _ = open::that(&v.save_path);
+        return;
+    }
+
+    let Some(rec) = ui.ctx.mgr.get_record(id) else { return };
+    let candidates = [
+        rec.target_path(),
+        rec.part_path(),
+        rec.video_part_path(),
+    ];
+
+    let found_path = candidates.into_iter().find(|p| p.exists());
+    let Some(src) = found_path else {
+        message(&t("Video is still buffering. Please wait a few moments until downloading starts."));
+        return;
+    };
+
+    let len = std::fs::metadata(&src).map(|m| m.len()).unwrap_or(0);
+    if len < 256 * 1024 {
+        message(&t("Video is still buffering. Please wait a few moments until the first segments are downloaded."));
+        return;
+    }
+
+    // Prioritize VLC if installed
+    if let Some(vlc) = find_vlc() {
+        let mut cmd = std::process::Command::new(vlc);
+        cmd.arg("--no-sub-autodetect-file").arg(&src);
+        swiftget_engine::mux::hide_window(&mut cmd);
+        if cmd.spawn().is_ok() {
+            return;
+        }
+    }
+
+    // Fallback: create safe preview copy in temp with correct media extension
+    let ext = filename::extension(&v.file_name);
+    let preview_dir = std::env::temp_dir().join("ZeroDownload_Preview");
+    let _ = std::fs::create_dir_all(&preview_dir);
+    let preview_path = preview_dir.join(format!("preview_{}_{}.{}", id, std::process::id(), ext));
+
+    let copy_ok = (|| -> std::io::Result<()> {
+        use std::io::{Read, Write};
+        let mut in_file = std::fs::File::open(&src)?;
+        let mut out_file = std::fs::File::create(&preview_path)?;
+        let mut buf = vec![0u8; 64 * 1024];
+        let mut total = 0u64;
+        let limit = 150 * 1024 * 1024;
+        while total < limit {
+            let n = in_file.read(&mut buf)?;
+            if n == 0 { break; }
+            out_file.write_all(&buf[..n])?;
+            total += n as u64;
+        }
+        out_file.flush()?;
+        Ok(())
+    })();
+
+    if copy_ok.is_ok() {
+        let _ = open::that(&preview_path);
+    } else {
+        let _ = open::that(&src);
+    }
+}
+
+pub(crate) fn fetch_subtitles_action(ui: &Ui, id: u64) {
+    let Some(v) = ui.ctx.mgr.get(id) else { return };
+    let client = ui.ctx.mgr.client();
+    let url = v.url.clone();
+    let path = v.save_path.clone();
+    std::thread::spawn(move || {
+        let rt = tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap();
+        let res = rt.block_on(swiftget_engine::subtitles::download_subtitles_for(&client, &url, &path));
+        let _ = slint::invoke_from_event_loop(move || {
+            match res {
+                Ok(files) if !files.is_empty() => {
+                    message(&t("Subtitles downloaded successfully and saved next to video!"));
+                }
+                _ => {
+                    message(&t("Could not find matching subtitles for this video."));
+                }
+            }
+        });
+    });
+}
+
 fn row_action(ui: &Ui, id: u64, action: &str) {
     let Some(v) = ui.ctx.mgr.get(id) else { return };
     match action {
@@ -1988,6 +2112,8 @@ fn row_action(ui: &Ui, id: u64, action: &str) {
                 let _ = slint::invoke_from_event_loop(move || message(&text));
             });
         }
+        "preview" => preview_download(ui, id),
+        "subtitles" => fetch_subtitles_action(ui, id),
         "properties" => extra::open_properties(ui, id),
         "delete" => delete_download(&ui.ctx, id),
         _ => {}
@@ -2422,6 +2548,12 @@ pub(crate) fn open_progress(ui: &Ui, id: u64) {
     {
         let mgr = ui.ctx.mgr.clone();
         d.on_resume(move || mgr.start(id));
+    }
+    {
+        let ui = ui.clone();
+        d.on_preview(move || {
+            preview_download(&ui, id);
+        });
     }
     {
         // "Cancel": stop the download and close the window
