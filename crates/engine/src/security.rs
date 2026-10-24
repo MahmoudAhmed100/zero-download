@@ -137,7 +137,7 @@ mod md5 {
             }
         }
 
-        pub fn consume(&mut self, mut input: &[u8]) {
+        pub fn consume(&mut self, input: &[u8]) {
             let mut index = ((self.count >> 3) & 0x3f) as usize;
             self.count += (input.len() as u64) << 3;
 

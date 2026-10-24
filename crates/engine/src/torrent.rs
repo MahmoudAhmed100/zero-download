@@ -7,11 +7,10 @@ use crate::http::Progress;
 use crate::limiter::SpeedLimiter;
 use crate::mux::{find_tool, hide_window};
 use anyhow::{bail, Context};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
-use std::time::Duration;
 use tokio_util::sync::CancellationToken;
 
 #[derive(Debug, Clone)]
@@ -172,7 +171,6 @@ pub async fn run_torrent(
                     .output();
             }
             let _ = parser.join();
-            let _ = wait_handle.await;
             bail!("تم إيقاف تحميل التورنت مؤقتاً");
         }
         res = wait_handle => {

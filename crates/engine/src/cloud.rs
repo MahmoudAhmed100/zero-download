@@ -6,7 +6,7 @@
 //! 3. Real-Debrid / Multi-hoster unrestrict API for premium download speeds.
 
 use anyhow::{anyhow, bail, Result};
-use reqwest::header::{HeaderMap, HeaderValue, COOKIE, USER_AGENT};
+use reqwest::header::USER_AGENT;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -169,7 +169,6 @@ trait ZipHelper {
 impl<T: std::io::Read + std::io::Seek> ZipHelper for T {
     fn read_zip_first_srt(mut self) -> std::io::Result<Vec<u8>> {
         // Simple search for uncompressed or stored srt inside zip data
-        use std::io::Read;
         let mut all = Vec::new();
         self.read_to_end(&mut all)?;
         Ok(all)
