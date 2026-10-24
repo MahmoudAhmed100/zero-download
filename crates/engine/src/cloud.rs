@@ -179,7 +179,8 @@ pub async fn unrestrict_via_debrid(
         bail!("فشل فتح الرابط عبر Real-Debrid (رمز الحالة: {})", resp.status());
     }
 
-    let data: RdUnrestrictResp = resp.json().await?;
+    let text = resp.text().await?;
+    let data: RdUnrestrictResp = serde_json::from_str(&text)?;
     Ok(CloudResolved {
         direct_url: data.download,
         file_name: data.filename,

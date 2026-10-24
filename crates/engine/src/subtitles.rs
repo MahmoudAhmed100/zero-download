@@ -100,7 +100,11 @@ pub async fn fetch_subtitles_api(
         return found;
     };
 
-    let Ok(json) = resp.json::<serde_json::Value>().await else {
+    let Ok(text) = resp.text().await else {
+        return found;
+    };
+
+    let Ok(json) = serde_json::from_str::<serde_json::Value>(&text) else {
         return found;
     };
 

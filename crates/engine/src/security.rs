@@ -146,10 +146,10 @@ mod md5 {
 
             if input.len() >= part_len {
                 self.buffer[index..index + part_len].copy_from_slice(&input[..part_len]);
-                self.transform(&self.buffer);
+                Self::transform(&mut self.state, &self.buffer);
                 i = part_len;
                 while i + 63 < input.len() {
-                    self.transform(&input[i..i + 64]);
+                    Self::transform(&mut self.state, &input[i..i + 64]);
                     i += 64;
                 }
                 index = 0;
@@ -182,13 +182,13 @@ mod md5 {
             Digest(out)
         }
 
-        fn transform(&mut self, block: &[u8]) {
+        fn transform(state: &mut [u32; 4], block: &[u8]) {
             let mut x = [0u32; 16];
             for (i, chunk) in block.chunks_exact(4).enumerate() {
                 x[i] = u32::from_le_bytes(chunk.try_into().unwrap());
             }
 
-            let [mut a, mut b, mut c, mut d] = self.state;
+            let [mut a, mut b, mut c, mut d] = *state;
 
             let ff = |a: &mut u32, b: u32, c: u32, d: u32, x: u32, s: u32, ac: u32| {
                 *a = a.wrapping_add((b & c) | (!b & d)).wrapping_add(x).wrapping_add(ac);
@@ -282,10 +282,10 @@ mod md5 {
             ii(&mut c, d, a, b, x[2], 15, 0x2ad7d2bb);
             ii(&mut b, c, d, a, x[9], 21, 0xeb86d391);
 
-            self.state[0] = self.state[0].wrapping_add(a);
-            self.state[1] = self.state[1].wrapping_add(b);
-            self.state[2] = self.state[2].wrapping_add(c);
-            self.state[3] = self.state[3].wrapping_add(d);
+            state[0] = state[0].wrapping_add(a);
+            state[1] = state[1].wrapping_add(b);
+            state[2] = state[2].wrapping_add(c);
+            state[3] = state[3].wrapping_add(d);
         }
     }
 

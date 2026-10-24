@@ -152,14 +152,30 @@ pub async fn run_torrent(
         }
     });
 
+    let pid = child.id();
+    let wait_handle = tokio::task::spawn_blocking(move || child.wait());
+
     // Monitor for cancellation or child completion
     tokio::select! {
         _ = cancel.cancelled() => {
-            let _ = child.kill();
+            #[cfg(windows)]
+            {
+                let mut kill_cmd = Command::new("taskkill");
+                kill_cmd.args(["/F", "/T", "/PID", &pid.to_string()]);
+                hide_window(&mut kill_cmd);
+                let _ = kill_cmd.output();
+            }
+            #[cfg(not(windows))]
+            {
+                let _ = Command::new("kill")
+                    .args(["-9", &pid.to_string()])
+                    .output();
+            }
             let _ = parser.join();
+            let _ = wait_handle.await;
             bail!("تم إيقاف تحميل التورنت مؤقتاً");
         }
-        res = tokio::task::spawn_blocking(move || child.wait()) => {
+        res = wait_handle => {
             let _ = parser.join();
             match res {
                 Ok(Ok(status)) if status.success() => Ok(()),
