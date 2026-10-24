@@ -3,6 +3,14 @@
 (() => {
   if (window.top !== window && !window.location.href.includes("youtube.com/embed")) return;
 
+  // Suppress harmless extension disconnection / lifecycle errors in the page
+  window.addEventListener("unhandledrejection", (event) => {
+    const msg = (event && event.reason && (event.reason.message || String(event.reason))) || "";
+    if (msg.includes("No SW") || msg.includes("Receiving end does not exist") || msg.includes("Extension context invalidated")) {
+      if (typeof event.preventDefault === "function") event.preventDefault();
+    }
+  });
+
   const VIDEO_PAGE = [
     /youtube\.com\/(watch|shorts\/|live\/)/i,
     /tiktok\.com\/@[^/]+\/(video|photo)\//i,
@@ -349,12 +357,19 @@
         row.innerHTML = `<span>${m.label || "فيديو"}</span><small style="opacity:0.6">${m.ext ? m.ext.toUpperCase() : ""}</small>`;
         row.addEventListener("click", (e) => {
           e.stopPropagation();
-          chrome.runtime.sendMessage({
-            type: "swiftget-download",
-            item: m,
-            title: cleanTitle(),
-            fileName: `${cleanTitle()}.${m.ext || "mp4"}`
-          });
+          try {
+            chrome.runtime.sendMessage(
+              {
+                type: "swiftget-download",
+                item: m,
+                title: cleanTitle(),
+                fileName: `${cleanTitle()}.${m.ext || "mp4"}`
+              },
+              () => {
+                if (chrome.runtime.lastError) {}
+              }
+            );
+          } catch (_) {}
           flashMsg("تم الإرسال لـ Zero Download ✔");
           menu.classList.remove("show");
         });
@@ -378,22 +393,28 @@
   function triggerDownload(video) {
     const pageUrl = linkFor(video);
     const title = cleanTitle();
-    chrome.runtime.sendMessage({
-      type: "swiftget-download-page",
-      pageUrl,
-      title,
-      currentSrc: video.currentSrc || video.src
-    }, () => {
-      const data = activeOverlays.get(video);
-      if (data) {
-        const m = data.host.shadowRoot?.getElementById("menu");
-        if (m) {
-          m.innerHTML = `<div style="padding:10px; color:#10b981; font-size:12px; font-weight:600; text-align:center;">تم إرسال التحميل لـ Zero Download ✔</div>`;
-          m.classList.add("show");
-          setTimeout(() => m.classList.remove("show"), 2200);
+    try {
+      chrome.runtime.sendMessage(
+        {
+          type: "swiftget-download-page",
+          pageUrl,
+          title,
+          currentSrc: video.currentSrc || video.src
+        },
+        () => {
+          if (chrome.runtime.lastError) {}
+          const data = activeOverlays.get(video);
+          if (data) {
+            const m = data.host.shadowRoot?.getElementById("menu");
+            if (m) {
+              m.innerHTML = `<div style="padding:10px; color:#10b981; font-size:12px; font-weight:600; text-align:center;">تم إرسال التحميل لـ Zero Download ✔</div>`;
+              m.classList.add("show");
+              setTimeout(() => m.classList.remove("show"), 2200);
+            }
+          }
         }
-      }
-    });
+      );
+    } catch (_) {}
   }
 
   function scanVideos() {

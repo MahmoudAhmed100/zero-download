@@ -13,6 +13,22 @@
 // Chrome / Edge / Opera load yt-core.js here; Firefox lists it in its manifest
 if (typeof importScripts === "function") importScripts("yt-core.js");
 
+// Guard against noisy Chromium MV3 lifecycle rejections (e.g. Service Worker suspending)
+if (typeof self !== "undefined") {
+  self.addEventListener("unhandledrejection", (event) => {
+    const msg = (event && event.reason && (event.reason.message || String(event.reason))) || "";
+    if (
+      msg.includes("No SW") ||
+      msg.includes("Receiving end does not exist") ||
+      msg.includes("Extension context invalidated") ||
+      msg.includes("Could not establish connection") ||
+      msg.includes("The message port closed")
+    ) {
+      if (typeof event.preventDefault === "function") event.preventDefault();
+    }
+  });
+}
+
 const DEFAULTS = { port: 9614, intercept: true, minSizeKB: 0 };
 
 async function getOpts() {
@@ -308,9 +324,17 @@ chrome.downloads.onCreated.addListener(async (item) => {
 // res_<tab>:   any other site: { page, resolving, resolved, resolveError }
 
 async function readTab(tabId) {
-  const keys = [`media_${tabId}`, `yt_${tabId}`, `res_${tabId}`];
-  const r = await chrome.storage.session.get(keys);
-  return { media: r[keys[0]] || [], yt: r[keys[1]] || null, res: r[keys[2]] || null };
+  if (!tabId || tabId < 0) return { media: [], yt: null, res: null };
+  try {
+    const keys = [`media_${tabId}`, `yt_${tabId}`, `res_${tabId}`];
+    let r = {};
+    try {
+      r = (await chrome.storage.session.get(keys)) || {};
+    } catch (_) {}
+    return { media: r[keys[0]] || [], yt: r[keys[1]] || null, res: r[keys[2]] || null };
+  } catch {
+    return { media: [], yt: null, res: null };
+  }
 }
 
 function optionItems(resolved, source) {
@@ -371,17 +395,43 @@ async function itemsForTab(tabId) {
 }
 
 async function pushToTab(tabId) {
-  const items = await itemsForTab(tabId);
-  const count = items.filter((i) => !i.disabled).length;
-  chrome.action.setBadgeBackgroundColor({ color: "#1f6feb" });
-  chrome.action.setBadgeText({ tabId, text: count ? String(count) : "" }).catch(() => {});
-  chrome.tabs.sendMessage(tabId, { type: "swiftget-media", items }).catch(() => {});
+  if (!tabId || tabId < 0) return;
+  try {
+    const items = await itemsForTab(tabId);
+    const count = items.filter((i) => !i.disabled).length;
+    try {
+      const p1 = chrome.action.setBadgeBackgroundColor({ color: "#1f6feb" });
+      if (p1 && typeof p1.catch === "function") p1.catch(() => {});
+    } catch (_) {}
+    try {
+      const p2 = chrome.action.setBadgeText({ tabId, text: count ? String(count) : "" });
+      if (p2 && typeof p2.catch === "function") p2.catch(() => {});
+    } catch (_) {}
+    try {
+      const p3 = chrome.tabs.sendMessage(tabId, { type: "swiftget-media", items });
+      if (p3 && typeof p3.catch === "function") p3.catch(() => {});
+    } catch (_) {}
+  } catch (_) {
+    // Benign lifecycle rejection (tab closed, navigating, or SW suspending)
+  }
 }
 
 async function clearTab(tabId) {
-  await chrome.storage.session.remove([`media_${tabId}`, `yt_${tabId}`, `res_${tabId}`]);
-  chrome.action.setBadgeText({ tabId, text: "" }).catch(() => {});
-  chrome.tabs.sendMessage(tabId, { type: "swiftget-media", items: [] }).catch(() => {});
+  if (!tabId || tabId < 0) return;
+  try {
+    try {
+      const p1 = chrome.storage.session.remove([`media_${tabId}`, `yt_${tabId}`, `res_${tabId}`]);
+      if (p1 && typeof p1.catch === "function") await p1.catch(() => {});
+    } catch (_) {}
+    try {
+      const p2 = chrome.action.setBadgeText({ tabId, text: "" });
+      if (p2 && typeof p2.catch === "function") p2.catch(() => {});
+    } catch (_) {}
+    try {
+      const p3 = chrome.tabs.sendMessage(tabId, { type: "swiftget-media", items: [] });
+      if (p3 && typeof p3.catch === "function") p3.catch(() => {});
+    } catch (_) {}
+  } catch (_) {}
 }
 
 // ---------------------------------------------------------------- 2. media sniffer
@@ -396,13 +446,22 @@ function headerMap(list) {
 }
 
 async function addMedia(tabId, item) {
-  const key = `media_${tabId}`;
-  const current = (await chrome.storage.session.get(key))[key] || [];
-  if (current.some((m) => m.url === item.url)) return;
-  current.push(item);
-  while (current.length > 15) current.shift();
-  await chrome.storage.session.set({ [key]: current });
-  pushToTab(tabId);
+  if (!tabId || tabId < 0) return;
+  try {
+    const key = `media_${tabId}`;
+    let current = [];
+    try {
+      const got = await chrome.storage.session.get(key);
+      current = (got && got[key]) || [];
+    } catch (_) {}
+    if (current.some((m) => m.url === item.url)) return;
+    current.push(item);
+    while (current.length > 15) current.shift();
+    try {
+      await chrome.storage.session.set({ [key]: current });
+    } catch (_) {}
+    pushToTab(tabId);
+  } catch (_) {}
 }
 
 chrome.webRequest.onHeadersReceived.addListener(
@@ -443,30 +502,39 @@ chrome.webRequest.onHeadersReceived.addListener(
 const seenStreams = new Map(); // tabId -> Set("<itag>_<dur>")
 
 async function addYoutubeStream(tabId, stream) {
-  const key = `yt_${tabId}`;
-  const tab = await chrome.tabs.get(tabId).catch(() => null);
-  const videoId = tab ? videoIdOf(tab.url) : null;
-  const state = (await chrome.storage.session.get(key))[key] || { videoId, sabr: false, streams: {} };
-  if (videoId && state.videoId && state.videoId !== videoId) {
-    // the user moved to another video
-    state.videoId = videoId;
-    state.streams = {};
-    state.sabr = false;
-    seenStreams.delete(tabId);
-  }
-  state.videoId = state.videoId || videoId;
-  if (stream.sabr) {
-    if (state.sabr) return;
-    state.sabr = true;
-  } else {
-    const sk = `${stream.itag}_${stream.dur}`;
-    // keep the newest URL of each stream (the old one may expire)
-    state.streams[sk] = stream;
-    const ids = Object.keys(state.streams);
-    if (ids.length > 60) delete state.streams[ids[0]];
-  }
-  await chrome.storage.session.set({ [key]: state });
-  pushToTab(tabId);
+  if (!tabId || tabId < 0) return;
+  try {
+    const key = `yt_${tabId}`;
+    const tab = await chrome.tabs.get(tabId).catch(() => null);
+    const videoId = tab ? videoIdOf(tab.url) : null;
+    let state = { videoId, sabr: false, streams: {} };
+    try {
+      const got = await chrome.storage.session.get(key);
+      if (got && got[key]) state = got[key];
+    } catch (_) {}
+    if (videoId && state.videoId && state.videoId !== videoId) {
+      // the user moved to another video
+      state.videoId = videoId;
+      state.streams = {};
+      state.sabr = false;
+      seenStreams.delete(tabId);
+    }
+    state.videoId = state.videoId || videoId;
+    if (stream.sabr) {
+      if (state.sabr) return;
+      state.sabr = true;
+    } else {
+      const sk = `${stream.itag}_${stream.dur}`;
+      // keep the newest URL of each stream (the old one may expire)
+      state.streams[sk] = stream;
+      const ids = Object.keys(state.streams);
+      if (ids.length > 60) delete state.streams[ids[0]];
+    }
+    try {
+      await chrome.storage.session.set({ [key]: state });
+    } catch (_) {}
+    pushToTab(tabId);
+  } catch (_) {}
 }
 
 chrome.webRequest.onBeforeRequest.addListener(
@@ -519,19 +587,33 @@ async function askApp(page) {
 }
 
 async function patchYt(tabId, videoId, change) {
-  const key = `yt_${tabId}`;
-  let state = (await chrome.storage.session.get(key))[key];
-  if (!state || state.videoId !== videoId) state = { videoId, sabr: false, streams: {} };
-  Object.assign(state, change);
-  await chrome.storage.session.set({ [key]: state });
-  pushToTab(tabId);
+  if (!tabId || tabId < 0) return;
+  try {
+    const key = `yt_${tabId}`;
+    let state;
+    try {
+      const got = await chrome.storage.session.get(key);
+      state = got && got[key];
+    } catch (_) {}
+    if (!state || state.videoId !== videoId) state = { videoId, sabr: false, streams: {} };
+    Object.assign(state, change);
+    try {
+      await chrome.storage.session.set({ [key]: state });
+    } catch (_) {}
+    pushToTab(tabId);
+  } catch (_) {}
 }
 
 async function resolveYoutube(tabId, pageUrl) {
+  if (!tabId || tabId < 0) return;
   const videoId = videoIdOf(pageUrl);
   if (!videoId || !/(^|\.)youtube\.com$/i.test(new URL(pageUrl).hostname)) return;
   const key = `yt_${tabId}`;
-  const state = (await chrome.storage.session.get(key))[key];
+  let state;
+  try {
+    const got = await chrome.storage.session.get(key);
+    state = got && got[key];
+  } catch (_) {}
   if (state && state.videoId === videoId && (state.resolved || state.resolveError)) return;
   if (resolving.get(tabId) === videoId) return;
   resolving.set(tabId, videoId);
@@ -555,27 +637,41 @@ async function resolveYoutube(tabId, pageUrl) {
  * Instagram, TikTok, X, Vimeo, Dailymotion and ~1800 more sites.
  */
 async function resolvePage(tabId, page) {
-  if (!page || !/^https?:/i.test(page) || isYoutube(page)) return;
-  const key = `res_${tabId}`;
-  const state = (await chrome.storage.session.get(key))[key];
-  if (state && state.page === page && (state.resolved || state.resolving || state.resolveError)) return;
-  if (resolving.get(tabId) === page) return;
-  resolving.set(tabId, page);
-  await chrome.storage.session.set({ [key]: { page, resolving: true } });
-  pushToTab(tabId);
-  let change;
+  if (!tabId || tabId < 0 || !page || !/^https?:/i.test(page) || isYoutube(page)) return;
   try {
-    change = await askApp(page);
-  } catch (e) {
-    change = { resolveError: (await appAlive()) ? String((e && e.message) || e) : "Zero Download is not running" };
-  } finally {
-    if (resolving.get(tabId) === page) resolving.delete(tabId);
-  }
-  const now = (await chrome.storage.session.get(key))[key];
-  if (now && now.page === page) {
-    await chrome.storage.session.set({ [key]: { page, resolving: false, ...change } });
+    const key = `res_${tabId}`;
+    let state;
+    try {
+      const got = await chrome.storage.session.get(key);
+      state = got && got[key];
+    } catch (_) {}
+    if (state && state.page === page && (state.resolved || state.resolving || state.resolveError)) return;
+    if (resolving.get(tabId) === page) return;
+    resolving.set(tabId, page);
+    try {
+      await chrome.storage.session.set({ [key]: { page, resolving: true } });
+    } catch (_) {}
     pushToTab(tabId);
-  }
+    let change;
+    try {
+      change = await askApp(page);
+    } catch (e) {
+      change = { resolveError: (await appAlive()) ? String((e && e.message) || e) : "Zero Download is not running" };
+    } finally {
+      if (resolving.get(tabId) === page) resolving.delete(tabId);
+    }
+    let now;
+    try {
+      const got = await chrome.storage.session.get(key);
+      now = got && got[key];
+    } catch (_) {}
+    if (now && now.page === page) {
+      try {
+        await chrome.storage.session.set({ [key]: { page, resolving: false, ...change } });
+      } catch (_) {}
+      pushToTab(tabId);
+    }
+  } catch (_) {}
 }
 
 // ---------------------------------------------------------------- tab lifecycle
@@ -697,12 +793,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       return reply(Promise.resolve({ ok: false, error: "Invalid URL" }), sendResponse);
     }
     case "swiftget-get-media":
-      itemsForTab(msg.tabId).then(sendResponse);
+      itemsForTab(msg.tabId).then(sendResponse).catch(() => sendResponse([]));
       return true;
     case "swiftget-media-request":
       if (!sender.tab) return false;
       if (sender.tab.url && videoIdOf(sender.tab.url)) resolveYoutube(sender.tab.id, sender.tab.url);
-      itemsForTab(sender.tab.id).then(sendResponse);
+      itemsForTab(sender.tab.id).then(sendResponse).catch(() => sendResponse([]));
       return true;
     case "swiftget-video-seen":
       // the page shows a video: find its qualities
@@ -711,13 +807,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       else resolvePage(sender.tab.id, msg.page || sender.tab.url);
       return false;
     case "swiftget-status":
-      appAlive().then((ok) => sendResponse({ ok }));
+      appAlive().then((ok) => sendResponse({ ok })).catch(() => sendResponse({ ok: false }));
       return true;
     case "swiftget-keys":
       lastKeys = { alt: !!msg.alt, ctrl: !!msg.ctrl, shift: !!msg.shift, at: Date.now() };
       return false;
     case "swiftget-config":
-      getConfig().then((cfg) => sendResponse((cfg && cfg.panel) || { enabled: true, skipSites: [] }));
+      getConfig()
+        .then((cfg) => sendResponse((cfg && cfg.panel) || { enabled: true, skipSites: [] }))
+        .catch(() => sendResponse({ enabled: true, skipSites: [] }));
       return true;
     default:
       return false;
