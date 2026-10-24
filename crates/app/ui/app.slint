@@ -524,6 +524,7 @@ export component MainWindow inherits ThemedWindow {
     callback export-list(string);
     callback import-list(string);
     callback set-theme(int);
+    callback set-opacity(float);
     callback set-language(string);
     callback toggle-categories();
     callback set-toolbar-small(bool);
@@ -939,6 +940,54 @@ export component MainWindow inherits ThemedWindow {
                         root.set-language("ar");
                     }
                 }
+                MenuItem {
+                    title: "Français";
+                    checkable: true;
+                    checked: root.language == "fr";
+                    activated => {
+                        root.set-language("fr");
+                    }
+                }
+                MenuItem {
+                    title: "Español";
+                    checkable: true;
+                    checked: root.language == "es";
+                    activated => {
+                        root.set-language("es");
+                    }
+                }
+                MenuItem {
+                    title: "Deutsch";
+                    checkable: true;
+                    checked: root.language == "de";
+                    activated => {
+                        root.set-language("de");
+                    }
+                }
+                MenuItem {
+                    title: "Português";
+                    checkable: true;
+                    checked: root.language == "pt";
+                    activated => {
+                        root.set-language("pt");
+                    }
+                }
+                MenuItem {
+                    title: "Türkçe";
+                    checkable: true;
+                    checked: root.language == "tr";
+                    activated => {
+                        root.set-language("tr");
+                    }
+                }
+                MenuItem {
+                    title: "Русский";
+                    checkable: true;
+                    checked: root.language == "ru";
+                    activated => {
+                        root.set-language("ru");
+                    }
+                }
             }
             Menu {
                 title: @tr("Theme");
@@ -972,6 +1021,81 @@ export component MainWindow inherits ThemedWindow {
                     checked: Theme.mode == 3;
                     activated => {
                         root.set-theme(3);
+                    }
+                }
+                MenuItem {
+                    title: @tr("Cyberpunk Neon");
+                    checkable: true;
+                    checked: Theme.mode == 4;
+                    activated => {
+                        root.set-theme(4);
+                    }
+                }
+                MenuItem {
+                    title: @tr("Sunset Crimson");
+                    checkable: true;
+                    checked: Theme.mode == 5;
+                    activated => {
+                        root.set-theme(5);
+                    }
+                }
+                MenuItem {
+                    title: @tr("Nord Arctic");
+                    checkable: true;
+                    checked: Theme.mode == 6;
+                    activated => {
+                        root.set-theme(6);
+                    }
+                }
+                MenuItem {
+                    title: @tr("AMOLED Pure Black");
+                    checkable: true;
+                    checked: Theme.mode == 7;
+                    activated => {
+                        root.set-theme(7);
+                    }
+                }
+                MenuItem {
+                    title: @tr("Forest Emerald");
+                    checkable: true;
+                    checked: Theme.mode == 8;
+                    activated => {
+                        root.set-theme(8);
+                    }
+                }
+            }
+            Menu {
+                title: @tr("Window opacity");
+                MenuItem {
+                    title: @tr("100% (Solid)");
+                    checkable: true;
+                    checked: Theme.opacity >= 0.98;
+                    activated => {
+                        root.set-opacity(1.0);
+                    }
+                }
+                MenuItem {
+                    title: @tr("90% (Subtle)");
+                    checkable: true;
+                    checked: Theme.opacity >= 0.88 && Theme.opacity < 0.95;
+                    activated => {
+                        root.set-opacity(0.9);
+                    }
+                }
+                MenuItem {
+                    title: @tr("80% (Medium)");
+                    checkable: true;
+                    checked: Theme.opacity >= 0.78 && Theme.opacity < 0.85;
+                    activated => {
+                        root.set-opacity(0.8);
+                    }
+                }
+                MenuItem {
+                    title: @tr("70% (Glass)");
+                    checkable: true;
+                    checked: Theme.opacity < 0.75;
+                    activated => {
+                        root.set-opacity(0.7);
                     }
                 }
             }

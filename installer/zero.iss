@@ -85,6 +85,12 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExe}"; Tasks: deskto
 Root: HKCU; Subkey: "Software\Zero\ZeroDownload"; ValueType: string; ValueName: "Installed"; ValueData: "1"; Flags: uninsdeletekey
 ; start in the background (next to the clock) when the user signs in
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "ZeroDownload"; ValueData: """{app}\{#MyAppExe}"" --background"; Flags: uninsdeletevalue; Tasks: autostart
+; Firefox persistent extension registration (prevents disappearing on exit)
+Root: HKCU; Subkey: "Software\Mozilla\Firefox\Extensions"; ValueType: string; ValueName: "zero-download@zero.app"; ValueData: "{app}\extension-firefox"; Flags: uninsdeletevalue
+; Native Messaging host registrations for Chrome, Edge, and Brave
+Root: HKCU; Subkey: "Software\Google\Chrome\NativeMessagingHosts\net.mahmoud.zerodownload"; ValueType: string; ValueData: "{app}\net.mahmoud.zerodownload.json"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\Microsoft\Edge\NativeMessagingHosts\net.mahmoud.zerodownload"; ValueType: string; ValueData: "{app}\net.mahmoud.zerodownload.json"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\BraveSoftware\Brave-Browser\NativeMessagingHosts\net.mahmoud.zerodownload"; ValueType: string; ValueData: "{app}\net.mahmoud.zerodownload.json"; Flags: uninsdeletekey
 
 [Run]
 Filename: "{app}\{#MyAppExe}"; Description: "Open Zero Download now"; Flags: nowait postinstall skipifsilent

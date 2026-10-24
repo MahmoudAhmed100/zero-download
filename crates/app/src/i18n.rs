@@ -5,15 +5,33 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 static ARABIC: AtomicBool = AtomicBool::new(false);
 
-/// "ar", "en", or "" = the language of Windows.
+/// "ar", "en", "fr", "es", "de", "pt", "tr", "ru" or "" = the language of Windows.
 pub fn effective(setting: &str) -> &'static str {
     match setting {
         "ar" => "ar",
         "en" => "en",
+        "fr" => "fr",
+        "es" => "es",
+        "de" => "de",
+        "pt" => "pt",
+        "tr" => "tr",
+        "ru" => "ru",
         _ => {
             let sys = sys_locale::get_locale().unwrap_or_default().to_ascii_lowercase();
             if sys.starts_with("ar") {
                 "ar"
+            } else if sys.starts_with("fr") {
+                "fr"
+            } else if sys.starts_with("es") {
+                "es"
+            } else if sys.starts_with("de") {
+                "de"
+            } else if sys.starts_with("pt") {
+                "pt"
+            } else if sys.starts_with("tr") {
+                "tr"
+            } else if sys.starts_with("ru") {
+                "ru"
             } else {
                 "en"
             }
@@ -23,8 +41,9 @@ pub fn effective(setting: &str) -> &'static str {
 
 /// Switch every window and every Rust text to this language.
 pub fn apply(lang: &str) {
-    ARABIC.store(lang == "ar", Ordering::Relaxed);
-    let _ = slint::select_bundled_translation(if lang == "ar" { "ar" } else { "en" });
+    let eff = effective(lang);
+    ARABIC.store(eff == "ar", Ordering::Relaxed);
+    let _ = slint::select_bundled_translation(eff);
 }
 
 pub fn is_arabic() -> bool {

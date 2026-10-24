@@ -90,32 +90,183 @@ export struct SegView {
 }
 
 // ------------------------------------------------------------------ themes
-// 0 Light, 1 Dark, 2 Ocean, 3 Midnight
+// 0 Light, 1 Dark, 2 Ocean, 3 Midnight, 4 Cyberpunk, 5 Sunset, 6 Nord, 7 AMOLED, 8 Emerald
 
 export global Theme {
     in-out property <int> mode: 0;
-    out property <bool> dark: mode == 1 || mode == 3;
-    out property <color> window: mode == 1 ? #1e1f22 : mode == 2 ? #e8f1fb : mode == 3 ? #15131d : #f0f0f0;
-    out property <color> panel: mode == 1 ? #26282c : mode == 2 ? #ffffff : mode == 3 ? #1d1a29 : #ffffff;
-    out property <color> toolbar-top: mode == 1 ? #2e3136 : mode == 2 ? #2f80ed : mode == 3 ? #2b2545 : #fdfdfd;
-    out property <color> toolbar-bottom: mode == 1 ? #24262a : mode == 2 ? #1b5fc4 : mode == 3 ? #1e1a33 : #e7ebf0;
-    out property <color> toolbar-text: mode == 1 ? #e8eaed : mode == 2 ? #ffffff : mode == 3 ? #ece9f6 : #1b1f24;
-    out property <color> toolbar-hover: mode == 1 ? #3a3e45 : mode == 2 ? #4a92f0 : mode == 3 ? #3a3260 : #e5f1fb;
-    out property <color> line: mode == 1 ? #3a3d42 : mode == 2 ? #c6d8ef : mode == 3 ? #352f4d : #d9dde3;
-    out property <color> grid: mode == 1 ? #2f3237 : mode == 2 ? #eaf2fc : mode == 3 ? #26223a : #eef0f3;
-    out property <color> header-top: mode == 1 ? #2e3136 : mode == 2 ? #f7fbff : mode == 3 ? #26223a : #ffffff;
-    out property <color> header-bottom: mode == 1 ? #282a2e : mode == 2 ? #e3eefb : mode == 3 ? #201c31 : #eef1f5;
-    out property <color> text: mode == 1 ? #e8eaed : mode == 2 ? #13243a : mode == 3 ? #ece9f6 : #1b1f24;
-    out property <color> muted: mode == 1 ? #9aa0a6 : mode == 2 ? #557090 : mode == 3 ? #a59fc0 : #5f6b78;
-    out property <color> accent: mode == 1 ? #5b9dff : mode == 2 ? #1565c0 : mode == 3 ? #a78bfa : #1f6feb;
-    out property <color> select: mode == 1 ? #264f78 : mode == 2 ? #cfe4ff : mode == 3 ? #3d3366 : #cce8ff;
-    out property <color> select-line: mode == 1 ? #3a6ea5 : mode == 2 ? #8dbcf5 : mode == 3 ? #5b4a99 : #99d1ff;
-    out property <color> hover: mode == 1 ? #2c3440 : mode == 2 ? #e3efff : mode == 3 ? #2a2541 : #e5f3ff;
+    in-out property <float> opacity: 1.0;
+    out property <bool> dark: mode != 0 && mode != 2;
+    out property <color> window:
+        mode == 1 ? #1e1f22 :
+        mode == 2 ? #e8f1fb :
+        mode == 3 ? #15131d :
+        mode == 4 ? #0a0e14 :
+        mode == 5 ? #181124 :
+        mode == 6 ? #2e3440 :
+        mode == 7 ? #000000 :
+        mode == 8 ? #0b1a14 :
+        #f0f0f0;
+    out property <color> panel:
+        mode == 1 ? #26282c :
+        mode == 2 ? #ffffff :
+        mode == 3 ? #1d1a29 :
+        mode == 4 ? #121820 :
+        mode == 5 ? #241935 :
+        mode == 6 ? #3b4252 :
+        mode == 7 ? #0d0d0d :
+        mode == 8 ? #13261f :
+        #ffffff;
+    out property <color> toolbar-top:
+        mode == 1 ? #2e3136 :
+        mode == 2 ? #2f80ed :
+        mode == 3 ? #2b2545 :
+        mode == 4 ? #1a222d :
+        mode == 5 ? #2f2046 :
+        mode == 6 ? #434c5e :
+        mode == 7 ? #141414 :
+        mode == 8 ? #183329 :
+        #fdfdfd;
+    out property <color> toolbar-bottom:
+        mode == 1 ? #24262a :
+        mode == 2 ? #1b5fc4 :
+        mode == 3 ? #1e1a33 :
+        mode == 4 ? #131922 :
+        mode == 5 ? #231735 :
+        mode == 6 ? #383f4f :
+        mode == 7 ? #080808 :
+        mode == 8 ? #10241c :
+        #e7ebf0;
+    out property <color> toolbar-text:
+        mode == 1 ? #e8eaed :
+        mode == 2 ? #ffffff :
+        mode == 3 ? #ece9f6 :
+        mode == 4 ? #00ff66 :
+        mode == 5 ? #ffd166 :
+        mode == 6 ? #eceff4 :
+        mode == 7 ? #ffffff :
+        mode == 8 ? #a7f3d0 :
+        #1b1f24;
+    out property <color> toolbar-hover:
+        mode == 1 ? #3a3e45 :
+        mode == 2 ? #4a92f0 :
+        mode == 3 ? #3a3260 :
+        mode == 4 ? #263342 :
+        mode == 5 ? #402c5c :
+        mode == 6 ? #4c566a :
+        mode == 7 ? #222222 :
+        mode == 8 ? #22473a :
+        #e5f1fb;
+    out property <color> line:
+        mode == 1 ? #3a3d42 :
+        mode == 2 ? #c6d8ef :
+        mode == 3 ? #352f4d :
+        mode == 4 ? #1e2837 :
+        mode == 5 ? #3c2957 :
+        mode == 6 ? #4c566a :
+        mode == 7 ? #262626 :
+        mode == 8 ? #1f4034 :
+        #d9dde3;
+    out property <color> grid:
+        mode == 1 ? #2f3237 :
+        mode == 2 ? #eaf2fc :
+        mode == 3 ? #26223a :
+        mode == 4 ? #151e29 :
+        mode == 5 ? #2a1d3d :
+        mode == 6 ? #373e4d :
+        mode == 7 ? #121212 :
+        mode == 8 ? #162d23 :
+        #eef0f3;
+    out property <color> header-top:
+        mode == 1 ? #2e3136 :
+        mode == 2 ? #f7fbff :
+        mode == 3 ? #26223a :
+        mode == 4 ? #182230 :
+        mode == 5 ? #2b1c40 :
+        mode == 6 ? #434c5e :
+        mode == 7 ? #141414 :
+        mode == 8 ? #183329 :
+        #ffffff;
+    out property <color> header-bottom:
+        mode == 1 ? #282a2e :
+        mode == 2 ? #e3eefb :
+        mode == 3 ? #201c31 :
+        mode == 4 ? #121924 :
+        mode == 5 ? #211533 :
+        mode == 6 ? #3b4252 :
+        mode == 7 ? #0a0a0a :
+        mode == 8 ? #10241d :
+        #eef1f5;
+    out property <color> text:
+        mode == 1 ? #e8eaed :
+        mode == 2 ? #13243a :
+        mode == 3 ? #ece9f6 :
+        mode == 4 ? #d1f7ff :
+        mode == 5 ? #faedf0 :
+        mode == 6 ? #eceff4 :
+        mode == 7 ? #f5f5f5 :
+        mode == 8 ? #ecfdf5 :
+        #1b1f24;
+    out property <color> muted:
+        mode == 1 ? #9aa0a6 :
+        mode == 2 ? #557090 :
+        mode == 3 ? #a59fc0 :
+        mode == 4 ? #5d7a99 :
+        mode == 5 ? #9e85b5 :
+        mode == 6 ? #d8dee9 :
+        mode == 7 ? #888888 :
+        mode == 8 ? #6ee7b7 :
+        #5f6b78;
+    out property <color> accent:
+        mode == 1 ? #5b9dff :
+        mode == 2 ? #1565c0 :
+        mode == 3 ? #a78bfa :
+        mode == 4 ? #00e5ff :
+        mode == 5 ? #ff4757 :
+        mode == 6 ? #88c0d0 :
+        mode == 7 ? #10b981 :
+        mode == 8 ? #10b981 :
+        #1f6feb;
+    out property <color> select:
+        mode == 1 ? #264f78 :
+        mode == 2 ? #cfe4ff :
+        mode == 3 ? #3d3366 :
+        mode == 4 ? #14424a :
+        mode == 5 ? #4d234a :
+        mode == 6 ? #434c5e :
+        mode == 7 ? #1a3328 :
+        mode == 8 ? #144331 :
+        #cce8ff;
+    out property <color> select-line:
+        mode == 1 ? #3a6ea5 :
+        mode == 2 ? #8dbcf5 :
+        mode == 3 ? #5b4a99 :
+        mode == 4 ? #00e5ff :
+        mode == 5 ? #ff6b81 :
+        mode == 6 ? #81a1c1 :
+        mode == 7 ? #10b981 :
+        mode == 8 ? #34d399 :
+        #99d1ff;
+    out property <color> hover:
+        mode == 1 ? #2c3440 :
+        mode == 2 ? #e3efff :
+        mode == 3 ? #2a2541 :
+        mode == 4 ? #162c38 :
+        mode == 5 ? #361f47 :
+        mode == 6 ? #3b4252 :
+        mode == 7 ? #1a1a1a :
+        mode == 8 ? #193b2d :
+        #e5f3ff;
     out property <color> ok: dark ? #3fcf7a : #1f9d55;
     out property <color> warn: #e08a00;
     out property <color> err: dark ? #ff6b62 : #d23b32;
     out property <color> bar-bg: dark ? #34373c : #e6e6e6;
-    out property <color> input-bg: dark ? #2b2d31 : #ffffff;
+    out property <color> input-bg:
+        mode == 4 ? #070a0f :
+        mode == 5 ? #150d20 :
+        mode == 6 ? #2e3440 :
+        mode == 7 ? #000000 :
+        mode == 8 ? #08140f :
+        dark ? #2b2d31 : #ffffff;
 }
 
 // Applies the light/dark look to the standard widgets of every window.

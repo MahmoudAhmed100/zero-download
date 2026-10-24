@@ -1,43 +1,265 @@
 <!doctype html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
-<style>
-  body { font: 13px/1.4 "Segoe UI", system-ui, sans-serif; color: #1f2733; margin: 0; width: 320px; background: #f4f6fa; }
-  header { display: flex; align-items: center; gap: 8px; padding: 12px 14px; background: #fff; border-bottom: 1px solid #e6eaf0; }
-  header img { width: 22px; height: 22px; }
-  header b { font-size: 14px; }
-  .dot { margin-left: auto; font-size: 12px; color: #6b7686; }
-  .dot::before { content: "●"; margin-right: 4px; color: #b9c0cb; }
-  .dot.on::before { color: #1a9e5a; }
-  section { padding: 10px 14px; }
-  h3 { margin: 4px 0 6px; font-size: 11px; color: #6b7686; text-transform: uppercase; letter-spacing: .04em; }
-  label { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
-  input[type=number] { width: 80px; padding: 3px 6px; border: 1px solid #d5dbe4; border-radius: 5px; }
-  .media { background: #fff; border-radius: 8px; margin: 6px 0; padding: 8px 10px; display: flex; gap: 8px; align-items: center; }
-  .media div { flex: 1; min-width: 0; }
-  .media small { display: block; color: #6b7686; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  button { background: #1f6feb; color: #fff; border: 0; border-radius: 6px; padding: 5px 10px; cursor: pointer; font: inherit; }
-  button:hover { background: #1a5fcc; }
-  .empty { color: #6b7686; }
-</style>
+  <meta charset="utf-8">
+  <title>Zero Download</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --success: #10b981;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Cairo", sans-serif;
+      width: 480px;
+      min-height: 280px;
+      max-height: 580px;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: #182234;
+      border-bottom: 1px solid var(--border);
+    }
+    header img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand b {
+      font-size: 15px;
+      color: #fff;
+    }
+    .brand span {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .header-actions {
+      margin-right: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .status-pill {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      font-weight: 600;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .icon-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.15s;
+    }
+    .icon-btn:hover { background: #334155; }
+    main {
+      padding: 14px 18px;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .media-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .media-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: border-color 0.15s, transform 0.1s;
+    }
+    .media-card:hover {
+      border-color: #475569;
+      transform: translateY(-1px);
+    }
+    .media-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: rgba(37, 99, 235, 0.15);
+      color: #60a5fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .media-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .media-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 3px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .media-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .quality-badge {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: #93c5fd;
+    }
+    .btn-download {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+    .btn-download:hover { background: var(--accent-hover); }
+    .btn-download:disabled { opacity: 0.5; cursor: default; }
+    .empty-state {
+      padding: 30px 10px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .empty-state svg {
+      width: 44px;
+      height: 44px;
+      margin-bottom: 10px;
+      opacity: 0.5;
+    }
+    footer {
+      padding: 10px 18px;
+      background: #141d2e;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    .quick-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .link-settings {
+      color: #60a5fa;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .link-settings:hover { text-decoration: underline; }
+  </style>
 </head>
 <body>
   <header>
-    <img src="icons/icon32.png" alt="">
-    <b>Zero Download</b>
-    <span class="dot" id="status">checking…</span>
+    <img src="icons/icon48.png" alt="Zero Download">
+    <div class="brand">
+      <b>Zero Download</b>
+      <span>التقاط وسائط الفيديو والصوت</span>
+    </div>
+    <div class="header-actions">
+      <div class="status-pill" id="statusPill">
+        <span class="status-dot"></span>
+        <span id="statusText">جاري الفحص...</span>
+      </div>
+      <button class="icon-btn" id="openOptionsBtn" title="الإعدادات الشاملة">⚙️ الإعدادات</button>
+    </div>
   </header>
-  <section>
-    <h3>Media on this page</h3>
-    <div id="media"><div class="empty">Nothing detected yet. Start playing the video.</div></div>
-  </section>
-  <section>
-    <h3>Settings</h3>
-    <label><input type="checkbox" id="intercept"> Send browser downloads to Zero Download</label>
-    <label>Ignore files smaller than <input type="number" id="minSize" min="0"> KB</label>
-    <label>App port <input type="number" id="port" min="1024" max="65535"></label>
-  </section>
+
+  <main>
+    <div class="section-title">
+      <span>الوسائط المكتشفة في هذه الصفحة</span>
+      <span id="mediaCount">0 عناصر</span>
+    </div>
+    <div class="media-list" id="mediaList">
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polygon points="23 7 16 12 23 17 23 7"></polygon>
+          <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+        </svg>
+        <div>لم يتم اكتشاف فيديو بعد في هذه الصفحة.</div>
+        <div style="font-size: 11px; margin-top: 4px;">ابدأ تشغيل الفيديو ليتم التقاطه فورا.</div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <label class="quick-toggle">
+      <input type="checkbox" id="quickIntercept" checked>
+      <span>اعتراض تحميلات المتصفح تلقائياً</span>
+    </label>
+    <a class="link-settings" id="footerOptionsLink">إعدادات متقدمة ↗</a>
+  </footer>
+
   <script src="popup.js"></script>
 </body>
 </html>

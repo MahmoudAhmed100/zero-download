@@ -71,6 +71,8 @@ struct Fmt {
     size: u64,
     abr: f64,
     note: String,
+    language: Option<String>,
+    is_original: bool,
     hls: bool,
     headers: Vec<(String, String)>,
 }
@@ -138,6 +140,14 @@ fn parse_one(f: &Value) -> Option<Fmt> {
     if ext == "mhtml" {
         return None;
     }
+    let note = f["format_note"].as_str().unwrap_or("").to_string();
+    let note_lower = note.to_ascii_lowercase();
+    let lang = f["language"].as_str().map(|s| s.to_string());
+    let lang_pref = f["language_preference"].as_i64().unwrap_or(0);
+    let is_original = note_lower.contains("original")
+        || lang.as_deref() == Some("original")
+        || (lang_pref >= 0 && !note_lower.contains("dubbed") && !note_lower.contains("dubb"));
+
     Some(Fmt {
         url: f["url"].as_str()?.to_string(),
         ext,
@@ -147,7 +157,9 @@ fn parse_one(f: &Value) -> Option<Fmt> {
         fps: as_u64(&f["fps"]).unwrap_or(0),
         size: as_u64(&f["filesize"]).or_else(|| as_u64(&f["filesize_approx"])).unwrap_or(0),
         abr: f["abr"].as_f64().or_else(|| f["tbr"].as_f64()).unwrap_or(0.0),
-        note: f["format_note"].as_str().unwrap_or("").to_string(),
+        note,
+        language: lang,
+        is_original,
         hls,
         headers: headers_of(f),
     })
@@ -215,7 +227,12 @@ pub fn build_options(full: &Value) -> YtInfo {
         .iter()
         .filter(|f| f.has_audio() && !f.has_video() && !f.hls)
         .collect();
-    audios.sort_by(|a, b| b.abr.partial_cmp(&a.abr).unwrap_or(std::cmp::Ordering::Equal));
+    audios.sort_by(|a, b| {
+        b.is_original
+            .cmp(&a.is_original)
+            .then(b.abr.partial_cmp(&a.abr).unwrap_or(std::cmp::Ordering::Equal))
+            .then(b.size.cmp(&a.size))
+    });
     let best_audio = |container: &str| -> Option<&Fmt> {
         audios
             .iter()
@@ -349,7 +366,7 @@ pub fn netscape_cookies(cookies: &[BrowserCookie]) -> String {
 
 fn run_ytdlp(tool: &Path, page_url: &str, cookie_file: Option<&Path>) -> anyhow::Result<Value> {
     let mut cmd = Command::new(tool);
-    cmd.args(["-J", "--no-playlist", "--no-warnings", "--no-progress", "--socket-timeout", "20"]);
+    cmd.args(["-J", "--no-playlist", "--no-warnings", "--no-progress", "--socket-timeout", "20", "--audio-multistreams"]);
     if let Some(c) = cookie_file {
         cmd.arg("--cookies").arg(c);
     }

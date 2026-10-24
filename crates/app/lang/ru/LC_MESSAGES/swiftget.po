@@ -1,0 +1,1262 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "{} downloads selected"
+msgstr "{} downloads selected"
+
+msgid "Open"
+msgstr "Открыть"
+
+msgid "Show download progress"
+msgstr "Show download progress"
+
+msgid "Open with…"
+msgstr "Открыть с помощью…"
+
+msgid "Open folder"
+msgstr "Открыть папку"
+
+msgid "Resume download"
+msgstr "Возобновить загрузку"
+
+msgid "Stop download"
+msgstr "Остановить загрузку"
+
+msgid "Redownload"
+msgstr "Скачать заново"
+
+msgid "Refresh download address…"
+msgstr "Refresh download address…"
+
+msgid "Move / Rename…"
+msgstr "Move / Rename…"
+
+msgid "Move to queue"
+msgstr "Move to queue"
+
+msgid "Delete from queue"
+msgstr "Delete from queue"
+
+msgid "Copy address"
+msgstr "Копировать адрес"
+
+msgid "Check file (SHA-256)"
+msgstr "Check file (SHA-256)"
+
+msgid "Properties"
+msgstr "Свойства"
+
+msgid "Remove"
+msgstr "Удалить"
+
+msgid "Start queue"
+msgstr "Запустить очередь"
+
+msgid "Stop queue"
+msgstr "Остановить очередь"
+
+msgid "Edit queue / schedule…"
+msgstr "Edit queue / schedule…"
+
+msgid "New queue…"
+msgstr "New queue…"
+
+msgid "Delete queue"
+msgstr "Delete queue"
+
+msgid "Add category…"
+msgstr "Add category…"
+
+msgid "Delete category"
+msgstr "Delete category"
+
+msgid "Properties…"
+msgstr "Properties…"
+
+msgid "Zero Download"
+msgstr "Zero Download"
+
+msgid "Tasks"
+msgstr "Tasks"
+
+msgid "Add new download…"
+msgstr "Add new download…"
+
+msgid "Add batch download…"
+msgstr "Add batch download…"
+
+msgid "Add batch download from clipboard"
+msgstr "Add batch download from clipboard"
+
+msgid "Run site grabber…"
+msgstr "Run site grabber…"
+
+msgid "Download a playlist…"
+msgstr "Download a playlist…"
+
+msgid "Export"
+msgstr "Export"
+
+msgid "To download list file (.ef2)…"
+msgstr "To download list file (.ef2)…"
+
+msgid "To text file…"
+msgstr "To text file…"
+
+msgid "Import"
+msgstr "Import"
+
+msgid "From download list file (.ef2)…"
+msgstr "From download list file (.ef2)…"
+
+msgid "From text file…"
+msgstr "From text file…"
+
+msgid "Open download folder"
+msgstr "Open download folder"
+
+msgid "Exit"
+msgstr "Выход"
+
+msgid "File"
+msgstr "Файл"
+
+msgid "Download now"
+msgstr "Download now"
+
+msgid "Select all   Ctrl+A"
+msgstr "Select all   Ctrl+A"
+
+msgid "Downloads"
+msgstr "Загрузки"
+
+msgid "Resume all"
+msgstr "Resume all"
+
+msgid "Stop all"
+msgstr "Stop all"
+
+msgid "Delete all completed"
+msgstr "Delete all completed"
+
+msgid "Find…   Ctrl+F"
+msgstr "Find…   Ctrl+F"
+
+msgid "Find next   F3"
+msgstr "Find next   F3"
+
+msgid "Speed Limiter"
+msgstr "Speed Limiter"
+
+msgid "Turn on"
+msgstr "Turn on"
+
+msgid "Turn off"
+msgstr "Turn off"
+
+msgid "Settings…"
+msgstr "Settings…"
+
+msgid "When all downloads finish"
+msgstr "When all downloads finish"
+
+msgid "Do nothing"
+msgstr "Do nothing"
+
+msgid "Shut down the computer"
+msgstr "Shut down the computer"
+
+msgid "Sleep"
+msgstr "Sleep"
+
+msgid "Hibernate"
+msgstr "Hibernate"
+
+msgid "Exit Zero Download"
+msgstr "Exit Zero Download"
+
+msgid "Scheduler…"
+msgstr "Scheduler…"
+
+msgid "Options…"
+msgstr "Options…"
+
+msgid "View"
+msgstr "Вид"
+
+msgid "Show categories"
+msgstr "Show categories"
+
+msgid "Arrange files"
+msgstr "Arrange files"
+
+msgid "By order of addition"
+msgstr "By order of addition"
+
+msgid "File name"
+msgstr "File name"
+
+msgid "Size"
+msgstr "Размер"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Time left"
+msgstr "Осталось времени"
+
+msgid "Transfer rate"
+msgstr "Transfer rate"
+
+msgid "Last try date"
+msgstr "Last try date"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Save to"
+msgstr "Сохранить в"
+
+msgid "Referer"
+msgstr "Referer"
+
+msgid "Parent web page"
+msgstr "Parent web page"
+
+msgid "Toolbar"
+msgstr "Toolbar"
+
+msgid "Large buttons"
+msgstr "Large buttons"
+
+msgid "Small buttons"
+msgstr "Small buttons"
+
+msgid "Columns…"
+msgstr "Columns…"
+
+msgid "Theme"
+msgstr "Тема"
+
+msgid "Light"
+msgstr "Светлая"
+
+msgid "Dark"
+msgstr "Темная"
+
+msgid "Ocean blue"
+msgstr "Морской синий"
+
+msgid "Midnight purple"
+msgstr "Полуночный фиолетовый"
+
+msgid "Help"
+msgstr "Справка"
+
+msgid "Add Zero Download to my browser…"
+msgstr "Add Zero Download to my browser…"
+
+msgid "Tip of the day…"
+msgstr "Tip of the day…"
+
+msgid "Check for updates (video downloader)"
+msgstr "Check for updates (video downloader)"
+
+msgid "Tell a friend"
+msgstr "Tell a friend"
+
+msgid "About Zero Download"
+msgstr "About Zero Download"
+
+msgid "Add URL"
+msgstr "Add URL"
+
+msgid "Add Batch"
+msgstr "Add Batch"
+
+msgid "Resume"
+msgstr "Resume"
+
+msgid "Stop"
+msgstr "Stop"
+
+msgid "Stop All"
+msgstr "Stop All"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Delete Done"
+msgstr "Delete Done"
+
+msgid "Options"
+msgstr "Параметры"
+
+msgid "Scheduler"
+msgstr "Scheduler"
+
+msgid "Limiter: On"
+msgstr "Limiter: On"
+
+msgid "Limiter: Off"
+msgstr "Limiter: Off"
+
+msgid "Start Queue"
+msgstr "Start Queue"
+
+msgid "Stop Queue"
+msgstr "Stop Queue"
+
+msgid "Grabber"
+msgstr "Grabber"
+
+msgid "Playlist"
+msgstr "Playlist"
+
+msgid "Filter the list…"
+msgstr "Filter the list…"
+
+msgid "Categories"
+msgstr "Categories"
+
+msgid "All Downloads"
+msgstr "All Downloads"
+
+msgid "Unfinished"
+msgstr "Unfinished"
+
+msgid "Finished"
+msgstr "Finished"
+
+msgid "Queues"
+msgstr "Queues"
+
+msgid "{} (running)"
+msgstr "{} (running)"
+
+msgid "New queue"
+msgstr "New queue"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "File Name"
+msgstr "File Name"
+
+msgid "Q"
+msgstr "Q"
+
+msgid "Last Try Date"
+msgstr "Last Try Date"
+
+msgid "Date Added"
+msgstr "Date Added"
+
+msgid "Save To"
+msgstr "Save To"
+
+msgid "Parent Web Page"
+msgstr "Parent Web Page"
+
+msgid "Nothing matches “{}”."
+msgstr "Nothing matches “{}”."
+
+msgid "No downloads here.\nClick “Add URL”, copy a link, or download something in your browser."
+msgstr "No downloads here.\nClick “Add URL”, copy a link, or download something in your browser."
+
+msgid "Download File Info"
+msgstr "Download File Info"
+
+msgid "URL"
+msgstr "Ссылка"
+
+msgid "https://example.com/file"
+msgstr "https://example.com/file"
+
+msgid "Check"
+msgstr "Check"
+
+msgid "Category"
+msgstr "Category"
+
+msgid "Save As"
+msgstr "Save As"
+
+msgid "Remember this path for \"{}\" category"
+msgstr "Remember this path for \"{}\" category"
+
+msgid "optional note"
+msgstr "optional note"
+
+msgid "Use authorization"
+msgstr "Use authorization"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Checking the address…"
+msgstr "Checking the address…"
+
+msgid "Connections"
+msgstr "Connections"
+
+msgid "Queue"
+msgstr "Queue"
+
+msgid "Download Later"
+msgstr "Download Later"
+
+msgid "Start Download"
+msgstr "Start Download"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "Add batch download"
+msgstr "Add batch download"
+
+msgid "List of links"
+msgstr "List of links"
+
+msgid "Address with a pattern (*)"
+msgstr "Address with a pattern (*)"
+
+msgid "Paste the links, one per line. They download one after another in the queue you choose."
+msgstr "Paste the links, one per line. They download one after another in the queue you choose."
+
+msgid "Paste from clipboard"
+msgstr "Paste from clipboard"
+
+msgid "Type an address with a * where the number (or letter) goes, for example\nhttps://www.site.com/pictures/img*.jpg"
+msgstr "Type an address with a * where the number (or letter) goes, for example\nhttps://www.site.com/pictures/img*.jpg"
+
+msgid "https://www.site.com/pictures/img*.jpg"
+msgstr "https://www.site.com/pictures/img*.jpg"
+
+msgid "Letters (a-z) instead of numbers"
+msgstr "Letters (a-z) instead of numbers"
+
+msgid "From"
+msgstr "From"
+
+msgid "To"
+msgstr "To"
+
+msgid "Wildcard size"
+msgstr "Wildcard size"
+
+msgid "Wildcard size 3 makes 001, 002 … 010."
+msgstr "Wildcard size 3 makes 001, 002 … 010."
+
+msgid "optional"
+msgstr "optional"
+
+msgid "Save all to"
+msgstr "Save all to"
+
+msgid "automatic (by file type)"
+msgstr "automatic (by file type)"
+
+msgid "Start the queue now"
+msgstr "Start the queue now"
+
+msgid "Add"
+msgstr "Add"
+
+msgid "Download status"
+msgstr "Download status"
+
+msgid "Options on completion"
+msgstr "Options on completion"
+
+msgid "File size"
+msgstr "File size"
+
+msgid "Downloaded"
+msgstr "Downloaded"
+
+msgid "Resume capability"
+msgstr "Resume capability"
+
+msgid "Use speed limiter for this download"
+msgstr "Use speed limiter for this download"
+
+msgid "Maximum download speed (KB/s)"
+msgstr "Maximum download speed (KB/s)"
+
+msgid "{} MB/s"
+msgstr "{} MB/s"
+
+msgid "{} KB/s"
+msgstr "{} KB/s"
+
+msgid "Changes apply right away, even while downloading."
+msgstr "Changes apply right away, even while downloading."
+
+msgid "When this download completes:"
+msgstr "When this download completes:"
+
+msgid "Do nothing (keep the computer on)"
+msgstr "Do nothing (keep the computer on)"
+
+msgid "Force programs to close when shutting down"
+msgstr "Force programs to close when shutting down"
+
+msgid "Show the \"Download complete\" window"
+msgstr "Show the \"Download complete\" window"
+
+msgid "You get 30 seconds to cancel before the computer shuts down, sleeps or hibernates."
+msgstr "You get 30 seconds to cancel before the computer shuts down, sleeps or hibernates."
+
+msgid "<< Hide details"
+msgstr "<< Hide details"
+
+msgid "Show details >>"
+msgstr "Show details >>"
+
+msgid "Pause"
+msgstr "Pause"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "Start positions and download progress by connections"
+msgstr "Start positions and download progress by connections"
+
+msgid "N."
+msgstr "N."
+
+msgid "Info"
+msgstr "Info"
+
+msgid "Download complete"
+msgstr "Download complete"
+
+msgid "Address"
+msgstr "Address"
+
+msgid "Saved as"
+msgstr "Saved as"
+
+msgid "Don't show this again"
+msgstr "Don't show this again"
+
+msgid "Columns"
+msgstr "Columns"
+
+msgid "Show these columns in the download list:"
+msgstr "Show these columns in the download list:"
+
+msgid "File Name (always shown)"
+msgstr "File Name (always shown)"
+
+msgid "Q (queue number)"
+msgstr "Q (queue number)"
+
+msgid "Reset"
+msgstr "Reset"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Add category"
+msgstr "Add category"
+
+msgid "Category properties"
+msgstr "Category properties"
+
+msgid "Category name"
+msgstr "Category name"
+
+msgid "e.g. Courses"
+msgstr "e.g. Courses"
+
+msgid "File types"
+msgstr "File types"
+
+msgid "mp4 mkv avi (separated by spaces)"
+msgstr "mp4 mkv avi (separated by spaces)"
+
+msgid "Sites"
+msgstr "Sites"
+
+msgid "udemy.com *.coursera.org (optional)"
+msgstr "udemy.com *.coursera.org (optional)"
+
+msgid "Save files to"
+msgstr "Save files to"
+
+msgid "automatic (Downloads\\{})"
+msgstr "automatic (Downloads\\{})"
+
+msgid "Files with these extensions, or from these sites, are put into this category and saved to its folder."
+msgstr "Files with these extensions, or from these sites, are put into this category and saved to its folder."
+
+msgid "Find file"
+msgstr "Find file"
+
+msgid "Find what"
+msgstr "Find what"
+
+msgid "Look in"
+msgstr "Look in"
+
+msgid "Address, referer and parent web page"
+msgstr "Address, referer and parent web page"
+
+msgid "Match case"
+msgstr "Match case"
+
+msgid "Match whole string"
+msgstr "Match whole string"
+
+msgid "Find Next"
+msgstr "Find Next"
+
+msgid "File Properties – {}"
+msgstr "File Properties – {}"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Date added"
+msgstr "Date added"
+
+msgid "Use authorization (server login)"
+msgstr "Use authorization (server login)"
+
+msgid "Result: {}"
+msgstr "Result: {}"
+
+msgid "Duplicate download link"
+msgstr "Duplicate download link"
+
+msgid "This address is already in the download list:"
+msgstr "This address is already in the download list:"
+
+msgid "Add it with a new name (numbered)"
+msgstr "Add it with a new name (numbered)"
+
+msgid "Add it and replace the old download (overwrite the file)"
+msgstr "Add it and replace the old download (overwrite the file)"
+
+msgid "If it is finished show it, if not resume it"
+msgstr "If it is finished show it, if not resume it"
+
+msgid "Remember my choice (Options > Downloads)"
+msgstr "Remember my choice (Options > Downloads)"
+
+msgid "All downloads are finished."
+msgstr "All downloads are finished."
+
+msgid "Zero Download will {} in {} seconds."
+msgstr "Zero Download will {} in {} seconds."
+
+msgid "Now"
+msgstr "Now"
+
+msgid "Queue name"
+msgstr "Queue name"
+
+msgid "Schedule"
+msgstr "Schedule"
+
+msgid "Files in the queue"
+msgstr "Files in the queue"
+
+msgid "Start the queue automatically"
+msgstr "Start the queue automatically"
+
+msgid "Start time (HH:MM)"
+msgstr "Start time (HH:MM)"
+
+msgid "Daily"
+msgstr "Daily"
+
+msgid "Once at (YYYY-MM-DD)"
+msgstr "Once at (YYYY-MM-DD)"
+
+msgid "Mon"
+msgstr "Mon"
+
+msgid "Tue"
+msgstr "Tue"
+
+msgid "Wed"
+msgstr "Wed"
+
+msgid "Thu"
+msgstr "Thu"
+
+msgid "Fri"
+msgstr "Fri"
+
+msgid "Sat"
+msgstr "Sat"
+
+msgid "Sun"
+msgstr "Sun"
+
+msgid "Start the queue when Zero Download starts"
+msgstr "Start the queue when Zero Download starts"
+
+msgid "Stop the queue at"
+msgstr "Stop the queue at"
+
+msgid "When the queue is done"
+msgstr "When the queue is done"
+
+msgid "For Sleep you may need to allow wake timers in the Windows power options, so the computer can wake up for the next start."
+msgstr "For Sleep you may need to allow wake timers in the Windows power options, so the computer can wake up for the next start."
+
+msgid "Move up"
+msgstr "Move up"
+
+msgid "Move down"
+msgstr "Move down"
+
+msgid "Files download in this order. Add files with right click > Move to queue, Add Batch, or \"Download Later\"."
+msgstr "Files download in this order. Add files with right click > Move to queue, Add Batch, or \"Download Later\"."
+
+msgid "Download"
+msgstr "Скачать"
+
+msgid "files at the same time"
+msgstr "files at the same time"
+
+msgid "Number of retries for each file if downloading failed"
+msgstr "Number of retries for each file if downloading failed"
+
+msgid "Save all files of this queue to"
+msgstr "Save all files of this queue to"
+
+msgid "Open each file when it has finished downloading"
+msgstr "Open each file when it has finished downloading"
+
+msgid "Start now"
+msgstr "Start now"
+
+msgid "Apply"
+msgstr "Apply"
+
+msgid "Download all links"
+msgstr "Download all links"
+
+msgid "Site Grabber"
+msgstr "Site Grabber"
+
+msgid "Start page"
+msgstr "Start page"
+
+msgid "https://example.com/gallery/"
+msgstr "https://example.com/gallery/"
+
+msgid "Start exploring"
+msgstr "Start exploring"
+
+msgid "Get"
+msgstr "Get"
+
+msgid "All files (not web pages)"
+msgstr "All files (not web pages)"
+
+msgid "All images"
+msgstr "All images"
+
+msgid "All videos"
+msgstr "All videos"
+
+msgid "All music / audio"
+msgstr "All music / audio"
+
+msgid "Archives and programs"
+msgstr "Archives and programs"
+
+msgid "Documents (PDF, Office)"
+msgstr "Documents (PDF, Office)"
+
+msgid "Custom file types"
+msgstr "Custom file types"
+
+msgid "jpg png mp4 (custom types)"
+msgstr "jpg png mp4 (custom types)"
+
+msgid "Levels to explore"
+msgstr "Levels to explore"
+
+msgid "Pages at the same time"
+msgstr "Pages at the same time"
+
+msgid "Other sites too"
+msgstr "Other sites too"
+
+msgid "Don't go to parent folders"
+msgstr "Don't go to parent folders"
+
+msgid "Show"
+msgstr "Show"
+
+msgid "All types"
+msgstr "All types"
+
+msgid "Images"
+msgstr "Images"
+
+msgid "Videos"
+msgstr "Videos"
+
+msgid "Music"
+msgstr "Music"
+
+msgid "Archives / programs"
+msgstr "Archives / programs"
+
+msgid "Documents"
+msgstr "Документы"
+
+msgid "Web pages"
+msgstr "Web pages"
+
+msgid "Filter by name or address…"
+msgstr "Filter by name or address…"
+
+msgid "Check all"
+msgstr "Check all"
+
+msgid "Uncheck all"
+msgstr "Uncheck all"
+
+msgid "Link text"
+msgstr "Link text"
+
+msgid "No links on this page."
+msgstr "No links on this page."
+
+msgid "Exploring…"
+msgstr "Exploring…"
+
+msgid "Type a start page and click \"Start exploring\"."
+msgstr "Type a start page and click \"Start exploring\"."
+
+msgid "Use link texts as descriptions"
+msgstr "Use link texts as descriptions"
+
+msgid "Download checked"
+msgstr "Download checked"
+
+msgid "Tip of the day"
+msgstr "Tip of the day"
+
+msgid "Did you know…"
+msgstr "Did you know…"
+
+msgid "Show tips at startup"
+msgstr "Show tips at startup"
+
+msgid "Next tip"
+msgstr "Next tip"
+
+msgid "Refresh download address"
+msgstr "Refresh download address"
+
+msgid "1. Open the web page where you got this file.\n2. Click the download link there again (or start the video).\n3. Zero Download takes the new address and continues from where it stopped."
+msgstr "1. Open the web page where you got this file.\n2. Click the download link there again (or start the video).\n3. Zero Download takes the new address and continues from where it stopped."
+
+msgid "Open the page"
+msgstr "Open the page"
+
+msgid "Waiting for the new address from the browser…"
+msgstr "Waiting for the new address from the browser…"
+
+msgid "Or paste the new address here:"
+msgstr "Or paste the new address here:"
+
+msgid "https://…"
+msgstr "https://…"
+
+msgid "Use it"
+msgstr "Use it"
+
+msgid "Stop waiting"
+msgstr "Stop waiting"
+
+msgid "Play"
+msgstr "Play"
+
+msgid "Zero Download – Options"
+msgstr "Zero Download – Options"
+
+msgid "General"
+msgstr "Общие"
+
+msgid "File Types"
+msgstr "File Types"
+
+msgid "Connection"
+msgstr "Connection"
+
+msgid "Proxy / Server"
+msgstr "Proxy / Server"
+
+msgid "Site Logins"
+msgstr "Site Logins"
+
+msgid "Sounds"
+msgstr "Sounds"
+
+msgid "Launch Zero Download on Windows startup"
+msgstr "Launch Zero Download on Windows startup"
+
+msgid "Keep running next to the clock when the window is closed"
+msgstr "Keep running next to the clock when the window is closed"
+
+msgid "Watch the clipboard for download links"
+msgstr "Watch the clipboard for download links"
+
+msgid "Automatically start downloading links placed in the clipboard"
+msgstr "Automatically start downloading links placed in the clipboard"
+
+msgid "Show \"Tip of the day\" at startup"
+msgstr "Show \"Tip of the day\" at startup"
+
+msgid "On double click on a download"
+msgstr "On double click on a download"
+
+msgid "Open the file / progress window"
+msgstr "Open the file / progress window"
+
+msgid "Show properties"
+msgstr "Show properties"
+
+msgid "Browser integration"
+msgstr "Browser integration"
+
+msgid "Chrome and Edge: load the \"extension\" folder in chrome://extensions (Developer mode > Load unpacked). Downloads, videos and the right click menu then go to Zero Download."
+msgstr "Chrome and Edge: load the \"extension\" folder in chrome://extensions (Developer mode > Load unpacked). Downloads, videos and the right click menu then go to Zero Download."
+
+msgid "Hold this key to let the browser download by itself"
+msgstr "Hold this key to let the browser download by itself"
+
+msgid "Alt"
+msgstr "Alt"
+
+msgid "Ctrl"
+msgstr "Ctrl"
+
+msgid "Shift"
+msgstr "Shift"
+
+msgid "None"
+msgstr "None"
+
+msgid "Hold this key to force Zero Download to take a link"
+msgstr "Hold this key to force Zero Download to take a link"
+
+msgid "Browser extension port"
+msgstr "Browser extension port"
+
+msgid "Automatically start downloading these file types (from the browser):"
+msgstr "Automatically start downloading these file types (from the browser):"
+
+msgid "Default"
+msgstr "Default"
+
+msgid "Don't start downloading automatically from these sites:"
+msgstr "Don't start downloading automatically from these sites:"
+
+msgid "*.update.microsoft.com  windowsupdate.com"
+msgstr "*.update.microsoft.com  windowsupdate.com"
+
+msgid "Don't start downloading these addresses (one per line, * allowed):"
+msgstr "Don't start downloading these addresses (one per line, * allowed):"
+
+msgid "Show the \"Download this video\" panel on web players"
+msgstr "Show the \"Download this video\" panel on web players"
+
+msgid "Don't show it on these sites"
+msgstr "Don't show it on these sites"
+
+msgid "Smallest video (KB)"
+msgstr "Smallest video (KB)"
+
+msgid "Smallest audio (KB)"
+msgstr "Smallest audio (KB)"
+
+msgid "Main download folder"
+msgstr "Main download folder"
+
+msgid "Browse…"
+msgstr "Browse…"
+
+msgid "Sort files into folders by category (Video, Music, Programs, Compressed, Documents, Images…)"
+msgstr "Sort files into folders by category (Video, Music, Programs, Compressed, Documents, Images…)"
+
+msgid "Each category's own folder and file types: right click it in the sidebar > Properties."
+msgstr "Each category's own folder and file types: right click it in the sidebar > Properties."
+
+msgid "Forget remembered category paths"
+msgstr "Forget remembered category paths"
+
+msgid "Temporary folder (parts while downloading)"
+msgstr "Temporary folder (parts while downloading)"
+
+msgid "next to the file (default)"
+msgstr "next to the file (default)"
+
+msgid "Tip: a temporary folder on another drive than the download folder makes joining the parts faster."
+msgstr "Tip: a temporary folder on another drive than the download folder makes joining the parts faster."
+
+msgid "Show the \"Download File Info\" window for downloads from the browser"
+msgstr "Show the \"Download File Info\" window for downloads from the browser"
+
+msgid "Start downloading immediately while showing \"Download File Info\""
+msgstr "Start downloading immediately while showing \"Download File Info\""
+
+msgid "Show the download progress window"
+msgstr "Show the download progress window"
+
+msgid "Normally"
+msgstr "Normally"
+
+msgid "Minimized"
+msgstr "Minimized"
+
+msgid "Don't show"
+msgstr "Don't show"
+
+msgid "If a duplicate link is added"
+msgstr "If a duplicate link is added"
+
+msgid "Ask me"
+msgstr "Ask me"
+
+msgid "Add it with a numbered file name"
+msgstr "Add it with a numbered file name"
+
+msgid "Add it and replace the old download"
+msgstr "Add it and replace the old download"
+
+msgid "Show the finished one / resume the unfinished one"
+msgstr "Show the finished one / resume the unfinished one"
+
+msgid "Give finished files the date from the server"
+msgstr "Give finished files the date from the server"
+
+msgid "Check every finished file for viruses with this program"
+msgstr "Check every finished file for viruses with this program"
+
+msgid "C:\\Program Files\\Windows Defender\\MpCmdRun.exe"
+msgstr "C:\\Program Files\\Windows Defender\\MpCmdRun.exe"
+
+msgid "Command line parameters"
+msgstr "Command line parameters"
+
+msgid "-Scan -ScanType 3 -File [File]"
+msgstr "-Scan -ScanType 3 -File [File]"
+
+msgid "[File] is replaced by the downloaded file."
+msgstr "[File] is replaced by the downloaded file."
+
+msgid "User-Agent for downloads added by hand"
+msgstr "User-Agent for downloads added by hand"
+
+msgid "Connection type / speed"
+msgstr "Connection type / speed"
+
+msgid "Low speed (modem, mobile)"
+msgstr "Low speed (modem, mobile)"
+
+msgid "Medium speed (DSL)"
+msgstr "Medium speed (DSL)"
+
+msgid "High speed (fiber, cable, LAN)"
+msgstr "High speed (fiber, cable, LAN)"
+
+msgid "Default max. connections number"
+msgstr "Default max. connections number"
+
+msgid "Downloads at the same time (0 = no limit)"
+msgstr "Downloads at the same time (0 = no limit)"
+
+msgid "Retries on error"
+msgstr "Retries on error"
+
+msgid "Exceptions: servers with their own number of connections"
+msgstr "Exceptions: servers with their own number of connections"
+
+msgid "Server"
+msgstr "Server"
+
+msgid "example.com"
+msgstr "example.com"
+
+msgid "Download limits"
+msgstr "Download limits"
+
+msgid "Download no more than"
+msgstr "Download no more than"
+
+msgid "MB every"
+msgstr "MB every"
+
+msgid "hours"
+msgstr "hours"
+
+msgid "No proxy"
+msgstr "No proxy"
+
+msgid "Use the system settings (like your browser)"
+msgstr "Use the system settings (like your browser)"
+
+msgid "Manual proxy configuration (HTTP / HTTPS)"
+msgstr "Manual proxy configuration (HTTP / HTTPS)"
+
+msgid "Proxy address"
+msgstr "Proxy address"
+
+msgid "proxy.example.com"
+msgstr "proxy.example.com"
+
+msgid "Port"
+msgstr "Port"
+
+msgid "User name"
+msgstr "User name"
+
+msgid "Don't use the proxy for"
+msgstr "Don't use the proxy for"
+
+msgid "localhost 127.0.0.1 *.local"
+msgstr "localhost 127.0.0.1 *.local"
+
+msgid "Addresses separated by spaces. SOCKS proxies: use the system settings."
+msgstr "Addresses separated by spaces. SOCKS proxies: use the system settings."
+
+msgid "User names and passwords for sites that ask for them:"
+msgstr "User names and passwords for sites that ask for them:"
+
+msgid "Site / path"
+msgstr "Site / path"
+
+msgid "example.com/members"
+msgstr "example.com/members"
+
+msgid "Add / Update"
+msgstr "Add / Update"
+
+msgid "Saved in the settings file of your Windows user account."
+msgstr "Saved in the settings file of your Windows user account."
+
+msgid "Play sounds"
+msgstr "Play sounds"
+
+msgid "Download failed"
+msgstr "Download failed"
+
+msgid "Queue started"
+msgstr "Queue started"
+
+msgid "Queue finished"
+msgstr "Queue finished"
+
+msgid ".wav files. Empty = no sound for that event."
+msgstr ".wav files. Empty = no sound for that event."
+
+msgid "Turn the speed limiter on"
+msgstr "Turn the speed limiter on"
+
+msgid "Always turn on the speed limiter when Zero Download starts"
+msgstr "Always turn on the speed limiter when Zero Download starts"
+
+msgid "Every download can also have its own limit: its progress window > Speed Limiter tab."
+msgstr "Every download can also have its own limit: its progress window > Speed Limiter tab."
+
+msgid "Download a playlist"
+msgstr "Download a playlist"
+
+msgid "Paste the address of a playlist:"
+msgstr "Paste the address of a playlist:"
+
+msgid "https://…/playlist?list=…"
+msgstr "https://…/playlist?list=…"
+
+msgid "Getting the list…"
+msgstr "Getting the list…"
+
+msgid "Get videos"
+msgstr "Get videos"
+
+msgid "Video"
+msgstr "Видео"
+
+msgid "Length"
+msgstr "Length"
+
+msgid "Getting the videos of the playlist…"
+msgstr "Getting the videos of the playlist…"
+
+msgid "The videos of the playlist show up here."
+msgstr "The videos of the playlist show up here."
+
+msgid "Quality"
+msgstr "Quality"
+
+msgid "Best quality (MP4)"
+msgstr "Best quality (MP4)"
+
+msgid "1080p"
+msgstr "1080p"
+
+msgid "720p"
+msgstr "720p"
+
+msgid "480p"
+msgstr "480p"
+
+msgid "360p"
+msgstr "360p"
+
+msgid "Audio only (M4A)"
+msgstr "Audio only (M4A)"
+
+msgid "Files at the same time"
+msgstr "Files at the same time"
+
+msgid "Number the files"
+msgstr "Number the files"
+
+msgid "Not installed on this computer"
+msgstr "Not installed on this computer"
+
+msgid "Add Zero Download to your browser"
+msgstr "Add Zero Download to your browser"
+
+msgid "Click your browser:"
+msgstr "Click your browser:"
+
+msgid "Almost done:"
+msgstr "Almost done:"
+
+msgid "Copy folder path"
+msgstr "Copy folder path"
+
+msgid "Language"
+msgstr "Язык"
+
+msgid "Version {}"
+msgstr "Version {}"
+
+msgid "Coded by Mahmoud"
+msgstr "Coded by Mahmoud"
+
+msgid "Check for updates"
+msgstr "Check for updates"
+
+msgid "Download with the browser"
+msgstr "Download with the browser"

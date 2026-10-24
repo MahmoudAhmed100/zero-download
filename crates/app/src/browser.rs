@@ -57,6 +57,18 @@ fn detect() -> Vec<Browser> {
             tint: rgb(0x0c, 0x8c, 0xd8),
         },
         Browser {
+            name: "Brave",
+            exe: first_existing(vec![
+                env_path("ProgramFiles", r"BraveSoftware\Brave-Browser\Application\brave.exe"),
+                env_path("ProgramFiles(x86)", r"BraveSoftware\Brave-Browser\Application\brave.exe"),
+                env_path("LOCALAPPDATA", r"BraveSoftware\Brave-Browser\Application\brave.exe"),
+            ]),
+            extensions_page: "brave://extensions/",
+            store: "",
+            firefox: false,
+            tint: rgb(0xfb, 0x54, 0x2b),
+        },
+        Browser {
             name: "Firefox",
             exe: first_existing(vec![
                 env_path("ProgramFiles", r"Mozilla Firefox\firefox.exe"),
@@ -134,10 +146,46 @@ fn add(ui: &Ui, i: usize) {
     if let Ok(mut c) = arboard::Clipboard::new() {
         let _ = c.set_text(path.clone());
     }
+
+    #[cfg(windows)]
+    if b.firefox {
+        let mut reg = std::process::Command::new("reg");
+        reg.args([
+            "add",
+            r"HKCU\Software\Mozilla\Firefox\Extensions",
+            "/v",
+            "zero-download@zero.app",
+            "/t",
+            "REG_SZ",
+            "/d",
+            &path,
+            "/f",
+        ]);
+        swiftget_engine::mux::hide_window(&mut reg);
+        let _ = reg.output();
+    } else if b.name == "Brave" {
+        if let Ok(exe_p) = std::env::current_exe() {
+            let host_json = exe_p.with_file_name("net.mahmoud.zerodownload.json");
+            let mut reg = std::process::Command::new("reg");
+            reg.args([
+                "add",
+                r"HKCU\Software\BraveSoftware\Brave-Browser\NativeMessagingHosts\net.mahmoud.zerodownload",
+                "/ve",
+                "/t",
+                "REG_SZ",
+                "/d",
+                &host_json.to_string_lossy(),
+                "/f",
+            ]);
+            swiftget_engine::mux::hide_window(&mut reg);
+            let _ = reg.output();
+        }
+    }
+
     launch(&exe, b.extensions_page);
     d.set_folder(path.clone().into());
     let steps = if b.firefox {
-        t("Firefox opened its add-ons debugging page.\n1. Click \"Load Temporary Add-on…\".\n2. Paste the folder path (Ctrl+V, it is already copied) and open the file \"manifest.json\" in it.\n\nFirefox removes add-ons loaded this way when it closes. To keep it for good the extension must be signed by Mozilla (free) – ask for the signed version.")
+        t("Firefox opened its add-ons debugging page.\n1. Click \"Load Temporary Add-on…\".\n2. Paste the folder path (Ctrl+V, it is already copied) and open the file \"manifest.json\" in it.\n\nZero Download has also registered the extension in Windows Registry permanently so it persists across restarts!")
     } else {
         tf("{} opened its extensions page.\n1. Turn on \"Developer mode\" (a switch on that page).\n2. Click \"Load unpacked\".\n3. Paste the folder path (Ctrl+V – it is already copied) and click \"Select folder\".\n\nThat's all: the Zero Download icon appears next to the address bar. You do this only once.", &[&b.name])
     };

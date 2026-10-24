@@ -684,6 +684,18 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       if (item.yt) return reply(downloadVideo(item.yt, msg.title, referrer), sendResponse);
       return reply(sendToApp({ url: item.url, referrer, fileName: msg.fileName }), sendResponse);
     }
+    case "swiftget-download-page": {
+      const pageUrl = msg.pageUrl || (sender.tab ? sender.tab.url : "");
+      const referrer = sender.tab ? sender.tab.url : "";
+      const currentSrc = msg.currentSrc;
+      if (pageUrl && (pageUrl.startsWith("http://") || pageUrl.startsWith("https://"))) {
+        if (currentSrc && /\.(mp4|webm|mkv|m3u8|ts|mov)(\?|$)/i.test(currentSrc)) {
+          return reply(sendToApp({ url: currentSrc, referrer: pageUrl, fileName: msg.title ? `${msg.title}.mp4` : undefined }), sendResponse);
+        }
+        return reply(sendToApp({ url: pageUrl, referrer, isPage: true, title: msg.title }), sendResponse);
+      }
+      return reply(Promise.resolve({ ok: false, error: "Invalid URL" }), sendResponse);
+    }
     case "swiftget-get-media":
       itemsForTab(msg.tabId).then(sendResponse);
       return true;

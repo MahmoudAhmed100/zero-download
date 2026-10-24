@@ -556,9 +556,15 @@ fn wire_main(ui: &Ui) {
         let ui = ui.clone();
         main.on_set_theme(move |m| {
             let mut s = ui.ctx.mgr.settings();
-            s.theme = m.clamp(0, 3) as u32;
+            s.theme = m.clamp(0, 8) as u32;
             let _ = ui.ctx.mgr.set_settings(s);
             apply_theme(&ui, m);
+        });
+    }
+    {
+        let ui = ui.clone();
+        main.on_set_opacity(move |op| {
+            apply_opacity(&ui, op);
         });
     }
     {
@@ -1359,11 +1365,79 @@ pub(crate) fn modal_open() -> bool {
 }
 
 /// Marks a message box as open for as long as it lives.
+#[cfg(windows)]
+pub fn bring_active_windows_to_front() {
+    unsafe {
+        use windows_sys::Win32::Foundation::{BOOL, HWND, LPARAM};
+        use windows_sys::Win32::System::Threading::GetCurrentProcessId;
+        use windows_sys::Win32::UI::WindowsAndMessaging::*;
+
+        unsafe extern "system" fn enum_proc(hwnd: HWND, _lparam: LPARAM) -> BOOL {
+            let mut proc_id = 0u32;
+            GetWindowThreadProcessId(hwnd, &mut proc_id);
+            if proc_id == GetCurrentProcessId() && IsWindowVisible(hwnd) != 0 {
+                SetWindowPos(
+                    hwnd,
+                    HWND_TOP,
+                    0,
+                    0,
+                    0,
+                    0,
+                    SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW,
+                );
+                SetForegroundWindow(hwnd);
+                BringWindowToTop(hwnd);
+            }
+            1
+        }
+
+        EnumWindows(Some(enum_proc), 0);
+    }
+}
+
+#[cfg(not(windows))]
+pub fn bring_active_windows_to_front() {}
+
+#[cfg(windows)]
+pub fn set_process_window_opacity(opacity: f32) {
+    let alpha = (opacity.clamp(0.5, 1.0) * 255.0) as u8;
+    unsafe {
+        use windows_sys::Win32::Foundation::{BOOL, HWND, LPARAM};
+        use windows_sys::Win32::System::Threading::GetCurrentProcessId;
+        use windows_sys::Win32::UI::WindowsAndMessaging::*;
+
+        unsafe extern "system" fn enum_opacity(hwnd: HWND, lparam: LPARAM) -> BOOL {
+            let mut proc_id = 0u32;
+            GetWindowThreadProcessId(hwnd, &mut proc_id);
+            if proc_id == GetCurrentProcessId() && IsWindowVisible(hwnd) != 0 {
+                let ex_style = GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
+                if (ex_style as u32 & WS_EX_LAYERED) == 0 {
+                    SetWindowLongPtrW(
+                        hwnd,
+                        GWL_EXSTYLE,
+                        (ex_style as usize | WS_EX_LAYERED as usize) as isize,
+                    );
+                }
+                SetLayeredWindowAttributes(hwnd, 0, lparam as u8, LWA_ALPHA);
+            }
+            1
+        }
+
+        EnumWindows(Some(enum_opacity), alpha as LPARAM);
+    }
+}
+
+#[cfg(not(windows))]
+pub fn set_process_window_opacity(_opacity: f32) {}
+
 pub(crate) struct ModalGuard(bool);
 
 impl ModalGuard {
     pub(crate) fn new() -> ModalGuard {
+        {
+        bring_active_windows_to_front();
         ModalGuard(MODAL.with(|m| m.replace(true)))
+    }
     }
 }
 
@@ -1456,6 +1530,7 @@ macro_rules! to_front {
         let w = &$w;
         w.window().set_minimized(false);
         w.set_front(true);
+        bring_active_windows_to_front();
         let weak = w.as_weak();
         slint::Timer::single_shot(std::time::Duration::from_millis(1800), move || {
             if let Some(w) = weak.upgrade() {
@@ -1483,6 +1558,41 @@ pub(crate) fn set_language(ui: &Ui, lang: &str) {
 }
 
 /// Set the theme on every open window (each window has its own copy).
+pub(crate) fn apply_opacity(ui: &Ui, opacity: f32) {
+    let op = opacity.clamp(0.5, 1.0);
+    set_process_window_opacity(op);
+    macro_rules! set_op {
+        ($($w:expr),*) => { $( if let Some(w) = $w.upgrade() { w.global::<Theme>().set_opacity(op); } )* };
+    }
+    set_op!(
+        ui.ctx.main,
+        ui.ctx.add,
+        ui.batch,
+        ui.settings_dlg,
+        ui.complete,
+        ui.columns,
+        ui.category,
+        ui.find,
+        ui.props,
+        ui.dup,
+        ui.countdown,
+        ui.sched,
+        ui.grabber,
+        ui.tips,
+        ui.refresh_dlg,
+        ui.playlist,
+        ui.browsers
+    );
+    ABOUT.with(|a| {
+        if let Some(d) = a.borrow().as_ref().and_then(|w| w.upgrade()) {
+            d.global::<Theme>().set_opacity(op);
+        }
+    });
+    for (d, _) in ui.progress.borrow().values() {
+        d.global::<Theme>().set_opacity(op);
+    }
+}
+
 pub(crate) fn apply_theme(ui: &Ui, mode: i32) {
     macro_rules! set {
         ($($w:expr),*) => { $( if let Some(w) = $w.upgrade() { w.global::<Theme>().set_mode(mode); } )* };
