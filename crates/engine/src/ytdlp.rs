@@ -1,4 +1,4 @@
-﻿//! Video links from any website through yt-dlp.
+//! Video links from any website through yt-dlp.
 //!
 //! yt-dlp knows how to find the real video files on more than 1800 sites
 //! (YouTube, Facebook, Instagram, TikTok, X/Twitter, Vimeo, Dailymotion...)
@@ -277,7 +277,7 @@ pub fn build_options(full: &Value) -> YtInfo {
             }
             let ext = if v.hls { "ts" } else { container };
             options.push(YtOption {
-                label: format!("{q} ┬╖ {}", ext.to_uppercase()),
+                label: format!("{q} · {}", ext.to_uppercase()),
                 sub: fmt_size(v.size),
                 key,
                 quality: q,
@@ -305,7 +305,7 @@ pub fn build_options(full: &Value) -> YtInfo {
         };
         let size = if v.size > 0 && audio.size > 0 { v.size + audio.size } else { 0 };
         options.push(YtOption {
-            label: format!("{q} ┬╖ {}{}", ext.to_uppercase(), v.codec_tag()),
+            label: format!("{q} · {}{}", ext.to_uppercase(), v.codec_tag()),
             sub: fmt_size(size),
             key,
             quality: q,
@@ -322,9 +322,9 @@ pub fn build_options(full: &Value) -> YtInfo {
         options.push(YtOption {
             key: format!("audio|{}", ext.to_uppercase()),
             label: if kbps > 0 {
-                format!("Audio only ┬╖ {} {kbps}k", ext.to_uppercase())
+                format!("Audio only · {} {kbps}k", ext.to_uppercase())
             } else {
-                format!("Audio only ┬╖ {}", ext.to_uppercase())
+                format!("Audio only · {}", ext.to_uppercase())
             },
             sub: fmt_size(a.size),
             quality: "audio".into(),
@@ -676,7 +676,7 @@ mod tests {
         assert_eq!(mp4.audio_url.as_deref(), Some("https://gv/140"));
         assert_eq!(mp4.size, 94000);
         assert_eq!(info.options[0].audio_url.as_deref(), Some("https://gv/251"));
-        assert_eq!(info.options.last().unwrap().label, "Audio only ┬╖ M4A 130k");
+        assert_eq!(info.options.last().unwrap().label, "Audio only · M4A 130k");
     }
 
     #[test]

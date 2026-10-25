@@ -31,7 +31,7 @@ fn exe(name: &str) -> String {
 /// Find a helper next to the program (`tools/<name>.exe` or `<name>.exe`),
 /// then in PATH, then in the per-user data folder.
 pub fn find_tool(name: &str) -> Option<PathBuf> {
-    bundled(name).or_else(|| which::which(name).ok())
+    crate::mux::find_tool(name)
 }
 
 /// A helper installed with the program itself or downloaded earlier into its

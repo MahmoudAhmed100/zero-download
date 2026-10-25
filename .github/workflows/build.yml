@@ -36,8 +36,8 @@ jobs:
           cargo test -p swiftget-engine --no-fail-fast 2>&1 | Tee-Object -FilePath tests.txt
           $code = $LASTEXITCODE
           if ($code -ne 0) {
-            Select-String -Path tests.txt -Pattern "(test .* \.\.\. FAILED|failures:|error:|^panicked)" |
-              Select-Object -First 40 | ForEach-Object { Write-Host "::error::$($_.Line.Trim())" }
+            Select-String -Path tests.txt -Pattern "(test .* \.\.\. FAILED|failures:|error(\[[^\]]+\])?:|^panicked|\s+-->)" |
+              Select-Object -First 60 | ForEach-Object { Write-Host "::error::$($_.Line.Trim())" }
             Write-Host "::error::engine tests failed (exit $code)"
             exit $code
           }
