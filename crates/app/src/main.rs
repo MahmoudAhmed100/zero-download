@@ -2320,23 +2320,6 @@ fn row_action(ui: &Ui, id: u64, action: &str) {
         "sha256" => {
             let path = v.save_path.clone();
             let name = v.file_name.clone();
-            std::thread::spawn(move || {
-                let text = match sha256_of(&path) {
-                    Ok(hash) => {
-                        let shown = tf("SHA-256 of {}:\n\n{}\n\n(copied to the clipboard)", &[&name, &hash]);
-                        if let Ok(mut c) = arboard::Clipboard::new() {
-                            let _ = c.set_text(hash);
-                        }
-                        shown
-                    }
-                    Err(e) => tf("Could not read the file: {}", &[&e]),
-                };
-                let _ = slint::invoke_from_event_loop(move || message(&text));
-            });
-        }
-        "sha256" => {
-            let path = v.save_path.clone();
-            let name = v.file_name.clone();
             let clip_text = arboard::Clipboard::new().ok().and_then(|mut c| c.get_text().ok());
             std::thread::spawn(move || {
                 let text = match swiftget_engine::security::compute_checksums(&path, clip_text.as_deref()) {
@@ -2389,22 +2372,6 @@ fn row_action(ui: &Ui, id: u64, action: &str) {
         "delete" => delete_download(&ui.ctx, id),
         _ => {}
     }
-}
-
-fn sha256_of(path: &Path) -> std::io::Result<String> {
-    use sha2::{Digest, Sha256};
-    use std::io::Read;
-    let mut f = std::fs::File::open(path)?;
-    let mut hasher = Sha256::new();
-    let mut buf = vec![0u8; 1 << 20];
-    loop {
-        let n = f.read(&mut buf)?;
-        if n == 0 {
-            break;
-        }
-        hasher.update(&buf[..n]);
-    }
-    Ok(hasher.finalize().iter().map(|b| format!("{b:02x}")).collect())
 }
 
 pub(crate) fn open_with(path: &Path) {

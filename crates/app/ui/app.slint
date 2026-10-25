@@ -1577,8 +1577,8 @@ export component MainWindow inherits ThemedWindow {
                             clip: true;
                             // scrolls sideways together with the list (wide columns)
                             HorizontalLayout {
-                                x: lv.viewport-x;
-                                width: max(parent.width, lv.viewport-width);
+                                x: lv.content-x;
+                                width: max(parent.width, lv.content-width);
                                 padding-left: 6px;
                                 HeaderCell {
                                     text: "";

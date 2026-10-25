@@ -37,7 +37,7 @@ fn first_existing(paths: Vec<Option<PathBuf>>) -> Option<PathBuf> {
 }
 
 fn rgb(r: u8, g: u8, b: u8) -> slint::Color {
-    slint::Color::from_rgb_uint8(r, g, b)
+    slint::Color::from_rgb_u8(r, g, b)
 }
 
 fn detect() -> Vec<Browser> {
@@ -125,6 +125,7 @@ pub(crate) fn open(ui: &Ui) {
             name: b.name.into(),
             installed: b.exe.is_some(),
             tint: b.tint,
+            action: t(if b.store.is_empty() { "Click to add" } else { "Click to add from the store" }).into(),
         })
         .collect();
     d.set_browsers(ModelRc::new(VecModel::from(rows)));
