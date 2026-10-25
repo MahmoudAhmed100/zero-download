@@ -595,6 +595,16 @@ fn wire_main(ui: &Ui) {
             let _ = ui.ctx.mgr.set_settings(s);
             apply_theme(&ui, m);
         });
+    {
+        let ui = ui.clone();
+        main.on_set_opacity(move |op| {
+            let mut s = ui.ctx.mgr.settings();
+            let pct = (op * 100.0).round().clamp(50.0, 100.0) as u32;
+            s.opacity = pct;
+            let _ = ui.ctx.mgr.set_settings(s);
+            apply_opacity(&ui, op);
+        });
+    }
     }
     {
         let ui = ui.clone();
@@ -1455,6 +1465,7 @@ pub(crate) struct ModalGuard(bool);
 
 impl ModalGuard {
     pub(crate) fn new() -> ModalGuard {
+        bring_active_windows_to_front();
         ModalGuard(MODAL.with(|m| m.replace(true)))
     }
 }
@@ -1641,6 +1652,107 @@ fn background_image(path: &str) -> Option<slint::Image> {
 }
 
 /// Set the theme on every open window (each window has its own copy).
+#[cfg(windows)]
+pub fn bring_active_windows_to_front() {
+    unsafe {
+        use windows_sys::Win32::Foundation::{BOOL, HWND, LPARAM};
+        use windows_sys::Win32::System::Threading::GetCurrentProcessId;
+        use windows_sys::Win32::UI::WindowsAndMessaging::*;
+
+        unsafe extern "system" fn enum_proc(hwnd: HWND, _lparam: LPARAM) -> BOOL {
+            let mut proc_id = 0u32;
+            GetWindowThreadProcessId(hwnd, &mut proc_id);
+            if proc_id == GetCurrentProcessId() && IsWindowVisible(hwnd) != 0 {
+                SetWindowPos(
+                    hwnd,
+                    HWND_TOP,
+                    0,
+                    0,
+                    0,
+                    0,
+                    SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW,
+                );
+                SetForegroundWindow(hwnd);
+                BringWindowToTop(hwnd);
+            }
+            1
+        }
+
+        EnumWindows(Some(enum_proc), 0);
+    }
+}
+
+#[cfg(not(windows))]
+pub fn bring_active_windows_to_front() {}
+
+#[cfg(windows)]
+pub fn set_process_window_opacity(opacity: f32) {
+    let alpha = (opacity.clamp(0.5, 1.0) * 255.0) as u8;
+    unsafe {
+        use windows_sys::Win32::Foundation::{BOOL, HWND, LPARAM};
+        use windows_sys::Win32::System::Threading::GetCurrentProcessId;
+        use windows_sys::Win32::UI::WindowsAndMessaging::*;
+
+        unsafe extern "system" fn enum_opacity(hwnd: HWND, lparam: LPARAM) -> BOOL {
+            let mut proc_id = 0u32;
+            GetWindowThreadProcessId(hwnd, &mut proc_id);
+            if proc_id == GetCurrentProcessId() && IsWindowVisible(hwnd) != 0 {
+                let ex_style = GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
+                if (ex_style as u32 & WS_EX_LAYERED) == 0 {
+                    SetWindowLongPtrW(
+                        hwnd,
+                        GWL_EXSTYLE,
+                        (ex_style as usize | WS_EX_LAYERED as usize) as isize,
+                    );
+                }
+                SetLayeredWindowAttributes(hwnd, 0, lparam as u8, LWA_ALPHA);
+            }
+            1
+        }
+
+        EnumWindows(Some(enum_opacity), alpha as LPARAM);
+    }
+}
+
+#[cfg(not(windows))]
+pub fn set_process_window_opacity(_opacity: f32) {}
+
+pub(crate) fn apply_opacity(ui: &Ui, opacity: f32) {
+    let op = opacity.clamp(0.5, 1.0);
+    set_process_window_opacity(op);
+    macro_rules! set_op {
+        ($($w:expr),*) => { $( if let Some(w) = $w.upgrade() { w.global::<Theme>().set_opacity(op); } )* };
+    }
+    set_op!(
+        ui.ctx.main,
+        ui.ctx.add,
+        ui.batch,
+        ui.settings_dlg,
+        ui.complete,
+        ui.columns,
+        ui.category,
+        ui.find,
+        ui.props,
+        ui.dup,
+        ui.countdown,
+        ui.sched,
+        ui.grabber,
+        ui.tips,
+        ui.refresh_dlg,
+        ui.playlist,
+        ui.browsers,
+        ui.updater
+    );
+    ABOUT.with(|a| {
+        if let Some(d) = a.borrow().as_ref().and_then(|w| w.upgrade()) {
+            d.global::<Theme>().set_opacity(op);
+        }
+    });
+    for (d, _) in ui.progress.borrow().values() {
+        d.global::<Theme>().set_opacity(op);
+    }
+}
+
 pub(crate) fn apply_theme(ui: &Ui, mode: i32) {
     let mut look = Look::of(&ui.ctx.mgr.settings());
     look.mode = mode;

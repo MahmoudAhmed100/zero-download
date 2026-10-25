@@ -1309,3 +1309,33 @@ msgstr "ادعم عبر PayPal"
 msgid "Hide"
 msgstr "إخفاء"
 
+
+msgid "Cyberpunk Neon"
+msgstr "سايبربانك نيون"
+
+msgid "Sunset Crimson"
+msgstr "غروب قرمزي"
+
+msgid "Nord Arctic"
+msgstr "نورد قطبي"
+
+msgid "AMOLED Pure Black"
+msgstr "أسود نقي AMOLED"
+
+msgid "Forest Emerald"
+msgstr "زمردي الغابة"
+
+msgid "Window opacity"
+msgstr "شفافية النافذة"
+
+msgid "100% (Solid)"
+msgstr "100% (معتم)"
+
+msgid "90% (Subtle)"
+msgstr "90% (خفيف)"
+
+msgid "80% (Medium)"
+msgstr "80% (متوسط)"
+
+msgid "70% (Glass)"
+msgstr "70% (زجاجي)"

@@ -548,6 +548,7 @@ export component MainWindow inherits ThemedWindow {
     callback open-download-folder();
     callback export-list(string);
     callback import-list(string);
+    callback set-opacity(float);
     callback set-theme(int);
     callback set-language(string);
     callback toggle-categories();
@@ -1033,7 +1034,7 @@ export component MainWindow inherits ThemedWindow {
                     }
                 }
                 MenuItem {
-                    title: @tr("Forest green");
+                    title: @tr("Cyberpunk Neon");
                     checkable: true;
                     checked: Theme.mode == 4;
                     activated => {
@@ -1041,7 +1042,7 @@ export component MainWindow inherits ThemedWindow {
                     }
                 }
                 MenuItem {
-                    title: @tr("Black");
+                    title: @tr("Sunset Crimson");
                     checkable: true;
                     checked: Theme.mode == 5;
                     activated => {
@@ -1049,7 +1050,7 @@ export component MainWindow inherits ThemedWindow {
                     }
                 }
                 MenuItem {
-                    title: @tr("Sunset");
+                    title: @tr("Nord Arctic");
                     checkable: true;
                     checked: Theme.mode == 6;
                     activated => {
@@ -1057,7 +1058,7 @@ export component MainWindow inherits ThemedWindow {
                     }
                 }
                 MenuItem {
-                    title: @tr("Teal night");
+                    title: @tr("AMOLED Pure Black");
                     checkable: true;
                     checked: Theme.mode == 7;
                     activated => {
@@ -1065,7 +1066,7 @@ export component MainWindow inherits ThemedWindow {
                     }
                 }
                 MenuItem {
-                    title: @tr("Rose");
+                    title: @tr("Forest Emerald");
                     checkable: true;
                     checked: Theme.mode == 8;
                     activated => {
@@ -1074,9 +1075,44 @@ export component MainWindow inherits ThemedWindow {
                 }
                 MenuSeparator { }
                 MenuItem {
-                    title: @tr("Appearanceظخ");
+                    title: @tr("Appearance…");
                     activated => {
                         root.open-settings(9);
+                    }
+                }
+            }
+            Menu {
+                title: @tr("Window opacity");
+                MenuItem {
+                    title: @tr("100% (Solid)");
+                    checkable: true;
+                    checked: Theme.opacity >= 0.98;
+                    activated => {
+                        root.set-opacity(1.0);
+                    }
+                }
+                MenuItem {
+                    title: @tr("90% (Subtle)");
+                    checkable: true;
+                    checked: Theme.opacity >= 0.88 && Theme.opacity < 0.95;
+                    activated => {
+                        root.set-opacity(0.9);
+                    }
+                }
+                MenuItem {
+                    title: @tr("80% (Medium)");
+                    checkable: true;
+                    checked: Theme.opacity >= 0.78 && Theme.opacity < 0.85;
+                    activated => {
+                        root.set-opacity(0.8);
+                    }
+                }
+                MenuItem {
+                    title: @tr("70% (Glass)");
+                    checkable: true;
+                    checked: Theme.opacity < 0.75;
+                    activated => {
+                        root.set-opacity(0.7);
                     }
                 }
             }
