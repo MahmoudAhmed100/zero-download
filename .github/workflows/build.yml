@@ -45,6 +45,8 @@ jobs:
         run: cargo build --release
       - name: Package
         shell: pwsh
+        env:
+          UPDATE_SIGNING_KEY: ${{ secrets.UPDATE_SIGNING_KEY }}
         run: |
           $version = ([regex]::Match((Get-Content Cargo.toml -Raw), '(?m)^version\s*=\s*"([^"]+)"')).Groups[1].Value
           if ("${{ github.ref_type }}" -eq "tag") {
@@ -62,7 +64,7 @@ jobs:
           Remove-Item -Recurse -Force "$p/extension/test", "$p/extension-firefox/test"
           Copy-Item -Force "$p/extension-firefox/manifest.firefox.json" "$p/extension-firefox/manifest.json"
           Remove-Item -Force "$p/extension-firefox/manifest.firefox.json", "$p/extension/manifest.firefox.json"
-          $rel = Invoke-RestMethod "https://api.github.com/repos/BtbN/FFmpeg-Builds/releases/tags/latest" -Headers @{ "User-Agent" = "EzooDownload-ci"; "Authorization" = "Bearer ${{ github.token }}" }
+          $rel = Invoke-RestMethod "https://api.github.com/repos/BtbN/FFmpeg-Builds/releases/tags/latest" -Headers @{ "User-Agent" = "ZeroDownload-ci"; "Authorization" = "Bearer ${{ github.token }}" }
           $asset = $rel.assets | Where-Object { $_.name -match '^ffmpeg-n[0-9.]+-latest-win64-gpl-[0-9.]+\.zip$' } |
             Sort-Object { [version](($_.name -replace '^ffmpeg-n([0-9.]+)-.*$', '$1') + '.0') } | Select-Object -Last 1
           Invoke-WebRequest $asset.browser_download_url -OutFile ffmpeg.zip
@@ -78,7 +80,11 @@ jobs:
           & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /Q "/DMyAppVersion=$version" installer\zero.iss
           if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed" }
           $hash = (Get-FileHash dist/ZeroDownload-Setup.exe -Algorithm SHA256).Hash.ToLower()
-          $json = "{`n  ""version"": ""$version"",`n  ""url"": ""https://github.com/${{ github.repository }}/releases/download/v$version/ZeroDownload-Setup.exe"",`n  ""sha256"": ""$hash""`n}`n"
+          $sig = ""
+          if ($env:UPDATE_SIGNING_KEY) {
+            $sig = (cargo run --quiet --release -p swiftget-engine --example sign_update -- $version $hash).Trim()
+          }
+          $json = "{`n  ""version"": ""$version"",`n  ""url"": ""https://github.com/${{ github.repository }}/releases/download/v$version/ZeroDownload-Setup.exe"",`n  ""sha256"": ""$hash"",`n  ""sig"": ""$sig""`n}`n"
           [IO.File]::WriteAllText("$PWD/dist/version.json", $json)
           Get-Content dist/version.json
           Compress-Archive -Path dist/ZeroDownload-Setup.exe, dist/version.json -DestinationPath ZeroDownload-windows.zip -Force

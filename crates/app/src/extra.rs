@@ -1,7 +1,8 @@
-//! Smaller windows: Columns, Category properties, Find, File Properties,
+﻿//! Smaller windows: Columns, Category properties, Find, File Properties,
 //! Duplicate link, shut down countdown, Tip of the day, Refresh download
 //! address, and Export / Import of the list.
 
+use crate::open_window;
 use crate::*;
 use swiftget_engine::config::{CategoryDef, ALL_COLUMNS, DEFAULT_COLUMNS};
 use swiftget_engine::ef2::{self, Ef2Item};
@@ -13,7 +14,7 @@ use crate::i18n::{t, tf};
 pub(crate) fn open_columns(ui: &Ui) {
     let Some(d) = ui.columns.upgrade() else { return };
     d.set_cols(cols_from(&ui.ctx.mgr.settings()));
-    let _ = d.show();
+    open_window!(d);
 }
 
 fn cols_to_list(c: &Cols) -> Vec<String> {
@@ -55,7 +56,7 @@ pub(crate) fn open_category(ui: &Ui, name: Option<String>) {
             d.set_folder(s.category_dirs.get(n).map(|p| p.display().to_string()).unwrap_or_default().into());
         }
     }
-    let _ = d.show();
+    open_window!(d);
 }
 
 fn save_category(ui: &Ui) {
@@ -127,7 +128,7 @@ pub(crate) fn delete_category(ui: &Ui, name: &str) {
         message(&t("This category comes with Zero Download and can't be deleted (you can change its file types in Properties)."));
         return;
     }
-    if !ask(&tf("Delete the category “{}”?\nIts files stay where they are and move to their file type's category.", &[&name])) {
+    if !ask(&tf("Delete the category ظ£{}ظإ?\nIts files stay where they are and move to their file type's category.", &[&name])) {
         return;
     }
     s.categories.retain(|c| c.name != name);
@@ -145,7 +146,7 @@ pub(crate) fn delete_category(ui: &Ui, name: &str) {
 pub(crate) fn open_find(ui: &Ui) {
     if let Some(d) = ui.find.upgrade() {
         d.set_message(SharedString::new());
-        let _ = d.show();
+        open_window!(d);
     }
 }
 
@@ -204,7 +205,7 @@ pub(crate) fn open_properties(ui: &Ui, id: u64) {
     d.set_ext(filename::extension(&v.file_name).to_uppercase().into());
     let ext = filename::extension(&v.file_name).to_uppercase();
     d.set_type_text(
-        if ext.is_empty() { t(&v.category) } else { tf("{} file  ·  {}", &[&ext, &t(&v.category)]) }.into(),
+        if ext.is_empty() { t(&v.category) } else { tf("{} file  ┬╖  {}", &[&ext, &t(&v.category)]) }.into(),
     );
     d.set_status(
         match v.status {
@@ -241,7 +242,7 @@ pub(crate) fn open_properties(ui: &Ui, id: u64) {
     d.set_user(v.headers.auth.as_ref().map(|a| a.0.clone()).unwrap_or_default().into());
     d.set_password(v.headers.auth.as_ref().map(|a| a.1.clone()).unwrap_or_default().into());
     d.set_message(SharedString::new());
-    let _ = d.show();
+    open_window!(d);
 }
 
 fn save_properties(ui: &Ui) {
@@ -291,8 +292,7 @@ pub(crate) fn ask_duplicate(ui: &Ui, p: PendingAdd) {
     d.set_choice(1);
     d.set_remember(false);
     *ui.pending.borrow_mut() = Some(p);
-    let _ = d.show();
-    to_front!(d);
+    open_window!(d);
 }
 
 // ---------------------------------------------------------------- shut down countdown
@@ -310,7 +310,7 @@ pub(crate) fn start_countdown(ui: &Ui, action: AfterDone) {
     d.set_seconds_total(COUNTDOWN);
     d.set_seconds_left(COUNTDOWN);
     *ui.power.borrow_mut() = Some((action, COUNTDOWN));
-    let _ = d.show();
+    open_window!(d);
 }
 
 pub(crate) fn tick_countdown(ui: &Ui) {
@@ -341,6 +341,44 @@ fn power_now(ui: &Ui) {
 
 // ---------------------------------------------------------------- tips
 
+/// http:// or https:// with a host: safe to hand to the browser.
+pub(crate) fn is_web_address(s: &str) -> bool {
+    url::Url::parse(s.trim())
+        .map(|u| matches!(u.scheme(), "http" | "https") && u.host_str().is_some_and(|h| !h.is_empty()))
+        .unwrap_or(false)
+}
+
+/// What the newest version brings (shown once after an automatic update).
+const WHATS_NEW: [&str; 16] = [
+    "The main window can be maximized to the full screen.",
+    "Columns of the list can be resized and moved by dragging their titles.",
+    "Toolbar names are bold, and the size of the video button can be chosen in the add-in's window.",
+    "Text size, font and a picture behind the main window (Options > Appearance).",
+    "Windows open in the middle of the screen; only the main window can be maximized.",
+    "Drag a finished file from the list onto the desktop or into a folder.",
+    "The progress of a download shows on its taskbar button.",
+    "Check for updates shows the check, the download and the installation in its own window.",
+    "Playlist videos are saved with their own original titles and their original sound.",
+    "Closing a download's window (X) stops the download; Resume opens it again.",
+    "The download button on videos in the browser is smaller, and its size can be changed in the add-in's settings.",
+    "Updates are signed: Zero Download installs only updates made by its developer.",
+    "Downloaded files are marked as coming from the internet, so Windows warns before opening an unsafe file.",
+    "Saved passwords and site logins are encrypted with your Windows account.",
+    "The video helpers (yt-dlp and ffmpeg) are checked before they are used.",
+    "More protection against harmful web pages and links.",
+];
+
+pub(crate) fn whats_new() {
+    let mut text = tf("Zero Download was updated to version {} by itself.", &[&env!("CARGO_PKG_VERSION")]);
+    text.push_str("\n\n");
+    text.push_str(&t("What's new:"));
+    for line in WHATS_NEW {
+        text.push_str("\nظت  ");
+        text.push_str(&t(line));
+    }
+    crate::message(&text);
+}
+
 const TIPS: [&str; 14] = [
     "Copy a download link anywhere (Ctrl+C) and Zero Download offers to download it.",
     "Play a video on a web page and click \"Download this video\" above it to choose the quality.",
@@ -350,7 +388,7 @@ const TIPS: [&str; 14] = [
     "The Scheduler can start a queue at night and shut down the computer when everything is finished.",
     "Downloads > When all downloads finish lets you shut down, sleep or hibernate the computer after the last file.",
     "The speed limiter on the toolbar keeps your internet usable for other things while downloading.",
-    "Add Batch > \"Address with a pattern\" downloads img001.jpg … img100.jpg from one address with a *.",
+    "Add Batch > \"Address with a pattern\" downloads img001.jpg ظخ img100.jpg from one address with a *.",
     "An old link expired? Right click the download > \"Refresh download address\" and continue from where it stopped.",
     "Right click a category in the sidebar > Properties to change its file types and its own folder.",
     "View > Columns shows more columns, like Date Added, Save To and Referer.",
@@ -370,7 +408,7 @@ pub(crate) fn show_tip(ui: &Ui, from_menu: bool) {
         s.tip_index = ((i + 1) % TIPS.len()) as u32;
         let _ = ui.ctx.mgr.set_settings(s);
     }
-    let _ = d.show();
+    open_window!(d);
 }
 
 // ---------------------------------------------------------------- refresh download address
@@ -386,8 +424,7 @@ pub(crate) fn open_refresh(ui: &Ui, id: u64) {
     d.set_page(v.parent_page.clone().unwrap_or_default().into());
     d.set_waiting(true);
     d.set_new_url(SharedString::new());
-    let _ = d.show();
-    to_front!(d);
+    open_window!(d);
 }
 
 /// The browser sent a download while we were waiting for a new address.
@@ -498,8 +535,7 @@ pub(crate) fn wire(ui: &Ui) {
             let w = d.as_weak();
             d.on_reset(move || {
                 if let Some(d) = w.upgrade() {
-                    let mut s = Settings::default();
-                    s.columns = DEFAULT_COLUMNS.iter().map(|c| c.to_string()).collect();
+                    let s = Settings { columns: DEFAULT_COLUMNS.iter().map(|c| c.to_string()).collect(), ..Default::default() };
                     d.set_cols(cols_from(&s));
                 }
             });
@@ -667,8 +703,10 @@ pub(crate) fn wire(ui: &Ui) {
             d.on_open_page(move || {
                 if let Some(d) = w.upgrade() {
                     let page = d.get_page().to_string();
-                    if !page.is_empty() {
-                        let _ = open::that(page);
+                    // only a web page: the address came from the browser or
+                    // a list file and must never start a program
+                    if is_web_address(&page) {
+                        let _ = open::that(page.trim());
                     }
                 }
             });
@@ -704,3 +742,26 @@ pub(crate) fn wire(ui: &Ui) {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::is_web_address;
+
+    #[test]
+    fn only_web_pages_are_opened() {
+        assert!(is_web_address("https://example.com/page"));
+        assert!(is_web_address(" http://example.com "));
+        for bad in [
+            "C:\\Windows\\System32\\calc.exe",
+            "\\\\server\\share\\x.exe",
+            "file:///C:/x.exe",
+            "javascript:alert(1)",
+            "ms-settings:",
+            "https://",
+            "",
+        ] {
+            assert!(!is_web_address(bad), "{bad}");
+        }
+    }
+}
+

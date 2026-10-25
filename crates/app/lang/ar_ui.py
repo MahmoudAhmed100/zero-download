@@ -1,4 +1,4 @@
-# Arabic translation of the Zero Download window texts.
+﻿# Arabic translation of the Zero Download window texts.
 # Run `python lang/make_po.py` after changing it: it rebuilds
 # lang/ar/LC_MESSAGES/swiftget.po from the @tr("...") texts of ui/*.slint.
 AR = {
@@ -431,7 +431,26 @@ AR = {
     "Copy folder path": "نسخ مسار المجلد",
     "Language": "اللغة",
     "Version {}": "الإصدار {}",
-    "Coded by Mahmoud": "Coded by Mahmoud",
+    "Coded by Ahmed Ezzat": "Coded by Ahmed Ezzat",
     "Check for updates": "البحث عن تحديثات",
     "Download with the browser": "التحميل عبر المتصفح",
+    "Forest green": "أخضر الغابة",
+    "Black": "أسود",
+    "Sunset": "الغروب",
+    "Teal night": "ليل فيروزي",
+    "Rose": "وردي",
+    "Transparency…": "الشفافية…",
+    "Window opacity": "شفافية النافذة",
+    "Like Zero Download? You can support its development:": "أعجبك Zero Download؟ يمكنك دعم تطويره:",
+    "Support with PayPal": "ادعم عبر PayPal",
+    "Appearance…": "المظهر…",
+    "Appearance": "المظهر",
+    "Text size": "حجم الخط",
+    "Font": "الخط",
+    "Default (Segoe UI)": "الافتراضي (Segoe UI)",
+    "Background picture": "صورة الخلفية",
+    "none (the theme's colors)": "بدون (ألوان المظهر)",
+    "Picture visibility": "وضوح الصورة",
+    "Hide": "إخفاء",
 }
+

@@ -2,15 +2,21 @@
 //! (its store page once the extension is published there, otherwise its
 //! extensions page with the folder path ready in the clipboard).
 
+use crate::open_window;
 use crate::*;
 use crate::i18n::{t, tf};
 
-/// Store pages of the published extension. Empty = not published yet:
-/// then the extension is added from its folder (developer mode).
+// Store addresses: once the extension is published on each store, fill its
+// web address here. The button in the program then opens the store directly.
 const STORE_CHROME: &str = "";
 const STORE_EDGE: &str = "";
 const STORE_FIREFOX: &str = "";
 const STORE_OPERA: &str = "";
+const STORE_BRAVE: &str = "";
+
+/// The Firefox add-on signed by Mozilla (built by the release): installed
+/// from this file it stays in Firefox for good.
+const FIREFOX_XPI: &str = "zero-download-firefox.xpi";
 
 #[derive(Clone)]
 pub(crate) struct Browser {
@@ -22,19 +28,22 @@ pub(crate) struct Browser {
     tint: slint::Color,
 }
 
-fn env_path(var: &str, rest: &str) -> Option<PathBuf> {
-    std::env::var_os(var).map(|v| PathBuf::from(v).join(rest))
+fn env_path(var: &str, sub: &str) -> Option<PathBuf> {
+    std::env::var_os(var).map(|p| PathBuf::from(p).join(sub))
 }
 
-fn first_existing(list: Vec<Option<PathBuf>>) -> Option<PathBuf> {
-    list.into_iter().flatten().find(|p| p.exists())
+fn first_existing(paths: Vec<Option<PathBuf>>) -> Option<PathBuf> {
+    paths.into_iter().flatten().find(|p| p.is_file())
+}
+
+fn rgb(r: u8, g: u8, b: u8) -> slint::Color {
+    slint::Color::from_rgb_uint8(r, g, b)
 }
 
 fn detect() -> Vec<Browser> {
-    let rgb = slint::Color::from_rgb_u8;
     vec![
         Browser {
-            name: "Chrome",
+            name: "Google Chrome",
             exe: first_existing(vec![
                 env_path("ProgramFiles", r"Google\Chrome\Application\chrome.exe"),
                 env_path("ProgramFiles(x86)", r"Google\Chrome\Application\chrome.exe"),
@@ -43,10 +52,10 @@ fn detect() -> Vec<Browser> {
             extensions_page: "chrome://extensions/",
             store: STORE_CHROME,
             firefox: false,
-            tint: rgb(0x1f, 0xa4, 0x63),
+            tint: rgb(0xea, 0x43, 0x35),
         },
         Browser {
-            name: "Edge",
+            name: "Microsoft Edge",
             exe: first_existing(vec![
                 env_path("ProgramFiles(x86)", r"Microsoft\Edge\Application\msedge.exe"),
                 env_path("ProgramFiles", r"Microsoft\Edge\Application\msedge.exe"),
@@ -57,6 +66,28 @@ fn detect() -> Vec<Browser> {
             tint: rgb(0x0c, 0x8c, 0xd8),
         },
         Browser {
+            name: "Firefox",
+            exe: first_existing(vec![
+                env_path("ProgramFiles", r"Mozilla Firefox\firefox.exe"),
+                env_path("ProgramFiles(x86)", r"Mozilla Firefox\firefox.exe"),
+            ]),
+            extensions_page: "about:debugging#/runtime/this-firefox",
+            store: STORE_FIREFOX,
+            firefox: true,
+            tint: rgb(0xff, 0x71, 0x39),
+        },
+        Browser {
+            name: "Opera",
+            exe: first_existing(vec![
+                env_path("LOCALAPPDATA", r"Programs\Opera\launcher.exe"),
+                env_path("ProgramFiles", r"Opera\launcher.exe"),
+            ]),
+            extensions_page: "opera://extensions",
+            store: STORE_OPERA,
+            firefox: false,
+            tint: rgb(0xd6, 0x1f, 0x2b),
+        },
+        Browser {
             name: "Brave",
             exe: first_existing(vec![
                 env_path("ProgramFiles", r"BraveSoftware\Brave-Browser\Application\brave.exe"),
@@ -64,72 +95,50 @@ fn detect() -> Vec<Browser> {
                 env_path("LOCALAPPDATA", r"BraveSoftware\Brave-Browser\Application\brave.exe"),
             ]),
             extensions_page: "brave://extensions/",
-            store: "",
+            store: STORE_BRAVE,
             firefox: false,
             tint: rgb(0xfb, 0x54, 0x2b),
-        },
-        Browser {
-            name: "Firefox",
-            exe: first_existing(vec![
-                env_path("ProgramFiles", r"Mozilla Firefox\firefox.exe"),
-                env_path("ProgramFiles(x86)", r"Mozilla Firefox\firefox.exe"),
-                env_path("LOCALAPPDATA", r"Mozilla Firefox\firefox.exe"),
-            ]),
-            extensions_page: "about:debugging#/runtime/this-firefox",
-            store: STORE_FIREFOX,
-            firefox: true,
-            tint: rgb(0xe8, 0x6a, 0x10),
-        },
-        Browser {
-            name: "Opera",
-            exe: first_existing(vec![
-                env_path("LOCALAPPDATA", r"Programs\Opera\opera.exe"),
-                env_path("LOCALAPPDATA", r"Programs\Opera GX\opera.exe"),
-                env_path("ProgramFiles", r"Opera\opera.exe"),
-            ]),
-            extensions_page: "opera://extensions",
-            store: STORE_OPERA,
-            firefox: false,
-            tint: rgb(0xd6, 0x1f, 0x2b),
         },
     ]
 }
 
-/// The extension's folder next to the program (Firefox has its own copy).
+/// The extension folder next to the program (`extension` or `extension-firefox`).
 fn extension_dir(firefox: bool) -> Option<PathBuf> {
-    let dir = std::env::current_exe().ok()?.parent()?.to_path_buf();
     let name = if firefox { "extension-firefox" } else { "extension" };
+    let dir = std::env::current_exe().ok()?.parent()?.to_path_buf();
     [dir.join(name), dir.join("..").join(name)].into_iter().find(|p| p.exists())
+}
+
+/// The signed Firefox add-on next to the program, when the release has one.
+fn firefox_xpi() -> Option<PathBuf> {
+    let dir = std::env::current_exe().ok()?.parent()?.to_path_buf();
+    [dir.join(FIREFOX_XPI), dir.join("ezoo-download-firefox.xpi")].into_iter().find(|p| p.exists())
 }
 
 pub(crate) fn open(ui: &Ui) {
     let Some(d) = ui.browsers.upgrade() else { return };
     let list = detect();
+    *ui.browser_list.borrow_mut() = list.clone();
     let rows: Vec<BrowserRow> = list
         .iter()
         .map(|b| BrowserRow {
             name: b.name.into(),
-            tint: b.tint,
             installed: b.exe.is_some(),
-            action: t(if b.store.is_empty() { "Click to add" } else { "Click to add from the store" }).into(),
+            tint: b.tint,
         })
         .collect();
-    *ui.browser_list.borrow_mut() = list;
     d.set_browsers(ModelRc::new(VecModel::from(rows)));
     d.set_steps(SharedString::new());
     d.set_folder(extension_dir(false).map(|p| p.display().to_string()).unwrap_or_default().into());
-    let _ = d.show();
+    open_window!(d);
     d.window().set_minimized(false);
 }
 
-fn launch(exe: &Path, url: &str) {
-    let _ = std::process::Command::new(exe).arg(url).spawn();
-}
-
 fn add(ui: &Ui, i: usize) {
+    let list = ui.browser_list.borrow();
+    let Some(b) = list.get(i) else { return };
     let Some(d) = ui.browsers.upgrade() else { return };
-    let Some(b) = ui.browser_list.borrow().get(i).cloned() else { return };
-    let Some(exe) = b.exe.clone() else {
+    let Some(exe) = &b.exe else {
         d.set_steps(tf("{} is not installed on this computer.", &[&b.name]).into());
         return;
     };
@@ -137,6 +146,15 @@ fn add(ui: &Ui, i: usize) {
         launch(&exe, b.store);
         d.set_steps(tf("{} opened the store page: click \"Add\" / \"Get\" there.", &[&b.name]).into());
         return;
+    }
+    if b.firefox {
+        if let Some(xpi) = firefox_xpi() {
+            // the signed add-on: Firefox asks "Add Zero Download?" and keeps it
+            let _ = std::process::Command::new(&exe).arg(&xpi).spawn();
+            d.set_folder(xpi.display().to_string().into());
+            d.set_steps(t("Firefox opened the Zero Download add-on.\n1. Click \"Add\" in the message Firefox shows.\n2. Then click \"OK\".\n\nThe add-on is signed by Mozilla, so it stays in Firefox after you close it and updates by itself.").into());
+            return;
+        }
     }
     let Some(dir) = extension_dir(b.firefox) else {
         d.set_steps(t("The extension folder was not found next to ZeroDownload.exe. Install Zero Download again.").into());
@@ -192,29 +210,22 @@ fn add(ui: &Ui, i: usize) {
     d.set_steps(steps.into());
 }
 
+fn launch(exe: &Path, arg: &str) {
+    let _ = std::process::Command::new(exe).arg(arg).spawn();
+}
+
 pub(crate) fn wire(ui: &Ui) {
     let Some(d) = ui.browsers.upgrade() else { return };
     {
         let ui = ui.clone();
-        d.on_add(move |i| add(&ui, i.max(0) as usize));
+        d.on_add(move |i| add(&ui, i as usize));
     }
     {
-        let w = d.as_weak();
+        let ui = ui.clone();
         d.on_copy_folder(move || {
-            if let Some(d) = w.upgrade() {
+            if let Some(d) = ui.browsers.upgrade() {
                 if let Ok(mut c) = arboard::Clipboard::new() {
                     let _ = c.set_text(d.get_folder().to_string());
-                }
-            }
-        });
-    }
-    {
-        let w = d.as_weak();
-        d.on_open_folder(move || {
-            if let Some(d) = w.upgrade() {
-                let f = d.get_folder().to_string();
-                if !f.is_empty() {
-                    let _ = open::that(f);
                 }
             }
         });

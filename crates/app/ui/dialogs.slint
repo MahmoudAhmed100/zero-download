@@ -1,9 +1,9 @@
-// Zero Download – the classic download manager's extra windows:
+﻿// Zero Download ظô the classic download manager's extra windows:
 // Options, Scheduler (queues), File Properties, Columns, Category properties,
 // Find, Duplicate link, Shutdown countdown, Site Grabber / Download all
 // links, Tip of the day and Refresh download address.
 
-import { Button, LineEdit, SpinBox, CheckBox, ComboBox, ListView, TextEdit, ScrollView, AboutSlint } from "std-widgets.slint";
+import { Button, LineEdit, SpinBox, CheckBox, ComboBox, ListView, TextEdit, ScrollView, AboutSlint, Slider } from "std-widgets.slint";
 import { Cols, PairRow, LinkRow, QueueRow, DownloadRow, Theme, ThemedWindow, TypeIcon, BigTypeIcon, HeaderCell, Cell, Glyph } from "common.slint";
 
 // ------------------------------------------------------------------ small parts
@@ -11,18 +11,18 @@ import { Cols, PairRow, LinkRow, QueueRow, DownloadRow, Theme, ThemedWindow, Typ
 component Label inherits Text {
     vertical-alignment: center;
     color: Theme.text;
-    font-size: 12px;
+    font-size: 12px * Theme.font-scale;
 }
 
 component Hint inherits Text {
     color: Theme.muted;
-    font-size: 11px;
+    font-size: 11px * Theme.font-scale;
     wrap: word-wrap;
 }
 
 component Section inherits Text {
     color: Theme.accent;
-    font-size: 12px;
+    font-size: 12px * Theme.font-scale;
     font-weight: 700;
 }
 
@@ -63,7 +63,7 @@ component Radio inherits Rectangle {
         height: parent.height;
         text: root.text;
         vertical-alignment: center;
-        font-size: 12px;
+        font-size: 12px * Theme.font-scale;
         color: root.enabled ? Theme.text : Theme.muted;
     }
 }
@@ -87,7 +87,7 @@ component SideTab inherits Rectangle {
         height: parent.height;
         text: root.text;
         vertical-alignment: center;
-        font-size: 12px;
+        font-size: 12px * Theme.font-scale;
         font-weight: root.active ? 600 : 400;
         color: Theme.text;
     }
@@ -114,7 +114,7 @@ component TabBtn inherits Rectangle {
         text: root.text;
         horizontal-alignment: center;
         vertical-alignment: center;
-        font-size: 12px;
+        font-size: 12px * Theme.font-scale;
         font-weight: root.active ? 600 : 400;
         color: Theme.text;
     }
@@ -205,7 +205,7 @@ export component ColumnsDialog inherits ThemedWindow {
         Text {
             text: @tr("File Name (always shown)");
             color: Theme.muted;
-            font-size: 12px;
+            font-size: 12px * Theme.font-scale;
         }
         CheckBox {
             text: @tr("Q (queue number)");
@@ -376,7 +376,7 @@ export component CategoryDialog inherits ThemedWindow {
                         placeholder-text: @tr("automatic (Downloads\\{})", root.name);
                     }
                     Button {
-                        text: "…";
+                        text: "ظخ";
                         clicked => {
                             root.browse();
                         }
@@ -502,7 +502,7 @@ export component PropertiesDialog inherits ThemedWindow {
     // set for a moment so the window comes in front of the browser
     in property <bool> front;
     always-on-top: root.front;
-    title: @tr("File Properties – {}", root.file-name);
+    title: @tr("File Properties ظô {}", root.file-name);
     preferred-width: 600px;
     in property <string> file-name;
     in property <string> kind: "general";
@@ -600,7 +600,7 @@ export component PropertiesDialog inherits ThemedWindow {
                         horizontal-stretch: 1;
                     }
                     Button {
-                        text: "…";
+                        text: "ظخ";
                         clicked => {
                             root.browse();
                         }
@@ -667,7 +667,7 @@ export component PropertiesDialog inherits ThemedWindow {
                 text: @tr("Result: {}", root.result);
                 vertical-alignment: center;
                 overflow: elide;
-                font-size: 11px;
+                font-size: 11px * Theme.font-scale;
                 color: root.done ? Theme.ok : Theme.err;
             }
         }
@@ -784,6 +784,8 @@ export component CountdownDialog inherits ThemedWindow {
     title: @tr("Zero Download");
     preferred-width: 420px;
     always-on-top: true;
+    // always in front already; kept so every window can be brought forward the same way
+    in property <bool> front;
     in property <string> action-text: "shut down the computer";
     in property <int> seconds-left: 30;
     in property <int> seconds-total: 30;
@@ -794,7 +796,7 @@ export component CountdownDialog inherits ThemedWindow {
         spacing: 12px;
         Text {
             text: @tr("All downloads are finished.");
-            font-size: 14px;
+            font-size: 14px * Theme.font-scale;
             font-weight: 700;
             color: Theme.ok;
         }
@@ -1209,7 +1211,7 @@ export component SchedulerDialog inherits ThemedWindow {
                             horizontal-stretch: 1;
                         }
                         Button {
-                            text: "…";
+                            text: "ظخ";
                             clicked => {
                                 root.browse();
                             }
@@ -1390,7 +1392,7 @@ export component GrabberDialog inherits ThemedWindow {
                 }
                 Text {
                     text: root.progress-text;
-                    font-size: 11px;
+                    font-size: 11px * Theme.font-scale;
                     color: root.exploring ? Theme.accent : Theme.muted;
                     overflow: elide;
                 }
@@ -1411,7 +1413,7 @@ export component GrabberDialog inherits ThemedWindow {
             }
             LineEdit {
                 text <=> root.filter;
-                placeholder-text: @tr("Filter by name or address…");
+                placeholder-text: @tr("Filter by name or addressظخ");
                 horizontal-stretch: 1;
                 edited(t) => {
                     root.filter-changed();
@@ -1523,7 +1525,7 @@ export component GrabberDialog inherits ThemedWindow {
                                 text: l.url;
                                 horizontal-stretch: 1;
                                 color: Theme.accent;
-                                font-size: 11px;
+                                font-size: 11px * Theme.font-scale;
                             }
                         }
                     }
@@ -1533,7 +1535,7 @@ export component GrabberDialog inherits ThemedWindow {
                 y: 80px;
                 width: parent.width;
                 horizontal-alignment: center;
-                text: root.links-mode ? @tr("No links on this page.") : root.exploring ? @tr("Exploring…") : @tr("Type a start page and click \"Start exploring\".");
+                text: root.links-mode ? @tr("No links on this page.") : root.exploring ? @tr("Exploringظخ") : @tr("Type a start page and click \"Start exploring\".");
                 color: Theme.muted;
             }
         }
@@ -1548,7 +1550,7 @@ export component GrabberDialog inherits ThemedWindow {
                 horizontal-stretch: 1;
             }
             Button {
-                text: "…";
+                text: "ظخ";
                 clicked => {
                     root.browse();
                 }
@@ -1630,8 +1632,8 @@ export component TipDialog inherits ThemedWindow {
                 spacing: 6px;
                 horizontal-stretch: 1;
                 Text {
-                    text: @tr("Did you know…");
-                    font-size: 14px;
+                    text: @tr("Did you knowظخ");
+                    font-size: 14px * Theme.font-scale;
                     font-weight: 700;
                     color: Theme.text;
                 }
@@ -1639,13 +1641,13 @@ export component TipDialog inherits ThemedWindow {
                     text: root.tip;
                     wrap: word-wrap;
                     color: Theme.text;
-                    font-size: 12px;
+                    font-size: 12px * Theme.font-scale;
                     min-height: 70px;
                 }
                 Text {
                     text: root.counter;
                     color: Theme.muted;
-                    font-size: 11px;
+                    font-size: 11px * Theme.font-scale;
                 }
             }
         }
@@ -1708,7 +1710,7 @@ export component RefreshDialog inherits ThemedWindow {
             Text {
                 text: root.page;
                 color: Theme.muted;
-                font-size: 11px;
+                font-size: 11px * Theme.font-scale;
                 overflow: elide;
                 horizontal-stretch: 1;
                 vertical-alignment: center;
@@ -1721,7 +1723,7 @@ export component RefreshDialog inherits ThemedWindow {
             }
         }
         Hint {
-            text: root.waiting ? @tr("Waiting for the new address from the browser…") : "";
+            text: root.waiting ? @tr("Waiting for the new address from the browserظخ") : "";
         }
         Label {
             text: @tr("Or paste the new address here:");
@@ -1731,7 +1733,7 @@ export component RefreshDialog inherits ThemedWindow {
             LineEdit {
                 text <=> root.new-url;
                 horizontal-stretch: 1;
-                placeholder-text: @tr("https://…");
+                placeholder-text: @tr("https://ظخ");
             }
             Button {
                 text: @tr("Use it");
@@ -1770,7 +1772,7 @@ component SoundRow inherits HorizontalLayout {
         horizontal-stretch: 1;
     }
     Button {
-        text: "…";
+        text: "ظخ";
         clicked => {
             root.browse();
         }
@@ -1787,7 +1789,7 @@ export component SettingsDialog inherits ThemedWindow {
     // set for a moment so the window comes in front of the browser
     in property <bool> front;
     always-on-top: root.front;
-    title: @tr("Zero Download – Options");
+    title: @tr("Zero Download ظô Options");
     preferred-width: 820px;
     preferred-height: 600px;
 
@@ -1795,6 +1797,19 @@ export component SettingsDialog inherits ThemedWindow {
     // General
     in-out property <int> language;
     in-out property <int> theme;
+    // how solid the main window is, 50..100 %
+    in-out property <float> window-opacity: 100;
+    // called while the slider moves, so the window shows it at once
+    callback preview-opacity(float);
+    // text size (percent) and font of every window
+    in-out property <float> text-size: 100;
+    in-out property <int> font-index;
+    // a picture behind the main window instead of the theme's color
+    in-out property <string> bg-image;
+    in-out property <float> bg-strength: 45;
+    callback browse-bg();
+    // the look changed: show it at once (the settings are kept on OK)
+    callback preview-look();
     in-out property <bool> start-with-windows;
     in-out property <bool> close-to-tray;
     in-out property <bool> clipboard;
@@ -1893,7 +1908,7 @@ export component SettingsDialog inherits ThemedWindow {
                 VerticalLayout {
                     padding: 3px;
                     alignment: start;
-                    for t[i] in [@tr("General"), @tr("File Types"), @tr("Save To"), @tr("Downloads"), @tr("Connection"), @tr("Proxy / Server"), @tr("Site Logins"), @tr("Sounds"), @tr("Speed Limiter")]: SideTab {
+                    for t[i] in [@tr("General"), @tr("File Types"), @tr("Save To"), @tr("Downloads"), @tr("Connection"), @tr("Proxy / Server"), @tr("Site Logins"), @tr("Sounds"), @tr("Speed Limiter"), @tr("Appearance")]: SideTab {
                         text: t;
                         active: root.tab == i;
                         clicked => {
@@ -1908,6 +1923,133 @@ export component SettingsDialog inherits ThemedWindow {
                 border-width: 1px;
                 border-color: Theme.line;
 
+                // ---------------- Appearance
+                if root.tab == 9: VerticalLayout {
+                    padding: 14px;
+                    spacing: 10px;
+                    alignment: start;
+                    HorizontalLayout {
+                        spacing: 8px;
+                        Label {
+                            text: @tr("Theme");
+                        }
+                        ComboBox {
+                            width: 200px;
+                            model: [@tr("Light"), @tr("Dark"), @tr("Ocean blue"), @tr("Midnight purple"), @tr("Forest green"), @tr("Black"), @tr("Sunset"), @tr("Teal night"), @tr("Rose")];
+                            current-index <=> root.theme;
+                        }
+                        Rectangle {
+                            horizontal-stretch: 1;
+                        }
+                    }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        Label {
+                            text: @tr("Window opacity");
+                        }
+                        Slider {
+                            width: 200px;
+                            minimum: 50;
+                            maximum: 100;
+                            value <=> root.window-opacity;
+                            changed(v) => {
+                                root.preview-opacity(v);
+                            }
+                        }
+                        Label {
+                            text: Math.round(root.window-opacity) + "%";
+                        }
+                        Rectangle {
+                            horizontal-stretch: 1;
+                        }
+                    }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        Label {
+                            text: @tr("Text size");
+                        }
+                        Slider {
+                            width: 200px;
+                            minimum: 80;
+                            maximum: 150;
+                            value <=> root.text-size;
+                            changed(v) => {
+                                root.preview-look();
+                            }
+                        }
+                        Label {
+                            text: Math.round(root.text-size) + "%";
+                        }
+                        Rectangle {
+                            horizontal-stretch: 1;
+                        }
+                    }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        Label {
+                            text: @tr("Font");
+                        }
+                        ComboBox {
+                            width: 200px;
+                            model: [@tr("Default (Segoe UI)"), "Tahoma", "Arial", "Calibri", "Verdana", "Times New Roman", "Courier New"];
+                            current-index <=> root.font-index;
+                            selected => {
+                                root.preview-look();
+                            }
+                        }
+                        Rectangle {
+                            horizontal-stretch: 1;
+                        }
+                    }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        Label {
+                            text: @tr("Background picture");
+                        }
+                        LineEdit {
+                            horizontal-stretch: 1;
+                            read-only: true;
+                            placeholder-text: @tr("none (the theme's colors)");
+                            text: root.bg-image;
+                        }
+                        Button {
+                            text: @tr("Browseظخ");
+                            clicked => {
+                                root.browse-bg();
+                            }
+                        }
+                        Button {
+                            text: @tr("Remove");
+                            enabled: root.bg-image != "";
+                            clicked => {
+                                root.bg-image = "";
+                                root.preview-look();
+                            }
+                        }
+                    }
+                    if root.bg-image != "": HorizontalLayout {
+                        spacing: 8px;
+                        Label {
+                            text: @tr("Picture visibility");
+                        }
+                        Slider {
+                            width: 200px;
+                            minimum: 10;
+                            maximum: 80;
+                            value <=> root.bg-strength;
+                            changed(v) => {
+                                root.preview-look();
+                            }
+                        }
+                        Label {
+                            text: Math.round(root.bg-strength) + "%";
+                        }
+                        Rectangle {
+                            horizontal-stretch: 1;
+                        }
+                    }
+                }
+
                 // ---------------- General
                 if root.tab == 0: VerticalLayout {
                     padding: 14px;
@@ -1920,22 +2062,8 @@ export component SettingsDialog inherits ThemedWindow {
                         }
                         ComboBox {
                             width: 200px;
-                            model: ["English", "العربية"];
+                            model: ["English", "╪د┘╪╣╪▒╪ذ┘è╪ر", "Fran├دais", "Espa├▒ol", "Deutsch", "Portugu├زs", "T├╝rk├دe", "╨ب╤â╤╤╨║╨╕╨╣"];
                             current-index <=> root.language;
-                        }
-                        Rectangle {
-                            horizontal-stretch: 1;
-                        }
-                    }
-                    HorizontalLayout {
-                        spacing: 8px;
-                        Label {
-                            text: @tr("Theme");
-                        }
-                        ComboBox {
-                            width: 200px;
-                            model: [@tr("Light"), @tr("Dark"), @tr("Ocean blue"), @tr("Midnight purple")];
-                            current-index <=> root.theme;
                         }
                         Rectangle {
                             horizontal-stretch: 1;
@@ -1989,7 +2117,7 @@ export component SettingsDialog inherits ThemedWindow {
                     HorizontalLayout {
                         spacing: 8px;
                         Button {
-                            text: @tr("Add Zero Download to my browser…");
+                            text: @tr("Add Zero Download to my browserظخ");
                             clicked => {
                                 root.open-extension-folder();
                             }
@@ -2052,7 +2180,7 @@ export component SettingsDialog inherits ThemedWindow {
                     TextEdit {
                         text <=> root.capture-exts;
                         min-height: 80px;
-                        font-size: 12px;
+                        font-size: 12px * Theme.font-scale;
                         wrap: word-wrap;
                     }
                     HorizontalLayout {
@@ -2077,7 +2205,7 @@ export component SettingsDialog inherits ThemedWindow {
                     TextEdit {
                         text <=> root.skip-addresses;
                         min-height: 60px;
-                        font-size: 12px;
+                        font-size: 12px * Theme.font-scale;
                     }
                     Rectangle {
                         height: 1px;
@@ -2141,14 +2269,14 @@ export component SettingsDialog inherits ThemedWindow {
                             horizontal-stretch: 1;
                         }
                         Button {
-                            text: @tr("Browse…");
+                            text: @tr("Browseظخ");
                             clicked => {
                                 root.browse("download");
                             }
                         }
                     }
                     CheckBox {
-                        text: @tr("Sort files into folders by category (Video, Music, Programs, Compressed, Documents, Images…)");
+                        text: @tr("Sort files into folders by category (Video, Music, Programs, Compressed, Documents, Imagesظخ)");
                         checked <=> root.category-folders;
                     }
                     Hint {
@@ -2175,7 +2303,7 @@ export component SettingsDialog inherits ThemedWindow {
                             horizontal-stretch: 1;
                         }
                         Button {
-                            text: @tr("Browse…");
+                            text: @tr("Browseظخ");
                             clicked => {
                                 root.browse("temp");
                             }
@@ -2252,7 +2380,7 @@ export component SettingsDialog inherits ThemedWindow {
                             horizontal-stretch: 1;
                         }
                         Button {
-                            text: "…";
+                            text: "ظخ";
                             enabled: root.virus-scan;
                             clicked => {
                                 root.browse("virus");
@@ -2715,14 +2843,14 @@ export component PlaylistDialog inherits ThemedWindow {
             spacing: 8px;
             LineEdit {
                 text <=> root.url;
-                placeholder-text: @tr("https://…/playlist?list=…");
+                placeholder-text: @tr("https://ظخ/playlist?list=ظخ");
                 horizontal-stretch: 1;
                 accepted(t) => {
                     root.fetch();
                 }
             }
             Button {
-                text: root.busy ? @tr("Getting the list…") : @tr("Get videos");
+                text: root.busy ? @tr("Getting the listظخ") : @tr("Get videos");
                 primary: true;
                 enabled: !root.busy && root.url != "";
                 clicked => {
@@ -2732,13 +2860,13 @@ export component PlaylistDialog inherits ThemedWindow {
         }
         Text {
             text: root.status;
-            font-size: 11px;
+            font-size: 11px * Theme.font-scale;
             color: Theme.muted;
             overflow: elide;
         }
         if root.playlist-title != "": Text {
             text: root.playlist-title;
-            font-size: 14px;
+            font-size: 14px * Theme.font-scale;
             font-weight: 700;
             color: Theme.text;
             overflow: elide;
@@ -2846,7 +2974,7 @@ export component PlaylistDialog inherits ThemedWindow {
                 y: 70px;
                 width: parent.width;
                 horizontal-alignment: center;
-                text: root.busy ? @tr("Getting the videos of the playlist…") : @tr("The videos of the playlist show up here.");
+                text: root.busy ? @tr("Getting the videos of the playlistظخ") : @tr("The videos of the playlist show up here.");
                 color: Theme.muted;
             }
         }
@@ -2888,7 +3016,7 @@ export component PlaylistDialog inherits ThemedWindow {
                         horizontal-stretch: 1;
                     }
                     Button {
-                        text: "…";
+                        text: "ظخ";
                         clicked => {
                             root.browse();
                         }
@@ -3001,14 +3129,14 @@ component BrowserCard inherits Rectangle {
         Text {
             text: root.data.name;
             horizontal-alignment: center;
-            font-size: 14px;
+            font-size: 14px * Theme.font-scale;
             font-weight: 700;
             color: Theme.text;
         }
         Text {
             text: root.data.installed ? root.data.action : @tr("Not installed on this computer");
             horizontal-alignment: center;
-            font-size: 11px;
+            font-size: 11px * Theme.font-scale;
             color: root.data.installed ? Theme.accent : Theme.muted;
             wrap: word-wrap;
         }
@@ -3020,7 +3148,7 @@ export component BrowserDialog inherits ThemedWindow {
     in property <bool> front;
     always-on-top: root.front;
     title: @tr("Add Zero Download to your browser");
-    preferred-width: 720px;
+    preferred-width: 880px;
     in property <[BrowserRow]> browsers;
     in property <string> steps;
     in property <string> folder;
@@ -3033,7 +3161,7 @@ export component BrowserDialog inherits ThemedWindow {
         spacing: 12px;
         Text {
             text: @tr("Click your browser:");
-            font-size: 14px;
+            font-size: 14px * Theme.font-scale;
             font-weight: 700;
             color: Theme.text;
         }
@@ -3061,7 +3189,7 @@ export component BrowserDialog inherits ThemedWindow {
                 Text {
                     text: root.steps;
                     wrap: word-wrap;
-                    font-size: 12px;
+                    font-size: 12px * Theme.font-scale;
                     color: Theme.text;
                 }
             }
@@ -3070,7 +3198,7 @@ export component BrowserDialog inherits ThemedWindow {
             spacing: 8px;
             Text {
                 text: root.folder;
-                font-size: 11px;
+                font-size: 11px * Theme.font-scale;
                 color: Theme.muted;
                 overflow: elide;
                 vertical-alignment: center;
@@ -3124,7 +3252,7 @@ export component AboutDialog inherits ThemedWindow {
         Text {
             text: "Zero Download";
             horizontal-alignment: center;
-            font-size: 20px;
+            font-size: 20px * Theme.font-scale;
             font-weight: 700;
             color: Theme.text;
         }
@@ -3134,19 +3262,41 @@ export component AboutDialog inherits ThemedWindow {
             color: Theme.muted;
         }
         Text {
-            text: @tr("Developed by Mahmoud");
+            text: @tr("Coded by Mahmoud");
             horizontal-alignment: center;
-            font-size: 13px;
+            font-size: 13px * Theme.font-scale;
             color: Theme.text;
         }
         HorizontalLayout {
             alignment: center;
             spacing: 10px;
-            
+            Button {
+                text: "YouTube";
+                clicked => {
+                    root.open-link("https://www.youtube.com/@Ezoo-Tech");
+                }
+            }
             Button {
                 text: "Facebook";
                 clicked => {
-                    root.open-link("https://www.facebook.com/share/19gJCRExaT");
+                    root.open-link("https://www.facebook.com/profile.php?id=61558130707674");
+                }
+            }
+        }
+        Text {
+            text: @tr("Like Zero Download? You can support its development:");
+            horizontal-alignment: center;
+            font-size: 12px * Theme.font-scale;
+            color: Theme.muted;
+            wrap: word-wrap;
+        }
+        HorizontalLayout {
+            alignment: center;
+            Button {
+                text: @tr("Support with PayPal");
+                primary: true;
+                clicked => {
+                    root.open-link("https://www.paypal.com/paypalme/ahmedezzat99");
                 }
             }
         }
@@ -3168,3 +3318,90 @@ export component AboutDialog inherits ThemedWindow {
         }
     }
 }
+
+// Help > Check for updates: looks for a new version, says when
+// this one is the newest, otherwise downloads the new one right here and
+// installs it in front of the user.
+export component UpdateDialog inherits ThemedWindow {
+    // set for a moment so the window comes in front
+    in property <bool> front;
+    always-on-top: root.front;
+    title: @tr("Check for updates");
+    preferred-width: 460px;
+    // 0 checking, 1 newest already, 2 downloading, 3 installing, 4 problem
+    in property <int> state;
+    in property <string> heading;
+    in property <string> detail;
+    // 0..1 while downloading (-1 = size unknown)
+    in property <float> progress: -1;
+    callback close-window();
+    VerticalLayout {
+        padding: 18px;
+        spacing: 12px;
+        HorizontalLayout {
+            spacing: 14px;
+            Rectangle {
+                width: 44px;
+                height: 44px;
+                border-radius: 22px;
+                background: root.state == 1 ? Theme.ok : root.state == 4 ? Theme.err : Theme.accent;
+                Glyph {
+                    x: 14px;
+                    y: 14px;
+                    kind: root.state == 1 ? "check" : root.state == 4 ? "warn" : "down";
+                    tint: white;
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                spacing: 4px;
+                Text {
+                    text: root.heading;
+                    font-size: 14px * Theme.font-scale;
+                    font-weight: 700;
+                    color: Theme.text;
+                    wrap: word-wrap;
+                }
+                Text {
+                    text: root.detail;
+                    color: Theme.muted;
+                    wrap: word-wrap;
+                }
+            }
+        }
+        if root.state == 0 || root.state == 2 || root.state == 3: Rectangle {
+            height: 10px;
+            border-radius: 5px;
+            background: Theme.bar-bg;
+            clip: true;
+            // known size: how far it is; otherwise a moving piece
+            if root.state == 2 && root.progress >= 0: Rectangle {
+                x: 0;
+                width: parent.width * clamp(root.progress, 0, 1);
+                height: parent.height;
+                border-radius: 5px;
+                background: Theme.accent;
+                animate width { duration: 150ms; }
+            }
+            if !(root.state == 2 && root.progress >= 0): Rectangle {
+                width: parent.width * 0.3;
+                height: parent.height;
+                border-radius: 5px;
+                background: Theme.accent;
+                x: mod(animation-tick() / 1ms, 1600) / 1600 * (parent.width * 1.3) - parent.width * 0.3;
+            }
+        }
+        HorizontalLayout {
+            alignment: end;
+            Button {
+                text: root.state == 2 || root.state == 3 ? @tr("Hide") : @tr("Close");
+                primary: root.state == 1 || root.state == 4;
+                enabled: root.state != 3;
+                clicked => {
+                    root.close-window();
+                }
+            }
+        }
+    }
+}
+

@@ -1,4 +1,4 @@
-// Zero Download – shared look: data types, themes, icons and small widgets.
+﻿// Zero Download ظô shared look: data types, themes, icons and small widgets.
 
 import { Button, LineEdit, SpinBox, CheckBox, ComboBox, ListView, TabWidget, TextEdit, Palette } from "std-widgets.slint";
 
@@ -24,6 +24,12 @@ export struct DownloadRow {
     parent: string,
     // 0 queued, 1 running, 2 paused, 3 complete, 4 error
     state: int,
+}
+
+// a column of the download list, in the order shown (drag to move / resize)
+export struct ColDef {
+    key: string,
+    width: length,
 }
 
 // which list columns are visible (View > Columns)
@@ -90,183 +96,46 @@ export struct SegView {
 }
 
 // ------------------------------------------------------------------ themes
-// 0 Light, 1 Dark, 2 Ocean, 3 Midnight, 4 Cyberpunk, 5 Sunset, 6 Nord, 7 AMOLED, 8 Emerald
+// 0 Light, 1 Dark, 2 Ocean, 3 Midnight
 
 export global Theme {
     in-out property <int> mode: 0;
-    in-out property <float> opacity: 1.0;
-    out property <bool> dark: mode != 0 && mode != 2;
-    out property <color> window:
-        mode == 1 ? #1e1f22 :
-        mode == 2 ? #e8f1fb :
-        mode == 3 ? #15131d :
-        mode == 4 ? #0a0e14 :
-        mode == 5 ? #181124 :
-        mode == 6 ? #2e3440 :
-        mode == 7 ? #000000 :
-        mode == 8 ? #0b1a14 :
-        #f0f0f0;
-    out property <color> panel:
-        mode == 1 ? #26282c :
-        mode == 2 ? #ffffff :
-        mode == 3 ? #1d1a29 :
-        mode == 4 ? #121820 :
-        mode == 5 ? #241935 :
-        mode == 6 ? #3b4252 :
-        mode == 7 ? #0d0d0d :
-        mode == 8 ? #13261f :
-        #ffffff;
-    out property <color> toolbar-top:
-        mode == 1 ? #2e3136 :
-        mode == 2 ? #2f80ed :
-        mode == 3 ? #2b2545 :
-        mode == 4 ? #1a222d :
-        mode == 5 ? #2f2046 :
-        mode == 6 ? #434c5e :
-        mode == 7 ? #141414 :
-        mode == 8 ? #183329 :
-        #fdfdfd;
-    out property <color> toolbar-bottom:
-        mode == 1 ? #24262a :
-        mode == 2 ? #1b5fc4 :
-        mode == 3 ? #1e1a33 :
-        mode == 4 ? #131922 :
-        mode == 5 ? #231735 :
-        mode == 6 ? #383f4f :
-        mode == 7 ? #080808 :
-        mode == 8 ? #10241c :
-        #e7ebf0;
-    out property <color> toolbar-text:
-        mode == 1 ? #e8eaed :
-        mode == 2 ? #ffffff :
-        mode == 3 ? #ece9f6 :
-        mode == 4 ? #00ff66 :
-        mode == 5 ? #ffd166 :
-        mode == 6 ? #eceff4 :
-        mode == 7 ? #ffffff :
-        mode == 8 ? #a7f3d0 :
-        #1b1f24;
-    out property <color> toolbar-hover:
-        mode == 1 ? #3a3e45 :
-        mode == 2 ? #4a92f0 :
-        mode == 3 ? #3a3260 :
-        mode == 4 ? #263342 :
-        mode == 5 ? #402c5c :
-        mode == 6 ? #4c566a :
-        mode == 7 ? #222222 :
-        mode == 8 ? #22473a :
-        #e5f1fb;
-    out property <color> line:
-        mode == 1 ? #3a3d42 :
-        mode == 2 ? #c6d8ef :
-        mode == 3 ? #352f4d :
-        mode == 4 ? #1e2837 :
-        mode == 5 ? #3c2957 :
-        mode == 6 ? #4c566a :
-        mode == 7 ? #262626 :
-        mode == 8 ? #1f4034 :
-        #d9dde3;
-    out property <color> grid:
-        mode == 1 ? #2f3237 :
-        mode == 2 ? #eaf2fc :
-        mode == 3 ? #26223a :
-        mode == 4 ? #151e29 :
-        mode == 5 ? #2a1d3d :
-        mode == 6 ? #373e4d :
-        mode == 7 ? #121212 :
-        mode == 8 ? #162d23 :
-        #eef0f3;
-    out property <color> header-top:
-        mode == 1 ? #2e3136 :
-        mode == 2 ? #f7fbff :
-        mode == 3 ? #26223a :
-        mode == 4 ? #182230 :
-        mode == 5 ? #2b1c40 :
-        mode == 6 ? #434c5e :
-        mode == 7 ? #141414 :
-        mode == 8 ? #183329 :
-        #ffffff;
-    out property <color> header-bottom:
-        mode == 1 ? #282a2e :
-        mode == 2 ? #e3eefb :
-        mode == 3 ? #201c31 :
-        mode == 4 ? #121924 :
-        mode == 5 ? #211533 :
-        mode == 6 ? #3b4252 :
-        mode == 7 ? #0a0a0a :
-        mode == 8 ? #10241d :
-        #eef1f5;
-    out property <color> text:
-        mode == 1 ? #e8eaed :
-        mode == 2 ? #13243a :
-        mode == 3 ? #ece9f6 :
-        mode == 4 ? #d1f7ff :
-        mode == 5 ? #faedf0 :
-        mode == 6 ? #eceff4 :
-        mode == 7 ? #f5f5f5 :
-        mode == 8 ? #ecfdf5 :
-        #1b1f24;
-    out property <color> muted:
-        mode == 1 ? #9aa0a6 :
-        mode == 2 ? #557090 :
-        mode == 3 ? #a59fc0 :
-        mode == 4 ? #5d7a99 :
-        mode == 5 ? #9e85b5 :
-        mode == 6 ? #d8dee9 :
-        mode == 7 ? #888888 :
-        mode == 8 ? #6ee7b7 :
-        #5f6b78;
-    out property <color> accent:
-        mode == 1 ? #5b9dff :
-        mode == 2 ? #1565c0 :
-        mode == 3 ? #a78bfa :
-        mode == 4 ? #00e5ff :
-        mode == 5 ? #ff4757 :
-        mode == 6 ? #88c0d0 :
-        mode == 7 ? #10b981 :
-        mode == 8 ? #10b981 :
-        #1f6feb;
-    out property <color> select:
-        mode == 1 ? #264f78 :
-        mode == 2 ? #cfe4ff :
-        mode == 3 ? #3d3366 :
-        mode == 4 ? #14424a :
-        mode == 5 ? #4d234a :
-        mode == 6 ? #434c5e :
-        mode == 7 ? #1a3328 :
-        mode == 8 ? #144331 :
-        #cce8ff;
-    out property <color> select-line:
-        mode == 1 ? #3a6ea5 :
-        mode == 2 ? #8dbcf5 :
-        mode == 3 ? #5b4a99 :
-        mode == 4 ? #00e5ff :
-        mode == 5 ? #ff6b81 :
-        mode == 6 ? #81a1c1 :
-        mode == 7 ? #10b981 :
-        mode == 8 ? #34d399 :
-        #99d1ff;
-    out property <color> hover:
-        mode == 1 ? #2c3440 :
-        mode == 2 ? #e3efff :
-        mode == 3 ? #2a2541 :
-        mode == 4 ? #162c38 :
-        mode == 5 ? #361f47 :
-        mode == 6 ? #3b4252 :
-        mode == 7 ? #1a1a1a :
-        mode == 8 ? #193b2d :
-        #e5f3ff;
+    // themes: Light, Dark, Ocean blue, Midnight purple, Forest green, Black,
+    // Sunset, Teal night, Rose
+    out property <bool> dark: mode == 1 || mode == 3 || mode == 5 || mode == 7;
+    // Options > General > Text size / Font
+    in-out property <float> font-scale: 1.0;
+    in-out property <string> font-family: "";
+    // a picture behind the main window: how much of it shows through (0..0.8)
+    in-out property <float> glass: 0;
+    out property <color> window: window-base;
+    out property <color> panel: panel-base.transparentize(glass);
+    out property <color> toolbar-top: toolbar-top-base.transparentize(glass);
+    out property <color> toolbar-bottom: toolbar-bottom-base.transparentize(glass);
+    out property <color> header-top: header-top-base.transparentize(glass);
+    out property <color> header-bottom: header-bottom-base.transparentize(glass);
+    out property <color> grid: grid-base.transparentize(glass);
+    property <color> window-base: [#f0f0f0, #1e1f22, #e8f1fb, #15131d, #eef5ef, #000000, #fbf1ea, #0f1c1e, #fbf0f4][mode];
+    property <color> panel-base: [#ffffff, #26282c, #ffffff, #1d1a29, #ffffff, #0b0b0b, #ffffff, #142527, #ffffff][mode];
+    property <color> toolbar-top-base: [#fdfdfd, #2e3136, #2f80ed, #2b2545, #2f9e5b, #121212, #f07b3f, #1b3a3d, #e05a8a][mode];
+    property <color> toolbar-bottom-base: [#e7ebf0, #24262a, #1b5fc4, #1e1a33, #1f7a43, #050505, #d4513a, #132b2e, #c23d6e][mode];
+    out property <color> toolbar-text: [#1b1f24, #e8eaed, #ffffff, #ece9f6, #ffffff, #f2f2f2, #ffffff, #e3f4f3, #ffffff][mode];
+    out property <color> toolbar-hover: [#e5f1fb, #3a3e45, #4a92f0, #3a3260, #45b06f, #262626, #f5955f, #26504f, #e97aa1][mode];
+    out property <color> line: [#d9dde3, #3a3d42, #c6d8ef, #352f4d, #c9dfcf, #262626, #efd2c2, #24403f, #efcdda][mode];
+    property <color> grid-base: [#eef0f3, #2f3237, #eaf2fc, #26223a, #eaf4ec, #141414, #fbeee6, #1a2e30, #fbedf2][mode];
+    property <color> header-top-base: [#ffffff, #2e3136, #f7fbff, #26223a, #f8fcf9, #161616, #fffaf6, #1b3133, #fffafc][mode];
+    property <color> header-bottom-base: [#eef1f5, #282a2e, #e3eefb, #201c31, #e2f0e6, #0e0e0e, #f8e5d9, #16292b, #f8e3eb][mode];
+    out property <color> text: [#1b1f24, #e8eaed, #13243a, #ece9f6, #15281b, #f2f2f2, #2e1a12, #e3f4f3, #2e1420][mode];
+    out property <color> muted: [#5f6b78, #9aa0a6, #557090, #a59fc0, #557a61, #9a9a9a, #8a6352, #8fb3b0, #8a5a6c][mode];
+    out property <color> accent: [#1f6feb, #5b9dff, #1565c0, #a78bfa, #1f8a4c, #4ea1ff, #d4513a, #2ec4b6, #c23d6e][mode];
+    out property <color> select: [#cce8ff, #264f78, #cfe4ff, #3d3366, #cdebd7, #1f3550, #fbd9c8, #1d4b4b, #f8d3e1][mode];
+    out property <color> select-line: [#99d1ff, #3a6ea5, #8dbcf5, #5b4a99, #8ccaa2, #2f5a8a, #eea98a, #2b7470, #eaa0bb][mode];
+    out property <color> hover: [#e5f3ff, #2c3440, #e3efff, #2a2541, #e2f3e7, #1a1a1a, #fdeadf, #1b3436, #fde6ee][mode];
     out property <color> ok: dark ? #3fcf7a : #1f9d55;
     out property <color> warn: #e08a00;
     out property <color> err: dark ? #ff6b62 : #d23b32;
     out property <color> bar-bg: dark ? #34373c : #e6e6e6;
-    out property <color> input-bg:
-        mode == 4 ? #070a0f :
-        mode == 5 ? #150d20 :
-        mode == 6 ? #2e3440 :
-        mode == 7 ? #000000 :
-        mode == 8 ? #08140f :
-        dark ? #2b2d31 : #ffffff;
+    out property <color> input-bg: dark ? #2b2d31 : #ffffff;
 }
 
 // Applies the light/dark look to the standard widgets of every window.
@@ -279,7 +148,10 @@ export component ThemedWindow inherits Window {
         Palette.color-scheme = self.dark ? ColorScheme.dark : ColorScheme.light;
     }
     background: Theme.window;
-    icon: @image-url("icon.png");
+    // 12px is the size Windows gives Slint by default (the message font)
+    default-font-size: 12px * Theme.font-scale;
+    default-font-family: Theme.font-family;
+    icon: @image-url("icon-window.png");
 }
 
 // Small vector icons for menus, lists and buttons (fonts on Windows don't
@@ -292,14 +164,6 @@ export component Glyph inherits Rectangle {
     in property <color> tint: Theme.accent;
     width: 16px;
     height: 16px;
-    if root.kind == "shield": Path {
-        viewbox-width: 16;
-        viewbox-height: 16;
-        stroke: root.tint;
-        stroke-width: 1.4px;
-        fill: transparent;
-        commands: "M 8 2 L 13 4 L 13 8 C 13 11.5 8 14 8 14 C 8 14 3 11.5 3 8 L 3 4 Z";
-    }
     if root.kind == "play": Path {
         viewbox-width: 16;
         viewbox-height: 16;
@@ -521,22 +385,26 @@ export component Icon inherits Rectangle {
         }
     }
     if root.kind == "playlist": Rectangle {
-        // a list of numbered rows with a download arrow
+        // a green player with a list in front of it
         P {
-            fill: @linear-gradient(180deg, #7c8cff 0%, #4b55d6 100%);
-            commands: "M 5 3 L 23 3 Q 26 3 26 6 L 26 24 Q 26 27 23 27 L 5 27 Q 2 27 2 24 L 2 6 Q 2 3 5 3 Z";
+            fill: @linear-gradient(180deg, #4cd47a 0%, #1e9e4c 100%);
+            commands: "M 6 4 L 28 4 Q 31 4 31 7 L 31 19 Q 31 22 28 22 L 6 22 Q 3 22 3 19 L 3 7 Q 3 4 6 4 Z";
         }
         P {
             fill: white;
-            commands: "M 6 8 L 9 8 L 9 11 L 6 11 Z M 11 8.5 L 22 8.5 L 22 10.5 L 11 10.5 Z M 6 14 L 9 14 L 9 17 L 6 17 Z M 11 14.5 L 22 14.5 L 22 16.5 L 11 16.5 Z M 6 20 L 9 20 L 9 23 L 6 23 Z M 11 20.5 L 18 20.5 L 18 22.5 L 11 22.5 Z";
+            commands: "M 14 8 L 21 13 L 14 18 Z";
         }
         P {
-            fill: #2e9e4f;
-            commands: "M 25 19 A 6.5 6.5 0 1 1 24.99 19 Z";
+            fill: #33475b;
+            commands: "M 3 24 L 20 24 L 20 26 L 3 26 Z M 3 28 L 20 28 L 20 30 L 3 30 Z";
+        }
+        P {
+            fill: #1f6feb;
+            commands: "M 25 21 A 6 6 0 1 1 24.99 21 Z";
         }
         P {
             fill: white;
-            commands: "M 24 21 L 26 21 L 26 25.5 L 28.5 25.5 L 25 29 L 21.5 25.5 L 24 25.5 Z";
+            commands: "M 24 23 L 26 23 L 26 27 L 28 27 L 25 30 L 22 27 L 24 27 Z";
         }
     }
     if root.kind == "grabber": Rectangle {
@@ -693,16 +561,10 @@ export component TypeIcon inherits Rectangle {
         : root.kind == "exe" ? #4a5568
         : root.kind == "apk" ? #2e9e5b
         : root.kind == "disc" ? #5b7083
-        : root.kind == "torrent" ? #0284c7
         : root.kind == "image" ? #12a594
         : #8a94a0;
     border-radius: self.width * 0.22;
     background: @linear-gradient(180deg, root.base.brighter(25%) 0%, root.base 100%);
-    if root.kind == "torrent": G {
-        stroke: white;
-        stroke-width: 1.4px;
-        commands: "M 5 4 L 5 9 A 3 3 0 0 0 11 9 L 11 4";
-    }
     if root.kind == "video": G {
         fill: white;
         commands: "M 6 4.5 L 12 8 L 6 11.5 Z";
@@ -791,7 +653,7 @@ export component BigTypeIcon inherits VerticalLayout {
     Text {
         text: root.ext;
         horizontal-alignment: center;
-        font-size: 11px;
+        font-size: 11px * Theme.font-scale;
         font-weight: 700;
         color: Theme.muted;
     }
@@ -806,8 +668,9 @@ export component ToolBtn inherits Rectangle {
     // View > Toolbar > Small buttons: icon only
     in property <bool> small;
     callback clicked();
-    width: root.small ? 34px : 70px;
-    height: root.small ? 34px : 62px;
+    // small buttons: every one fits a 960 px wide window
+    width: root.small ? 34px : 56px;
+    height: root.small ? 34px : 52px;
     border-radius: 3px;
     border-width: ta.has-hover && root.enabled ? 1px : 0px;
     border-color: Theme.select-line;
@@ -822,18 +685,26 @@ export component ToolBtn inherits Rectangle {
     }
     if !root.small: VerticalLayout {
         alignment: center;
-        spacing: 4px;
+        spacing: 3px;
+        padding-left: 1px;
+        padding-right: 1px;
         opacity: root.enabled ? 1.0 : 0.35;
         HorizontalLayout {
             alignment: center;
             Icon {
+                width: 26px;
+                height: 26px;
                 kind: root.icon;
             }
         }
+        // a long name ends in "ظخ" ("Delete Cظخ")
         Text {
             text: root.text;
-            font-size: 11px;
+            font-size: 10px * Theme.font-scale;
+            // bold, so the names read well on every theme
+            font-weight: 700;
             horizontal-alignment: center;
+            overflow: elide;
             color: Theme.toolbar-text;
         }
     }
@@ -848,9 +719,9 @@ export component ToolBtn inherits Rectangle {
 }
 
 export component ToolSeparator inherits Rectangle {
-    width: 9px;
+    width: 7px;
     Rectangle {
-        x: 4px;
+        x: 3px;
         y: 8px;
         width: 1px;
         height: parent.height - 16px;
@@ -963,14 +834,14 @@ export component TreeItem inherits Rectangle {
             horizontal-stretch: 1;
             overflow: elide;
             color: Theme.text;
-            font-size: 12px;
+            font-size: 12px * Theme.font-scale;
             font-weight: root.bold ? 600 : 400;
         }
         Text {
             text: root.count;
             vertical-alignment: center;
             color: Theme.muted;
-            font-size: 11px;
+            font-size: 11px * Theme.font-scale;
         }
     }
 }
@@ -982,15 +853,42 @@ export component HeaderCell inherits Rectangle {
     in property <string> key;
     in property <string> sort-by;
     in property <bool> sort-desc;
+    // drag the right edge to resize, drag the title to move it
+    in property <bool> adjustable;
     callback sort(string);
+    // the new width while the edge is dragged; done when it is let go
+    callback resized(length);
+    callback resize-done();
+    // the title was dragged and let go at `x` (in the header)
+    callback dropped(length);
+    property <bool> moving;
+    property <length> start-width;
+    property <length> start-x;
     height: 24px;
-    background: ta.has-hover && root.key != "" ? Theme.hover : transparent;
+    background: root.moving ? Theme.select : ta.has-hover && (root.key != "" || root.adjustable) ? Theme.hover : transparent;
     ta := TouchArea {
         width: parent.width;
         height: parent.height;
-        enabled: root.key != "";
+        enabled: root.key != "" || root.adjustable;
+        mouse-cursor: root.moving ? MouseCursor.grabbing : MouseCursor.default;
+        pointer-event(ev) => {
+            if (ev.button == PointerEventButton.left && ev.kind == PointerEventKind.down) {
+                root.moving = false;
+            }
+            if (ev.button == PointerEventButton.left && ev.kind == PointerEventKind.up && root.moving) {
+                root.dropped(root.x + self.mouse-x);
+            }
+        }
+        moved => {
+            if (root.adjustable && self.pressed && abs(self.mouse-x - self.pressed-x) > 10px) {
+                root.moving = true;
+            }
+        }
         clicked => {
-            root.sort(root.key);
+            if (!root.moving && root.key != "") {
+                root.sort(root.key);
+            }
+            root.moving = false;
         }
     }
     Text {
@@ -1000,7 +898,7 @@ export component HeaderCell inherits Rectangle {
         text: root.text;
         horizontal-alignment: root.align;
         vertical-alignment: center;
-        font-size: 12px;
+        font-size: 12px * Theme.font-scale;
         color: Theme.text;
         overflow: elide;
     }
@@ -1017,11 +915,33 @@ export component HeaderCell inherits Rectangle {
         height: parent.height - 8px;
         background: Theme.line;
     }
+    // the edge to resize the column
+    if root.adjustable: edge := TouchArea {
+        x: parent.width - 5px;
+        width: 8px;
+        height: parent.height;
+        mouse-cursor: MouseCursor.col-resize;
+        pointer-event(ev) => {
+            if (ev.button == PointerEventButton.left && ev.kind == PointerEventKind.down) {
+                root.start-width = root.width;
+                root.start-x = self.absolute-position.x + self.mouse-x;
+            }
+            if (ev.button == PointerEventButton.left && ev.kind == PointerEventKind.up) {
+                root.resize-done();
+            }
+        }
+        moved => {
+            if (self.pressed) {
+                // measured on the screen: the edge itself moves with the column
+                root.resized(max(36px, root.start-width + self.absolute-position.x + self.mouse-x - root.start-x));
+            }
+        }
+    }
 }
 
 export component Cell inherits Text {
     vertical-alignment: center;
-    font-size: 12px;
+    font-size: 12px * Theme.font-scale;
     color: Theme.text;
     overflow: elide;
 }
@@ -1063,7 +983,7 @@ export component MenuEntry inherits Rectangle {
             text: root.text;
             color: Theme.text;
             vertical-alignment: center;
-            font-size: 12px;
+            font-size: 12px * Theme.font-scale;
             font-weight: root.bold ? 700 : 400;
             overflow: elide;
             horizontal-stretch: 1;
@@ -1088,10 +1008,11 @@ export component MenuLabel inherits Rectangle {
     Text {
         x: 34px;
         text: root.text;
-        font-size: 11px;
+        font-size: 11px * Theme.font-scale;
         color: Theme.muted;
         vertical-alignment: center;
         height: parent.height;
     }
 }
+
 

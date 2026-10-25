@@ -1,135 +1,68 @@
-// Zero Download Popup Script
-const DEFAULTS = { port: 9614, intercept: true, minSizeKB: 0 };
+﻿const fmtSize = (n) => {
+  if (!n) return "";
+  const u = ["B", "KB", "MB", "GB"];
+  let i = 0;
+  while (n >= 1024 && i < u.length - 1) {
+    n /= 1024;
+    i++;
+  }
+  return `${n.toFixed(i ? 1 : 0)} ${u[i]}`;
+};
 
 async function init() {
-  const opts = Object.assign({}, DEFAULTS, await chrome.storage.local.get(DEFAULTS));
-  const quickIntercept = document.getElementById("quickIntercept");
-  quickIntercept.checked = !!opts.intercept;
-  quickIntercept.addEventListener("change", () => {
-    chrome.storage.local.set({ intercept: quickIntercept.checked });
+  document.getElementById("settings").addEventListener("click", () => {
+    chrome.runtime.openOptionsPage();
+    window.close();
   });
 
-  const openOptions = () => {
-    if (chrome.runtime.openOptionsPage) {
-      chrome.runtime.openOptionsPage();
-    } else {
-      window.open(chrome.runtime.getURL("options.html"));
-    }
-  };
+  // size of the "Download this video" button on pages (also in the settings page)
+  const sizes = [...document.querySelectorAll("#sizes button")];
+  const mark = (v) => sizes.forEach((b) => b.classList.toggle("on", b.dataset.size === v));
+  chrome.storage.local.get({ bubbleSize: "normal" }, (o) => mark(["small", "normal", "large"].includes(o.bubbleSize) ? o.bubbleSize : "normal"));
+  sizes.forEach((b) =>
+    b.addEventListener("click", () => {
+      chrome.storage.local.set({ bubbleSize: b.dataset.size });
+      mark(b.dataset.size);
+    })
+  );
 
-  document.getElementById("openOptionsBtn").addEventListener("click", openOptions);
-  document.getElementById("footerOptionsLink").addEventListener("click", openOptions);
-
-  // Status check with app
   chrome.runtime.sendMessage({ type: "swiftget-status" }, (res) => {
-    const pill = document.getElementById("statusPill");
-    const text = document.getElementById("statusText");
+    const el = document.getElementById("status");
     const ok = res && res.ok;
-    if (ok) {
-      pill.style.background = "rgba(16, 185, 129, 0.15)";
-      pill.style.color = "#10b981";
-      pill.style.borderColor = "rgba(16, 185, 129, 0.3)";
-      text.textContent = "متصل بالبرنامج ✔";
-    } else {
-      pill.style.background = "rgba(239, 68, 68, 0.15)";
-      pill.style.color = "#ef4444";
-      pill.style.borderColor = "rgba(239, 68, 68, 0.3)";
-      text.textContent = "التطبيق غير متصل";
-    }
+    el.textContent = ok ? "connected" : "app not running";
+    el.classList.toggle("on", !!ok);
   });
 
-  // Query media for the active tab
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab) return;
-
   chrome.runtime.sendMessage({ type: "swiftget-get-media", tabId: tab.id }, (items) => {
-    const listEl = document.getElementById("mediaList");
-    const countEl = document.getElementById("mediaCount");
-
-    if (!items || !items.length) {
-      countEl.textContent = "0 عناصر";
-      return;
-    }
-
-    countEl.textContent = `${items.length} عنصر`;
-    listEl.innerHTML = "";
-
-    const cleanTabTitle = (tab.title || "video").replace(/[<>:"/\\|?*\u0000-\u001f]/g, "_").slice(0, 120);
-
+    if (!items || !items.length) return;
+    const box = document.getElementById("media");
+    box.replaceChildren();
+    const title = (tab.title || "video").replace(/[<>:"/\\|?*\u0000-\u001f]/g, "_").slice(0, 120);
     items.forEach((m) => {
-      const card = document.createElement("div");
-      card.className = "media-card";
-
-      const icon = document.createElement("div");
-      icon.className = "media-icon";
-      const isAudio = m.ext === "mp3" || m.ext === "m4a" || (m.sub && m.sub.includes("Audio"));
-      icon.innerHTML = isAudio ? "🎵" : "🎬";
-
+      const row = document.createElement("div");
+      row.className = "media";
       const info = document.createElement("div");
-      info.className = "media-info";
-
-      const title = document.createElement("div");
-      title.className = "media-title";
-      title.textContent = m.label || cleanTabTitle;
-
-      const meta = document.createElement("div");
-      meta.className = "media-meta";
-
-      if (m.quality) {
-        const qBadge = document.createElement("span");
-        qBadge.className = "quality-badge";
-        qBadge.textContent = m.quality;
-        meta.appendChild(qBadge);
-      }
-
-      if (m.ext) {
-        const extBadge = document.createElement("span");
-        extBadge.className = "quality-badge";
-        extBadge.textContent = m.ext.toUpperCase();
-        meta.appendChild(extBadge);
-      }
-
-      if (m.sub) {
-        const subSpan = document.createElement("span");
-        subSpan.textContent = m.sub;
-        meta.appendChild(subSpan);
-      }
-
-      info.append(title, meta);
-
+      info.textContent = m.label;
+      const small = document.createElement("small");
+      small.textContent = m.sub || "";
+      info.appendChild(small);
       const btn = document.createElement("button");
-      btn.className = "btn-download";
-      btn.innerHTML = "<span>تحميل</span> ⬇";
+      btn.textContent = "Download";
       btn.disabled = !!m.disabled;
-
       btn.addEventListener("click", () => {
-        btn.textContent = "جاري الإرسال...";
-        btn.disabled = true;
         chrome.runtime.sendMessage(
-          {
-            type: "swiftget-download",
-            item: m,
-            title: tab.title,
-            referrer: tab.url,
-            fileName: `${cleanTabTitle}.${m.ext || "mp4"}`
-          },
+          { type: "swiftget-download", item: m, title: tab.title, referrer: tab.url, fileName: `${title}.${m.ext || "mp4"}` },
           (res) => {
-            if (res && res.ok) {
-              btn.textContent = "تم الإرسال ✔";
-              btn.style.background = "#10b981";
-            } else {
-              btn.textContent = "فشل الإرسال";
-              btn.style.background = "#ef4444";
-              btn.disabled = false;
-            }
+            btn.textContent = res && res.ok ? "Sent ظ£¤" : "App not running";
           }
         );
       });
-
-      card.append(icon, info, btn);
-      listEl.appendChild(card);
+      row.append(info, btn);
+      box.appendChild(row);
     });
   });
 }
 
-document.addEventListener("DOMContentLoaded", init);
+init();

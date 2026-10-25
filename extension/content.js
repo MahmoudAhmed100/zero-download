@@ -66,6 +66,28 @@
   });
 
   const activeOverlays = new Map(); // video -> overlay data
+
+  const ZOOM = { small: 0.85, normal: 1, large: 1.25 };
+  let zoom = 1;
+  const applyZoom = () => {
+    for (const host of activeOverlays.values()) {
+      if (host && host.style) host.style.setProperty("--z", String(zoom));
+    }
+  };
+  try {
+    if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.get({ bubbleSize: "normal" }, (o) => {
+        zoom = ZOOM[o && o.bubbleSize] || 1;
+        applyZoom();
+      });
+      chrome.storage.onChanged.addListener((ch) => {
+        if (ch && ch.bubbleSize) {
+          zoom = ZOOM[ch.bubbleSize.newValue] || 1;
+          applyZoom();
+        }
+      });
+    }
+  } catch (_) {}
   let globalItems = [];
 
   function isValidVideo(video) {
@@ -130,12 +152,13 @@
     host.style.right = "14px";
     host.style.left = "auto";
     host.style.bottom = "auto";
+    host.style.setProperty("--z", String(zoom));
 
     const root = host.attachShadow({ mode: "closed" });
     root.innerHTML = `
       <style>
         :host { all: initial; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Cairo", sans-serif; }
-        .pill-wrap { position: relative; user-select: none; }
+        .pill-wrap { position: relative; user-select: none; zoom: var(--z, 1); }
         .pill {
           display: inline-flex;
           align-items: center;

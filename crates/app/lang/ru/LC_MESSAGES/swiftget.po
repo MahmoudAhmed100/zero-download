@@ -1,17 +1,17 @@
-msgid ""
+﻿msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language: ru\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "{} downloads selected"
-msgstr "{} downloads selected"
+msgstr "Выбрано загрузок: {}"
 
 msgid "Open"
 msgstr "Открыть"
 
 msgid "Show download progress"
-msgstr "Show download progress"
+msgstr "Показать ход загрузки"
 
 msgid "Open with…"
 msgstr "Открыть с помощью…"
@@ -20,7 +20,7 @@ msgid "Open folder"
 msgstr "Открыть папку"
 
 msgid "Resume download"
-msgstr "Возобновить загрузку"
+msgstr "Продолжить загрузку"
 
 msgid "Stop download"
 msgstr "Остановить загрузку"
@@ -29,28 +29,28 @@ msgid "Redownload"
 msgstr "Скачать заново"
 
 msgid "Refresh download address…"
-msgstr "Refresh download address…"
+msgstr "Обновить адрес загрузки…"
 
 msgid "Move / Rename…"
-msgstr "Move / Rename…"
+msgstr "Переместить / Переименовать…"
 
 msgid "Move to queue"
-msgstr "Move to queue"
+msgstr "Переместить в очередь"
 
 msgid "Delete from queue"
-msgstr "Delete from queue"
+msgstr "Убрать из очереди"
 
 msgid "Copy address"
 msgstr "Копировать адрес"
 
 msgid "Check file (SHA-256)"
-msgstr "Check file (SHA-256)"
+msgstr "Проверить файл (SHA-256)"
 
 msgid "Properties"
 msgstr "Свойства"
 
 msgid "Remove"
-msgstr "Удалить"
+msgstr "Убрать"
 
 msgid "Start queue"
 msgstr "Запустить очередь"
@@ -59,64 +59,100 @@ msgid "Stop queue"
 msgstr "Остановить очередь"
 
 msgid "Edit queue / schedule…"
-msgstr "Edit queue / schedule…"
+msgstr "Изменить очередь / расписание…"
 
 msgid "New queue…"
-msgstr "New queue…"
+msgstr "Новая очередь…"
 
 msgid "Delete queue"
-msgstr "Delete queue"
+msgstr "Удалить очередь"
 
 msgid "Add category…"
-msgstr "Add category…"
+msgstr "Добавить категорию…"
 
 msgid "Delete category"
-msgstr "Delete category"
+msgstr "Удалить категорию"
 
 msgid "Properties…"
-msgstr "Properties…"
+msgstr "Свойства…"
 
 msgid "Zero Download"
 msgstr "Zero Download"
 
+msgid "File Name"
+msgstr "Имя файла"
+
+msgid "Q"
+msgstr "О"
+
+msgid "Size"
+msgstr "Размер"
+
+msgid "Status"
+msgstr "Состояние"
+
+msgid "Time left"
+msgstr "Осталось"
+
+msgid "Transfer rate"
+msgstr "Скорость"
+
+msgid "Last Try Date"
+msgstr "Последняя попытка"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "Date Added"
+msgstr "Дата добавления"
+
+msgid "Save To"
+msgstr "Сохранить в"
+
+msgid "Referer"
+msgstr "Реферер"
+
+msgid "Parent Web Page"
+msgstr "Исходная веб-страница"
+
 msgid "Tasks"
-msgstr "Tasks"
+msgstr "Задачи"
 
 msgid "Add new download…"
-msgstr "Add new download…"
+msgstr "Добавить загрузку…"
 
 msgid "Add batch download…"
-msgstr "Add batch download…"
+msgstr "Добавить пакетную загрузку…"
 
 msgid "Add batch download from clipboard"
-msgstr "Add batch download from clipboard"
+msgstr "Пакетная загрузка из буфера обмена"
 
 msgid "Run site grabber…"
-msgstr "Run site grabber…"
+msgstr "Запустить сборщик сайтов…"
 
 msgid "Download a playlist…"
-msgstr "Download a playlist…"
+msgstr "Скачать плейлист…"
 
 msgid "Export"
-msgstr "Export"
+msgstr "Экспорт"
 
 msgid "To download list file (.ef2)…"
-msgstr "To download list file (.ef2)…"
+msgstr "В файл списка загрузок (.ef2)…"
 
 msgid "To text file…"
-msgstr "To text file…"
+msgstr "В текстовый файл…"
 
 msgid "Import"
-msgstr "Import"
+msgstr "Импорт"
 
 msgid "From download list file (.ef2)…"
-msgstr "From download list file (.ef2)…"
+msgstr "Из файла списка загрузок (.ef2)…"
 
 msgid "From text file…"
-msgstr "From text file…"
+msgstr "Из текстового файла…"
 
 msgid "Open download folder"
-msgstr "Open download folder"
+msgstr "Открыть папку загрузок"
 
 msgid "Exit"
 msgstr "Выход"
@@ -125,118 +161,103 @@ msgid "File"
 msgstr "Файл"
 
 msgid "Download now"
-msgstr "Download now"
+msgstr "Скачать сейчас"
 
 msgid "Select all   Ctrl+A"
-msgstr "Select all   Ctrl+A"
+msgstr "Выделить всё   Ctrl+A"
 
 msgid "Downloads"
 msgstr "Загрузки"
 
 msgid "Resume all"
-msgstr "Resume all"
+msgstr "Продолжить все"
 
 msgid "Stop all"
-msgstr "Stop all"
+msgstr "Остановить все"
 
 msgid "Delete all completed"
-msgstr "Delete all completed"
+msgstr "Удалить все завершённые"
 
 msgid "Find…   Ctrl+F"
-msgstr "Find…   Ctrl+F"
+msgstr "Найти…   Ctrl+F"
 
 msgid "Find next   F3"
-msgstr "Find next   F3"
+msgstr "Найти далее   F3"
 
 msgid "Speed Limiter"
-msgstr "Speed Limiter"
+msgstr "Ограничитель скорости"
 
 msgid "Turn on"
-msgstr "Turn on"
+msgstr "Включить"
 
 msgid "Turn off"
-msgstr "Turn off"
+msgstr "Выключить"
 
 msgid "Settings…"
-msgstr "Settings…"
+msgstr "Настройки…"
 
 msgid "When all downloads finish"
-msgstr "When all downloads finish"
+msgstr "Когда все загрузки завершатся"
 
 msgid "Do nothing"
-msgstr "Do nothing"
+msgstr "Ничего не делать"
 
 msgid "Shut down the computer"
-msgstr "Shut down the computer"
+msgstr "Выключить компьютер"
 
 msgid "Sleep"
-msgstr "Sleep"
+msgstr "Спящий режим"
 
 msgid "Hibernate"
-msgstr "Hibernate"
+msgstr "Гибернация"
 
 msgid "Exit Zero Download"
-msgstr "Exit Zero Download"
+msgstr "Выйти из Zero Download"
 
 msgid "Scheduler…"
-msgstr "Scheduler…"
+msgstr "Планировщик…"
 
 msgid "Options…"
-msgstr "Options…"
+msgstr "Параметры…"
 
 msgid "View"
 msgstr "Вид"
 
 msgid "Show categories"
-msgstr "Show categories"
+msgstr "Показывать категории"
 
 msgid "Arrange files"
-msgstr "Arrange files"
+msgstr "Упорядочить файлы"
 
 msgid "By order of addition"
-msgstr "By order of addition"
+msgstr "По порядку добавления"
 
 msgid "File name"
-msgstr "File name"
-
-msgid "Size"
-msgstr "Размер"
-
-msgid "Status"
-msgstr "Статус"
-
-msgid "Time left"
-msgstr "Осталось времени"
-
-msgid "Transfer rate"
-msgstr "Transfer rate"
+msgstr "Имя файла"
 
 msgid "Last try date"
-msgstr "Last try date"
-
-msgid "Description"
-msgstr "Description"
+msgstr "Последняя попытка"
 
 msgid "Save to"
 msgstr "Сохранить в"
 
-msgid "Referer"
-msgstr "Referer"
-
 msgid "Parent web page"
-msgstr "Parent web page"
+msgstr "Исходная веб-страница"
 
 msgid "Toolbar"
-msgstr "Toolbar"
+msgstr "Панель инструментов"
 
 msgid "Large buttons"
-msgstr "Large buttons"
+msgstr "Большие кнопки"
 
 msgid "Small buttons"
-msgstr "Small buttons"
+msgstr "Маленькие кнопки"
 
 msgid "Columns…"
-msgstr "Columns…"
+msgstr "Столбцы…"
+
+msgid "Language"
+msgstr "Язык"
 
 msgid "Theme"
 msgstr "Тема"
@@ -245,703 +266,733 @@ msgid "Light"
 msgstr "Светлая"
 
 msgid "Dark"
-msgstr "Темная"
+msgstr "Тёмная"
 
 msgid "Ocean blue"
-msgstr "Морской синий"
+msgstr "Синий океан"
 
 msgid "Midnight purple"
 msgstr "Полуночный фиолетовый"
+
+msgid "Forest green"
+msgstr "Зелёный лес"
+
+msgid "Black"
+msgstr "Чёрная"
+
+msgid "Sunset"
+msgstr "Закат"
+
+msgid "Teal night"
+msgstr "Бирюзовая ночь"
+
+msgid "Rose"
+msgstr "Розовая"
+
+msgid "Appearance…"
+msgstr "Оформление…"
 
 msgid "Help"
 msgstr "Справка"
 
 msgid "Add Zero Download to my browser…"
-msgstr "Add Zero Download to my browser…"
+msgstr "Добавить Zero Download в мой браузер…"
 
 msgid "Tip of the day…"
-msgstr "Tip of the day…"
+msgstr "Совет дня…"
+
+msgid "Check for updates"
+msgstr "Проверить обновления"
 
 msgid "Check for updates (video downloader)"
-msgstr "Check for updates (video downloader)"
-
-msgid "Tell a friend"
-msgstr "Tell a friend"
+msgstr "Проверить обновления (загрузчик видео)"
 
 msgid "About Zero Download"
-msgstr "About Zero Download"
+msgstr "О программе Zero Download"
 
 msgid "Add URL"
-msgstr "Add URL"
+msgstr "Добавить URL"
 
 msgid "Add Batch"
-msgstr "Add Batch"
+msgstr "Пакет"
 
 msgid "Resume"
-msgstr "Resume"
+msgstr "Продолжить"
 
 msgid "Stop"
-msgstr "Stop"
+msgstr "Стоп"
 
 msgid "Stop All"
-msgstr "Stop All"
+msgstr "Стоп все"
 
 msgid "Delete"
 msgstr "Удалить"
 
 msgid "Delete Done"
-msgstr "Delete Done"
+msgstr "Удалить готовые"
 
 msgid "Options"
 msgstr "Параметры"
 
 msgid "Scheduler"
-msgstr "Scheduler"
+msgstr "Планировщик"
 
 msgid "Limiter: On"
-msgstr "Limiter: On"
+msgstr "Ограничитель: вкл"
 
 msgid "Limiter: Off"
-msgstr "Limiter: Off"
+msgstr "Ограничитель: выкл"
 
 msgid "Start Queue"
-msgstr "Start Queue"
+msgstr "Запуск очереди"
 
 msgid "Stop Queue"
-msgstr "Stop Queue"
+msgstr "Стоп очереди"
 
 msgid "Grabber"
-msgstr "Grabber"
+msgstr "Сборщик"
 
 msgid "Playlist"
-msgstr "Playlist"
+msgstr "Плейлист"
 
 msgid "Filter the list…"
-msgstr "Filter the list…"
+msgstr "Фильтр списка…"
 
 msgid "Categories"
-msgstr "Categories"
+msgstr "Категории"
 
 msgid "All Downloads"
-msgstr "All Downloads"
+msgstr "Все загрузки"
 
 msgid "Unfinished"
-msgstr "Unfinished"
+msgstr "Незавершённые"
 
 msgid "Finished"
-msgstr "Finished"
+msgstr "Завершённые"
 
 msgid "Queues"
-msgstr "Queues"
+msgstr "Очереди"
 
 msgid "{} (running)"
-msgstr "{} (running)"
+msgstr "{} (выполняется)"
 
 msgid "New queue"
-msgstr "New queue"
+msgstr "Новая очередь"
 
 msgid "Edit"
-msgstr "Edit"
-
-msgid "File Name"
-msgstr "File Name"
-
-msgid "Q"
-msgstr "Q"
-
-msgid "Last Try Date"
-msgstr "Last Try Date"
-
-msgid "Date Added"
-msgstr "Date Added"
-
-msgid "Save To"
-msgstr "Save To"
-
-msgid "Parent Web Page"
-msgstr "Parent Web Page"
+msgstr "Изменить"
 
 msgid "Nothing matches “{}”."
-msgstr "Nothing matches “{}”."
+msgstr "Ничего не найдено по «{}»."
 
 msgid "No downloads here.\nClick “Add URL”, copy a link, or download something in your browser."
-msgstr "No downloads here.\nClick “Add URL”, copy a link, or download something in your browser."
+msgstr "Здесь нет загрузок.\nНажмите «Добавить URL», скопируйте ссылку или скачайте что-нибудь в браузере."
 
 msgid "Download File Info"
-msgstr "Download File Info"
+msgstr "Сведения о файле"
 
 msgid "URL"
-msgstr "Ссылка"
+msgstr "URL"
 
 msgid "https://example.com/file"
 msgstr "https://example.com/file"
 
 msgid "Check"
-msgstr "Check"
+msgstr "Проверить"
 
 msgid "Category"
-msgstr "Category"
+msgstr "Категория"
 
 msgid "Save As"
-msgstr "Save As"
+msgstr "Сохранить как"
 
 msgid "Remember this path for \"{}\" category"
-msgstr "Remember this path for \"{}\" category"
+msgstr "Запомнить этот путь для категории \"{}\""
 
 msgid "optional note"
-msgstr "optional note"
+msgstr "примечание (необязательно)"
 
 msgid "Use authorization"
-msgstr "Use authorization"
+msgstr "Использовать авторизацию"
 
 msgid "Login"
-msgstr "Login"
+msgstr "Логин"
 
 msgid "Password"
-msgstr "Password"
+msgstr "Пароль"
 
 msgid "Checking the address…"
-msgstr "Checking the address…"
+msgstr "Проверка адреса…"
 
 msgid "Connections"
-msgstr "Connections"
+msgstr "Соединения"
 
 msgid "Queue"
-msgstr "Queue"
+msgstr "Очередь"
+
+msgid "Download with the browser"
+msgstr "Скачать браузером"
 
 msgid "Download Later"
-msgstr "Download Later"
+msgstr "Скачать позже"
 
 msgid "Start Download"
-msgstr "Start Download"
+msgstr "Начать загрузку"
 
 msgid "Cancel"
 msgstr "Отмена"
 
 msgid "Add batch download"
-msgstr "Add batch download"
+msgstr "Пакетная загрузка"
 
 msgid "List of links"
-msgstr "List of links"
+msgstr "Список ссылок"
 
 msgid "Address with a pattern (*)"
-msgstr "Address with a pattern (*)"
+msgstr "Адрес с шаблоном (*)"
 
 msgid "Paste the links, one per line. They download one after another in the queue you choose."
-msgstr "Paste the links, one per line. They download one after another in the queue you choose."
+msgstr "Вставьте ссылки, по одной в строке. Они скачиваются друг за другом в выбранной очереди."
 
 msgid "Paste from clipboard"
-msgstr "Paste from clipboard"
+msgstr "Вставить из буфера обмена"
 
 msgid "Type an address with a * where the number (or letter) goes, for example\nhttps://www.site.com/pictures/img*.jpg"
-msgstr "Type an address with a * where the number (or letter) goes, for example\nhttps://www.site.com/pictures/img*.jpg"
+msgstr "Введите адрес со * на месте номера (или буквы), например\nhttps://www.site.com/pictures/img*.jpg"
 
 msgid "https://www.site.com/pictures/img*.jpg"
 msgstr "https://www.site.com/pictures/img*.jpg"
 
 msgid "Letters (a-z) instead of numbers"
-msgstr "Letters (a-z) instead of numbers"
+msgstr "Буквы (a-z) вместо чисел"
 
 msgid "From"
-msgstr "From"
+msgstr "С"
 
 msgid "To"
-msgstr "To"
+msgstr "По"
 
 msgid "Wildcard size"
-msgstr "Wildcard size"
+msgstr "Ширина шаблона"
 
 msgid "Wildcard size 3 makes 001, 002 … 010."
-msgstr "Wildcard size 3 makes 001, 002 … 010."
+msgstr "Ширина 3 даёт 001, 002 … 010."
 
 msgid "optional"
-msgstr "optional"
+msgstr "необязательно"
 
 msgid "Save all to"
-msgstr "Save all to"
+msgstr "Сохранить всё в"
 
 msgid "automatic (by file type)"
-msgstr "automatic (by file type)"
+msgstr "автоматически (по типу файла)"
 
 msgid "Start the queue now"
-msgstr "Start the queue now"
+msgstr "Запустить очередь сейчас"
 
 msgid "Add"
-msgstr "Add"
+msgstr "Добавить"
 
 msgid "Download status"
-msgstr "Download status"
+msgstr "Состояние загрузки"
 
 msgid "Options on completion"
-msgstr "Options on completion"
+msgstr "Действия по завершении"
 
 msgid "File size"
-msgstr "File size"
+msgstr "Размер файла"
 
 msgid "Downloaded"
-msgstr "Downloaded"
+msgstr "Скачано"
 
 msgid "Resume capability"
-msgstr "Resume capability"
+msgstr "Возобновление"
 
 msgid "Use speed limiter for this download"
-msgstr "Use speed limiter for this download"
+msgstr "Ограничить скорость этой загрузки"
 
 msgid "Maximum download speed (KB/s)"
-msgstr "Maximum download speed (KB/s)"
+msgstr "Максимальная скорость (КБ/с)"
 
 msgid "{} MB/s"
-msgstr "{} MB/s"
+msgstr "{} МБ/с"
 
 msgid "{} KB/s"
-msgstr "{} KB/s"
+msgstr "{} КБ/с"
 
 msgid "Changes apply right away, even while downloading."
-msgstr "Changes apply right away, even while downloading."
+msgstr "Изменения применяются сразу, даже во время загрузки."
 
 msgid "When this download completes:"
-msgstr "When this download completes:"
+msgstr "Когда эта загрузка завершится:"
 
 msgid "Do nothing (keep the computer on)"
-msgstr "Do nothing (keep the computer on)"
+msgstr "Ничего не делать (не выключать компьютер)"
 
 msgid "Force programs to close when shutting down"
-msgstr "Force programs to close when shutting down"
+msgstr "Принудительно закрывать программы при выключении"
 
 msgid "Show the \"Download complete\" window"
-msgstr "Show the \"Download complete\" window"
+msgstr "Показывать окно \"Загрузка завершена\""
 
 msgid "You get 30 seconds to cancel before the computer shuts down, sleeps or hibernates."
-msgstr "You get 30 seconds to cancel before the computer shuts down, sleeps or hibernates."
+msgstr "У вас будет 30 секунд на отмену, прежде чем компьютер выключится или перейдёт в спящий режим или гибернацию."
 
 msgid "<< Hide details"
-msgstr "<< Hide details"
+msgstr "<< Скрыть подробности"
 
 msgid "Show details >>"
-msgstr "Show details >>"
+msgstr "Подробнее >>"
 
 msgid "Pause"
-msgstr "Pause"
+msgstr "Пауза"
 
 msgid "Close"
 msgstr "Закрыть"
 
 msgid "Start positions and download progress by connections"
-msgstr "Start positions and download progress by connections"
+msgstr "Начальные позиции и ход загрузки по соединениям"
 
 msgid "N."
-msgstr "N."
+msgstr "№"
 
 msgid "Info"
-msgstr "Info"
+msgstr "Инфо"
 
 msgid "Download complete"
-msgstr "Download complete"
+msgstr "Загрузка завершена"
 
 msgid "Address"
-msgstr "Address"
+msgstr "Адрес"
 
 msgid "Saved as"
-msgstr "Saved as"
+msgstr "Сохранено как"
 
 msgid "Don't show this again"
-msgstr "Don't show this again"
+msgstr "Больше не показывать"
 
 msgid "Columns"
-msgstr "Columns"
+msgstr "Столбцы"
 
 msgid "Show these columns in the download list:"
-msgstr "Show these columns in the download list:"
+msgstr "Показывать эти столбцы в списке загрузок:"
 
 msgid "File Name (always shown)"
-msgstr "File Name (always shown)"
+msgstr "Имя файла (всегда показывается)"
 
 msgid "Q (queue number)"
-msgstr "Q (queue number)"
+msgstr "О (номер очереди)"
 
 msgid "Reset"
-msgstr "Reset"
+msgstr "Сбросить"
 
 msgid "OK"
-msgstr "OK"
+msgstr "ОК"
 
 msgid "Add category"
-msgstr "Add category"
+msgstr "Добавить категорию"
 
 msgid "Category properties"
-msgstr "Category properties"
+msgstr "Свойства категории"
 
 msgid "Category name"
-msgstr "Category name"
+msgstr "Название категории"
 
 msgid "e.g. Courses"
-msgstr "e.g. Courses"
+msgstr "например, Курсы"
 
 msgid "File types"
-msgstr "File types"
+msgstr "Типы файлов"
 
 msgid "mp4 mkv avi (separated by spaces)"
-msgstr "mp4 mkv avi (separated by spaces)"
+msgstr "mp4 mkv avi (через пробел)"
 
 msgid "Sites"
-msgstr "Sites"
+msgstr "Сайты"
 
 msgid "udemy.com *.coursera.org (optional)"
-msgstr "udemy.com *.coursera.org (optional)"
+msgstr "udemy.com *.coursera.org (необязательно)"
 
 msgid "Save files to"
-msgstr "Save files to"
+msgstr "Сохранять файлы в"
 
 msgid "automatic (Downloads\\{})"
-msgstr "automatic (Downloads\\{})"
+msgstr "автоматически (Загрузки\\{})"
 
 msgid "Files with these extensions, or from these sites, are put into this category and saved to its folder."
-msgstr "Files with these extensions, or from these sites, are put into this category and saved to its folder."
+msgstr "Файлы с этими расширениями или с этих сайтов попадают в эту категорию и сохраняются в её папку."
 
 msgid "Find file"
-msgstr "Find file"
+msgstr "Найти файл"
 
 msgid "Find what"
-msgstr "Find what"
+msgstr "Что искать"
 
 msgid "Look in"
-msgstr "Look in"
+msgstr "Где искать"
 
 msgid "Address, referer and parent web page"
-msgstr "Address, referer and parent web page"
+msgstr "Адрес, реферер и исходная веб-страница"
 
 msgid "Match case"
-msgstr "Match case"
+msgstr "Учитывать регистр"
 
 msgid "Match whole string"
-msgstr "Match whole string"
+msgstr "Только целиком"
 
 msgid "Find Next"
-msgstr "Find Next"
+msgstr "Найти далее"
 
 msgid "File Properties – {}"
-msgstr "File Properties – {}"
+msgstr "Свойства файла – {}"
 
 msgid "Type"
-msgstr "Type"
+msgstr "Тип"
 
 msgid "Date added"
-msgstr "Date added"
+msgstr "Дата добавления"
 
 msgid "Use authorization (server login)"
-msgstr "Use authorization (server login)"
+msgstr "Использовать авторизацию (вход на сервер)"
 
 msgid "Result: {}"
-msgstr "Result: {}"
+msgstr "Результат: {}"
 
 msgid "Duplicate download link"
-msgstr "Duplicate download link"
+msgstr "Повторная ссылка на загрузку"
 
 msgid "This address is already in the download list:"
-msgstr "This address is already in the download list:"
+msgstr "Этот адрес уже есть в списке загрузок:"
 
 msgid "Add it with a new name (numbered)"
-msgstr "Add it with a new name (numbered)"
+msgstr "Добавить под новым именем (с номером)"
 
 msgid "Add it and replace the old download (overwrite the file)"
-msgstr "Add it and replace the old download (overwrite the file)"
+msgstr "Добавить и заменить старую загрузку (перезаписать файл)"
 
 msgid "If it is finished show it, if not resume it"
-msgstr "If it is finished show it, if not resume it"
+msgstr "Если завершена — показать, если нет — продолжить"
 
 msgid "Remember my choice (Options > Downloads)"
-msgstr "Remember my choice (Options > Downloads)"
+msgstr "Запомнить мой выбор (Параметры > Загрузки)"
 
 msgid "All downloads are finished."
-msgstr "All downloads are finished."
+msgstr "Все загрузки завершены."
 
 msgid "Zero Download will {} in {} seconds."
-msgstr "Zero Download will {} in {} seconds."
+msgstr "Zero Download: {} через {} с."
 
 msgid "Now"
-msgstr "Now"
+msgstr "Сейчас"
 
 msgid "Queue name"
-msgstr "Queue name"
+msgstr "Название очереди"
 
 msgid "Schedule"
-msgstr "Schedule"
+msgstr "Расписание"
 
 msgid "Files in the queue"
-msgstr "Files in the queue"
+msgstr "Файлы в очереди"
 
 msgid "Start the queue automatically"
-msgstr "Start the queue automatically"
+msgstr "Запускать очередь автоматически"
 
 msgid "Start time (HH:MM)"
-msgstr "Start time (HH:MM)"
+msgstr "Время запуска (ЧЧ:ММ)"
 
 msgid "Daily"
-msgstr "Daily"
+msgstr "Ежедневно"
 
 msgid "Once at (YYYY-MM-DD)"
-msgstr "Once at (YYYY-MM-DD)"
+msgstr "Один раз (ГГГГ-ММ-ДД)"
 
 msgid "Mon"
-msgstr "Mon"
+msgstr "Пн"
 
 msgid "Tue"
-msgstr "Tue"
+msgstr "Вт"
 
 msgid "Wed"
-msgstr "Wed"
+msgstr "Ср"
 
 msgid "Thu"
-msgstr "Thu"
+msgstr "Чт"
 
 msgid "Fri"
-msgstr "Fri"
+msgstr "Пт"
 
 msgid "Sat"
-msgstr "Sat"
+msgstr "Сб"
 
 msgid "Sun"
-msgstr "Sun"
+msgstr "Вс"
 
 msgid "Start the queue when Zero Download starts"
-msgstr "Start the queue when Zero Download starts"
+msgstr "Запускать очередь при запуске Zero Download"
 
 msgid "Stop the queue at"
-msgstr "Stop the queue at"
+msgstr "Остановить очередь в"
 
 msgid "When the queue is done"
-msgstr "When the queue is done"
+msgstr "Когда очередь завершится"
 
 msgid "For Sleep you may need to allow wake timers in the Windows power options, so the computer can wake up for the next start."
-msgstr "For Sleep you may need to allow wake timers in the Windows power options, so the computer can wake up for the next start."
+msgstr "Для спящего режима может понадобиться разрешить таймеры пробуждения в настройках электропитания Windows, чтобы компьютер проснулся к следующему запуску."
 
 msgid "Move up"
-msgstr "Move up"
+msgstr "Вверх"
 
 msgid "Move down"
-msgstr "Move down"
+msgstr "Вниз"
 
 msgid "Files download in this order. Add files with right click > Move to queue, Add Batch, or \"Download Later\"."
-msgstr "Files download in this order. Add files with right click > Move to queue, Add Batch, or \"Download Later\"."
+msgstr "Файлы скачиваются в этом порядке. Добавляйте файлы правым щелчком > Переместить в очередь, через Пакет или \"Скачать позже\"."
 
 msgid "Download"
-msgstr "Скачать"
+msgstr "Скачивать"
 
 msgid "files at the same time"
-msgstr "files at the same time"
+msgstr "файлов одновременно"
 
 msgid "Number of retries for each file if downloading failed"
-msgstr "Number of retries for each file if downloading failed"
+msgstr "Число повторов для каждого файла при ошибке"
 
 msgid "Save all files of this queue to"
-msgstr "Save all files of this queue to"
+msgstr "Сохранять все файлы этой очереди в"
 
 msgid "Open each file when it has finished downloading"
-msgstr "Open each file when it has finished downloading"
+msgstr "Открывать каждый файл после загрузки"
 
 msgid "Start now"
-msgstr "Start now"
+msgstr "Запустить сейчас"
 
 msgid "Apply"
-msgstr "Apply"
+msgstr "Применить"
 
 msgid "Download all links"
-msgstr "Download all links"
+msgstr "Скачать все ссылки"
 
 msgid "Site Grabber"
-msgstr "Site Grabber"
+msgstr "Сборщик сайтов"
 
 msgid "Start page"
-msgstr "Start page"
+msgstr "Начальная страница"
 
 msgid "https://example.com/gallery/"
 msgstr "https://example.com/gallery/"
 
 msgid "Start exploring"
-msgstr "Start exploring"
+msgstr "Начать обход"
 
 msgid "Get"
-msgstr "Get"
+msgstr "Собирать"
 
 msgid "All files (not web pages)"
-msgstr "All files (not web pages)"
+msgstr "Все файлы (не веб-страницы)"
 
 msgid "All images"
-msgstr "All images"
+msgstr "Все изображения"
 
 msgid "All videos"
-msgstr "All videos"
+msgstr "Все видео"
 
 msgid "All music / audio"
-msgstr "All music / audio"
+msgstr "Вся музыка / аудио"
 
 msgid "Archives and programs"
-msgstr "Archives and programs"
+msgstr "Архивы и программы"
 
 msgid "Documents (PDF, Office)"
-msgstr "Documents (PDF, Office)"
+msgstr "Документы (PDF, Office)"
 
 msgid "Custom file types"
-msgstr "Custom file types"
+msgstr "Свои типы файлов"
 
 msgid "jpg png mp4 (custom types)"
-msgstr "jpg png mp4 (custom types)"
+msgstr "jpg png mp4 (свои типы)"
 
 msgid "Levels to explore"
-msgstr "Levels to explore"
+msgstr "Уровней обхода"
 
 msgid "Pages at the same time"
-msgstr "Pages at the same time"
+msgstr "Страниц одновременно"
 
 msgid "Other sites too"
-msgstr "Other sites too"
+msgstr "Также другие сайты"
 
 msgid "Don't go to parent folders"
-msgstr "Don't go to parent folders"
+msgstr "Не переходить в родительские папки"
 
 msgid "Show"
-msgstr "Show"
+msgstr "Показать"
 
 msgid "All types"
-msgstr "All types"
+msgstr "Все типы"
 
 msgid "Images"
-msgstr "Images"
+msgstr "Изображения"
 
 msgid "Videos"
-msgstr "Videos"
+msgstr "Видео"
 
 msgid "Music"
-msgstr "Music"
+msgstr "Музыка"
 
 msgid "Archives / programs"
-msgstr "Archives / programs"
+msgstr "Архивы / программы"
 
 msgid "Documents"
 msgstr "Документы"
 
 msgid "Web pages"
-msgstr "Web pages"
+msgstr "Веб-страницы"
 
 msgid "Filter by name or address…"
-msgstr "Filter by name or address…"
+msgstr "Фильтр по имени или адресу…"
 
 msgid "Check all"
-msgstr "Check all"
+msgstr "Отметить все"
 
 msgid "Uncheck all"
-msgstr "Uncheck all"
+msgstr "Снять все"
 
 msgid "Link text"
-msgstr "Link text"
+msgstr "Текст ссылки"
 
 msgid "No links on this page."
-msgstr "No links on this page."
+msgstr "На этой странице нет ссылок."
 
 msgid "Exploring…"
-msgstr "Exploring…"
+msgstr "Обход…"
 
 msgid "Type a start page and click \"Start exploring\"."
-msgstr "Type a start page and click \"Start exploring\"."
+msgstr "Введите начальную страницу и нажмите \"Начать обход\"."
 
 msgid "Use link texts as descriptions"
-msgstr "Use link texts as descriptions"
+msgstr "Использовать текст ссылок как описание"
 
 msgid "Download checked"
-msgstr "Download checked"
+msgstr "Скачать отмеченные"
 
 msgid "Tip of the day"
-msgstr "Tip of the day"
+msgstr "Совет дня"
 
 msgid "Did you know…"
-msgstr "Did you know…"
+msgstr "А вы знали…"
 
 msgid "Show tips at startup"
-msgstr "Show tips at startup"
+msgstr "Показывать советы при запуске"
 
 msgid "Next tip"
-msgstr "Next tip"
+msgstr "Следующий совет"
 
 msgid "Refresh download address"
-msgstr "Refresh download address"
+msgstr "Обновить адрес загрузки"
 
 msgid "1. Open the web page where you got this file.\n2. Click the download link there again (or start the video).\n3. Zero Download takes the new address and continues from where it stopped."
-msgstr "1. Open the web page where you got this file.\n2. Click the download link there again (or start the video).\n3. Zero Download takes the new address and continues from where it stopped."
+msgstr "1. Откройте веб-страницу, откуда вы получили этот файл.\n2. Снова нажмите там ссылку для скачивания (или запустите видео).\n3. Zero Download возьмёт новый адрес и продолжит с того места, где остановился."
 
 msgid "Open the page"
-msgstr "Open the page"
+msgstr "Открыть страницу"
 
 msgid "Waiting for the new address from the browser…"
-msgstr "Waiting for the new address from the browser…"
+msgstr "Ожидание нового адреса от браузера…"
 
 msgid "Or paste the new address here:"
-msgstr "Or paste the new address here:"
+msgstr "Или вставьте новый адрес сюда:"
 
 msgid "https://…"
 msgstr "https://…"
 
 msgid "Use it"
-msgstr "Use it"
+msgstr "Использовать"
 
 msgid "Stop waiting"
-msgstr "Stop waiting"
+msgstr "Не ждать"
 
 msgid "Play"
-msgstr "Play"
+msgstr "Воспроизвести"
 
 msgid "Zero Download – Options"
-msgstr "Zero Download – Options"
+msgstr "Zero Download – Параметры"
 
 msgid "General"
 msgstr "Общие"
 
 msgid "File Types"
-msgstr "File Types"
+msgstr "Типы файлов"
 
 msgid "Connection"
-msgstr "Connection"
+msgstr "Соединение"
 
 msgid "Proxy / Server"
-msgstr "Proxy / Server"
+msgstr "Прокси / Сервер"
 
 msgid "Site Logins"
-msgstr "Site Logins"
+msgstr "Логины сайтов"
 
 msgid "Sounds"
-msgstr "Sounds"
+msgstr "Звуки"
+
+msgid "Appearance"
+msgstr "Оформление"
+
+msgid "Window opacity"
+msgstr "Непрозрачность окна"
+
+msgid "Text size"
+msgstr "Размер текста"
+
+msgid "Font"
+msgstr "Шрифт"
+
+msgid "Default (Segoe UI)"
+msgstr "По умолчанию (Segoe UI)"
+
+msgid "Background picture"
+msgstr "Фоновое изображение"
+
+msgid "none (the theme's colors)"
+msgstr "нет (цвета темы)"
+
+msgid "Browse…"
+msgstr "Обзор…"
+
+msgid "Picture visibility"
+msgstr "Видимость изображения"
 
 msgid "Launch Zero Download on Windows startup"
-msgstr "Launch Zero Download on Windows startup"
+msgstr "Запускать Zero Download вместе с Windows"
 
 msgid "Keep running next to the clock when the window is closed"
-msgstr "Keep running next to the clock when the window is closed"
+msgstr "Оставаться рядом с часами при закрытии окна"
 
 msgid "Watch the clipboard for download links"
-msgstr "Watch the clipboard for download links"
+msgstr "Следить за буфером обмена на ссылки для загрузки"
 
 msgid "Automatically start downloading links placed in the clipboard"
-msgstr "Automatically start downloading links placed in the clipboard"
+msgstr "Автоматически скачивать ссылки, попавшие в буфер обмена"
 
 msgid "Show \"Tip of the day\" at startup"
-msgstr "Show \"Tip of the day\" at startup"
+msgstr "Показывать \"Совет дня\" при запуске"
 
 msgid "On double click on a download"
-msgstr "On double click on a download"
+msgstr "Двойной щелчок по загрузке"
 
 msgid "Open the file / progress window"
-msgstr "Open the file / progress window"
+msgstr "Открыть файл / окно хода загрузки"
 
 msgid "Show properties"
-msgstr "Show properties"
+msgstr "Показать свойства"
 
 msgid "Browser integration"
-msgstr "Browser integration"
+msgstr "Интеграция с браузером"
 
 msgid "Chrome and Edge: load the \"extension\" folder in chrome://extensions (Developer mode > Load unpacked). Downloads, videos and the right click menu then go to Zero Download."
-msgstr "Chrome and Edge: load the \"extension\" folder in chrome://extensions (Developer mode > Load unpacked). Downloads, videos and the right click menu then go to Zero Download."
+msgstr "Chrome и Edge: загрузите папку \"extension\" в chrome://extensions (Режим разработчика > Загрузить распакованное расширение). Тогда загрузки, видео и меню правого щелчка пойдут в Zero Download."
 
 msgid "Hold this key to let the browser download by itself"
-msgstr "Hold this key to let the browser download by itself"
+msgstr "Удерживайте эту клавишу, чтобы браузер скачивал сам"
 
 msgid "Alt"
 msgstr "Alt"
@@ -953,262 +1004,259 @@ msgid "Shift"
 msgstr "Shift"
 
 msgid "None"
-msgstr "None"
+msgstr "Нет"
 
 msgid "Hold this key to force Zero Download to take a link"
-msgstr "Hold this key to force Zero Download to take a link"
+msgstr "Удерживайте эту клавишу, чтобы Zero Download обязательно взял ссылку"
 
 msgid "Browser extension port"
-msgstr "Browser extension port"
+msgstr "Порт расширения браузера"
 
 msgid "Automatically start downloading these file types (from the browser):"
-msgstr "Automatically start downloading these file types (from the browser):"
+msgstr "Автоматически скачивать файлы этих типов (из браузера):"
 
 msgid "Default"
-msgstr "Default"
+msgstr "По умолчанию"
 
 msgid "Don't start downloading automatically from these sites:"
-msgstr "Don't start downloading automatically from these sites:"
+msgstr "Не начинать загрузку автоматически с этих сайтов:"
 
 msgid "*.update.microsoft.com  windowsupdate.com"
 msgstr "*.update.microsoft.com  windowsupdate.com"
 
 msgid "Don't start downloading these addresses (one per line, * allowed):"
-msgstr "Don't start downloading these addresses (one per line, * allowed):"
+msgstr "Не скачивать эти адреса (по одному в строке, можно *):"
 
 msgid "Show the \"Download this video\" panel on web players"
-msgstr "Show the \"Download this video\" panel on web players"
+msgstr "Показывать панель \"Скачать это видео\" на веб-плеерах"
 
 msgid "Don't show it on these sites"
-msgstr "Don't show it on these sites"
+msgstr "Не показывать на этих сайтах"
 
 msgid "Smallest video (KB)"
-msgstr "Smallest video (KB)"
+msgstr "Минимальный размер видео (КБ)"
 
 msgid "Smallest audio (KB)"
-msgstr "Smallest audio (KB)"
+msgstr "Минимальный размер аудио (КБ)"
 
 msgid "Main download folder"
-msgstr "Main download folder"
-
-msgid "Browse…"
-msgstr "Browse…"
+msgstr "Основная папка загрузок"
 
 msgid "Sort files into folders by category (Video, Music, Programs, Compressed, Documents, Images…)"
-msgstr "Sort files into folders by category (Video, Music, Programs, Compressed, Documents, Images…)"
+msgstr "Раскладывать файлы по папкам категорий (Видео, Музыка, Программы, Архивы, Документы, Изображения…)"
 
 msgid "Each category's own folder and file types: right click it in the sidebar > Properties."
-msgstr "Each category's own folder and file types: right click it in the sidebar > Properties."
+msgstr "Своя папка и типы файлов каждой категории: правый щелчок по ней на боковой панели > Свойства."
 
 msgid "Forget remembered category paths"
-msgstr "Forget remembered category paths"
+msgstr "Забыть запомненные пути категорий"
 
 msgid "Temporary folder (parts while downloading)"
-msgstr "Temporary folder (parts while downloading)"
+msgstr "Временная папка (части во время загрузки)"
 
 msgid "next to the file (default)"
-msgstr "next to the file (default)"
+msgstr "рядом с файлом (по умолчанию)"
 
 msgid "Tip: a temporary folder on another drive than the download folder makes joining the parts faster."
-msgstr "Tip: a temporary folder on another drive than the download folder makes joining the parts faster."
+msgstr "Совет: временная папка на другом диске, чем папка загрузок, ускоряет сборку частей."
 
 msgid "Show the \"Download File Info\" window for downloads from the browser"
-msgstr "Show the \"Download File Info\" window for downloads from the browser"
+msgstr "Показывать окно \"Сведения о файле\" для загрузок из браузера"
 
 msgid "Start downloading immediately while showing \"Download File Info\""
-msgstr "Start downloading immediately while showing \"Download File Info\""
+msgstr "Сразу начинать загрузку, показывая \"Сведения о файле\""
 
 msgid "Show the download progress window"
-msgstr "Show the download progress window"
+msgstr "Показывать окно хода загрузки"
 
 msgid "Normally"
-msgstr "Normally"
+msgstr "Обычно"
 
 msgid "Minimized"
-msgstr "Minimized"
+msgstr "Свёрнутым"
 
 msgid "Don't show"
-msgstr "Don't show"
+msgstr "Не показывать"
 
 msgid "If a duplicate link is added"
-msgstr "If a duplicate link is added"
+msgstr "Если добавлена повторная ссылка"
 
 msgid "Ask me"
-msgstr "Ask me"
+msgstr "Спрашивать"
 
 msgid "Add it with a numbered file name"
-msgstr "Add it with a numbered file name"
+msgstr "Добавить с номером в имени файла"
 
 msgid "Add it and replace the old download"
-msgstr "Add it and replace the old download"
+msgstr "Добавить и заменить старую загрузку"
 
 msgid "Show the finished one / resume the unfinished one"
-msgstr "Show the finished one / resume the unfinished one"
+msgstr "Показать завершённую / продолжить незавершённую"
 
 msgid "Give finished files the date from the server"
-msgstr "Give finished files the date from the server"
+msgstr "Ставить завершённым файлам дату с сервера"
 
 msgid "Check every finished file for viruses with this program"
-msgstr "Check every finished file for viruses with this program"
+msgstr "Проверять каждый завершённый файл на вирусы этой программой"
 
 msgid "C:\\Program Files\\Windows Defender\\MpCmdRun.exe"
 msgstr "C:\\Program Files\\Windows Defender\\MpCmdRun.exe"
 
 msgid "Command line parameters"
-msgstr "Command line parameters"
+msgstr "Параметры командной строки"
 
 msgid "-Scan -ScanType 3 -File [File]"
 msgstr "-Scan -ScanType 3 -File [File]"
 
 msgid "[File] is replaced by the downloaded file."
-msgstr "[File] is replaced by the downloaded file."
+msgstr "[File] заменяется скачанным файлом."
 
 msgid "User-Agent for downloads added by hand"
-msgstr "User-Agent for downloads added by hand"
+msgstr "User-Agent для загрузок, добавленных вручную"
 
 msgid "Connection type / speed"
-msgstr "Connection type / speed"
+msgstr "Тип / скорость соединения"
 
 msgid "Low speed (modem, mobile)"
-msgstr "Low speed (modem, mobile)"
+msgstr "Низкая скорость (модем, мобильная сеть)"
 
 msgid "Medium speed (DSL)"
-msgstr "Medium speed (DSL)"
+msgstr "Средняя скорость (DSL)"
 
 msgid "High speed (fiber, cable, LAN)"
-msgstr "High speed (fiber, cable, LAN)"
+msgstr "Высокая скорость (оптика, кабель, LAN)"
 
 msgid "Default max. connections number"
-msgstr "Default max. connections number"
+msgstr "Макс. число соединений по умолчанию"
 
 msgid "Downloads at the same time (0 = no limit)"
-msgstr "Downloads at the same time (0 = no limit)"
+msgstr "Загрузок одновременно (0 = без ограничений)"
 
 msgid "Retries on error"
-msgstr "Retries on error"
+msgstr "Повторов при ошибке"
 
 msgid "Exceptions: servers with their own number of connections"
-msgstr "Exceptions: servers with their own number of connections"
+msgstr "Исключения: серверы со своим числом соединений"
 
 msgid "Server"
-msgstr "Server"
+msgstr "Сервер"
 
 msgid "example.com"
 msgstr "example.com"
 
 msgid "Download limits"
-msgstr "Download limits"
+msgstr "Ограничения загрузки"
 
 msgid "Download no more than"
-msgstr "Download no more than"
+msgstr "Скачивать не больше"
 
 msgid "MB every"
-msgstr "MB every"
+msgstr "МБ каждые"
 
 msgid "hours"
-msgstr "hours"
+msgstr "ч"
 
 msgid "No proxy"
-msgstr "No proxy"
+msgstr "Без прокси"
 
 msgid "Use the system settings (like your browser)"
-msgstr "Use the system settings (like your browser)"
+msgstr "Использовать настройки системы (как браузер)"
 
 msgid "Manual proxy configuration (HTTP / HTTPS)"
-msgstr "Manual proxy configuration (HTTP / HTTPS)"
+msgstr "Ручная настройка прокси (HTTP / HTTPS)"
 
 msgid "Proxy address"
-msgstr "Proxy address"
+msgstr "Адрес прокси"
 
 msgid "proxy.example.com"
 msgstr "proxy.example.com"
 
 msgid "Port"
-msgstr "Port"
+msgstr "Порт"
 
 msgid "User name"
-msgstr "User name"
+msgstr "Имя пользователя"
 
 msgid "Don't use the proxy for"
-msgstr "Don't use the proxy for"
+msgstr "Не использовать прокси для"
 
 msgid "localhost 127.0.0.1 *.local"
 msgstr "localhost 127.0.0.1 *.local"
 
 msgid "Addresses separated by spaces. SOCKS proxies: use the system settings."
-msgstr "Addresses separated by spaces. SOCKS proxies: use the system settings."
+msgstr "Адреса через пробел. SOCKS-прокси: используйте настройки системы."
 
 msgid "User names and passwords for sites that ask for them:"
-msgstr "User names and passwords for sites that ask for them:"
+msgstr "Имена пользователей и пароли для сайтов, которые их запрашивают:"
 
 msgid "Site / path"
-msgstr "Site / path"
+msgstr "Сайт / путь"
 
 msgid "example.com/members"
 msgstr "example.com/members"
 
 msgid "Add / Update"
-msgstr "Add / Update"
+msgstr "Добавить / Обновить"
 
 msgid "Saved in the settings file of your Windows user account."
-msgstr "Saved in the settings file of your Windows user account."
+msgstr "Хранится в файле настроек вашей учётной записи Windows."
 
 msgid "Play sounds"
-msgstr "Play sounds"
+msgstr "Воспроизводить звуки"
 
 msgid "Download failed"
-msgstr "Download failed"
+msgstr "Ошибка загрузки"
 
 msgid "Queue started"
-msgstr "Queue started"
+msgstr "Очередь запущена"
 
 msgid "Queue finished"
-msgstr "Queue finished"
+msgstr "Очередь завершена"
 
 msgid ".wav files. Empty = no sound for that event."
-msgstr ".wav files. Empty = no sound for that event."
+msgstr "Файлы .wav. Пусто = без звука для этого события."
 
 msgid "Turn the speed limiter on"
-msgstr "Turn the speed limiter on"
+msgstr "Включить ограничитель скорости"
 
 msgid "Always turn on the speed limiter when Zero Download starts"
-msgstr "Always turn on the speed limiter when Zero Download starts"
+msgstr "Всегда включать ограничитель при запуске Zero Download"
 
 msgid "Every download can also have its own limit: its progress window > Speed Limiter tab."
-msgstr "Every download can also have its own limit: its progress window > Speed Limiter tab."
+msgstr "У каждой загрузки может быть свой лимит: её окно хода загрузки > вкладка «Ограничитель скорости»."
 
 msgid "Download a playlist"
-msgstr "Download a playlist"
+msgstr "Скачать плейлист"
 
 msgid "Paste the address of a playlist:"
-msgstr "Paste the address of a playlist:"
+msgstr "Вставьте адрес плейлиста:"
 
 msgid "https://…/playlist?list=…"
 msgstr "https://…/playlist?list=…"
 
 msgid "Getting the list…"
-msgstr "Getting the list…"
+msgstr "Получение списка…"
 
 msgid "Get videos"
-msgstr "Get videos"
+msgstr "Получить видео"
 
 msgid "Video"
 msgstr "Видео"
 
 msgid "Length"
-msgstr "Length"
+msgstr "Длительность"
 
 msgid "Getting the videos of the playlist…"
-msgstr "Getting the videos of the playlist…"
+msgstr "Получение видео из плейлиста…"
 
 msgid "The videos of the playlist show up here."
-msgstr "The videos of the playlist show up here."
+msgstr "Здесь появятся видео из плейлиста."
 
 msgid "Quality"
-msgstr "Quality"
+msgstr "Качество"
 
 msgid "Best quality (MP4)"
-msgstr "Best quality (MP4)"
+msgstr "Лучшее качество (MP4)"
 
 msgid "1080p"
 msgstr "1080p"
@@ -1223,40 +1271,41 @@ msgid "360p"
 msgstr "360p"
 
 msgid "Audio only (M4A)"
-msgstr "Audio only (M4A)"
+msgstr "Только аудио (M4A)"
 
 msgid "Files at the same time"
-msgstr "Files at the same time"
+msgstr "Файлов одновременно"
 
 msgid "Number the files"
-msgstr "Number the files"
+msgstr "Нумеровать файлы"
 
 msgid "Not installed on this computer"
-msgstr "Not installed on this computer"
+msgstr "Не установлен на этом компьютере"
 
 msgid "Add Zero Download to your browser"
-msgstr "Add Zero Download to your browser"
+msgstr "Добавьте Zero Download в браузер"
 
 msgid "Click your browser:"
-msgstr "Click your browser:"
+msgstr "Нажмите на свой браузер:"
 
 msgid "Almost done:"
-msgstr "Almost done:"
+msgstr "Почти готово:"
 
 msgid "Copy folder path"
-msgstr "Copy folder path"
-
-msgid "Language"
-msgstr "Язык"
+msgstr "Копировать путь к папке"
 
 msgid "Version {}"
-msgstr "Version {}"
+msgstr "Версия {}"
 
-msgid "Coded by Mahmoud"
-msgstr "Coded by Mahmoud"
+msgid "Coded by Ahmed Ezzat"
+msgstr "Автор: Ahmed Ezzat"
 
-msgid "Check for updates"
-msgstr "Check for updates"
+msgid "Like Zero Download? You can support its development:"
+msgstr "Нравится Zero Download? Вы можете поддержать разработку:"
 
-msgid "Download with the browser"
-msgstr "Download with the browser"
+msgid "Support with PayPal"
+msgstr "Поддержать через PayPal"
+
+msgid "Hide"
+msgstr "Скрыть"
+

@@ -1,300 +1,35 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
+﻿<!doctype html>
+<html>
 <head>
-  <meta charset="utf-8">
-  <title>Zero Download - إعدادات الإضافة</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --border: #334155;
-      --accent: #3b82f6;
-      --accent-hover: #2563eb;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --success: #10b981;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Cairo", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      padding: 30px 20px;
-      display: flex;
-      justify-content: center;
-    }
-    .container {
-      width: 100%;
-      max-width: 780px;
-    }
-    header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 28px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    header img {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-    }
-    .header-text h1 {
-      font-size: 22px;
-      font-weight: 700;
-    }
-    .header-text p {
-      color: var(--text-muted);
-      font-size: 13px;
-    }
-    .status-badge {
-      margin-right: auto;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--success);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--success);
-    }
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 22px 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    }
-    .card h2 {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: #60a5fa;
-    }
-    .row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    }
-    .row:last-child { border-bottom: none; }
-    .row-info b {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 2px;
-    }
-    .row-info span {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-    /* Switch */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 24px;
-      flex-shrink: 0;
-    }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #475569; transition: .25s; border-radius: 24px;
-    }
-    .slider:before {
-      position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
-      background-color: white; transition: .25s; border-radius: 50%;
-    }
-    input:checked + .slider { background-color: var(--accent); }
-    input:checked + .slider:before { transform: translateX(20px); }
-    select, input[type=number], input[type=text] {
-      background: #0f172a;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 7px 12px;
-      border-radius: 8px;
-      font: inherit;
-      font-size: 13px;
-      outline: none;
-    }
-    select:focus, input:focus { border-color: var(--accent); }
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 24px;
-    }
-    .btn {
-      padding: 10px 22px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-      transition: background 0.15s;
-    }
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-    }
-    .btn-primary:hover { background: var(--accent-hover); }
-    .toast {
-      position: fixed;
-      bottom: 25px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: #1e293b;
-      border: 1px solid var(--success);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-weight: 600;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-      transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-    }
-    .toast.show { transform: translateX(-50%) translateY(0); }
-  </style>
+<meta charset="utf-8">
+<title>Zero Download - Settings</title>
+<style>
+  body { font: 14px/1.5 "Segoe UI", system-ui, sans-serif; color: #1f2733; margin: 0; padding: 18px 22px; min-width: 420px; background: #f4f6fa; }
+  h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; font-size: 18px; }
+  h2 img { width: 28px; height: 28px; }
+  .card { background: #fff; border-radius: 10px; padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+  label { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+  select { padding: 3px 6px; border: 1px solid #d5dbe4; border-radius: 6px; font: inherit; }
+  input[type=number] { width: 90px; padding: 4px 8px; border: 1px solid #d5dbe4; border-radius: 6px; font: inherit; }
+  .saved { color: #1a9e5a; font-size: 12px; height: 16px; margin-top: 8px; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <img src="icons/icon48.png" alt="Zero Download">
-      <div class="header-text">
-        <h1>Zero Download</h1>
-        <p>مركز إعدادات وتحكم إضافة المتصفح المتقدمة</p>
-      </div>
-      <div class="status-badge" id="appStatus">
-        <span class="status-dot"></span>
-        <span id="appStatusText">متصل بالبرنامج</span>
-      </div>
-    </header>
-
-    <!-- Video Overlay Button -->
-    <div class="card">
-      <h2>🎬 أزرار التحميل العائمة على الفيديو</h2>
-      <div class="row">
-        <div class="row-info">
-          <b>إظهار زر التحميل على كل فيديو</b>
-          <span>يظهر زر تحميل مخصص فوق كل فيديو في الصفحة تلقائياً</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" id="showVideoPill" checked>
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div class="row">
-        <div class="row-info">
-          <b>قابلية سحب الزر (Drag & Drop)</b>
-          <span>إمكانية سحب الزر ووضعه في أي مكان بالماوس فوق الفيديو</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" id="draggablePill" checked>
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div class="row">
-        <div class="row-info">
-          <b>الموضع الافتراضي للزر</b>
-          <span>المكان التلقائي لزر التحميل عند فتح أي فيديو</span>
-        </div>
-        <select id="pillPosition">
-          <option value="top-right">أعلى اليمين (Top-Right)</option>
-          <option value="top-left">أعلى اليسار (Top-Left)</option>
-          <option value="bottom-right">أسفل اليمين (Bottom-Right)</option>
-          <option value="bottom-left">أسفل اليسار (Bottom-Left)</option>
-        </select>
-      </div>
-      <div class="row">
-        <div class="row-info">
-          <b>حجم زر التحميل</b>
-          <span>اختر الحجم الأنسب لراحتك البصرية</span>
-        </div>
-        <select id="pillSize">
-          <option value="medium">متوسط مريح (موصى به)</option>
-          <option value="large">كبير وواضح</option>
-          <option value="compact">مدمج صغير</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Audio Language Preferences -->
-    <div class="card">
-      <h2>🔊 إعدادات وتفضيلات الصوت وتعدد اللغات</h2>
-      <div class="row">
-        <div class="row-info">
-          <b>تفضيل الصوت الأصلي تلقائياً (YouTube)</b>
-          <span>تحميل التراك الصوتي الأصلي دائماً وتجاوز الدبلجة التلقائية الإجبارية</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" id="preferOriginalAudio" checked>
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div class="row">
-        <div class="row-info">
-          <b>اللغة الصوتية البديلة</b>
-          <span>في حال عدم توفر الصوت الأصلي، يتم اختيار هذه اللغة</span>
-        </div>
-        <select id="fallbackAudioLang">
-          <option value="en">الإنجليزية (English)</option>
-          <option value="ar">العربية (Arabic)</option>
-          <option value="any">أفضل جودة متاحة (Best Available)</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Browser Integration -->
-    <div class="card">
-      <h2>⚡ التقاط التحميلات من المتصفح</h2>
-      <div class="row">
-        <div class="row-info">
-          <b>تحويل تحميلات المتصفح تلقائياً إلى Zero Download</b>
-          <span>التقاط الروابط والتنزيلات وتسريعها عبر المحرك</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" id="intercept" checked>
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div class="row">
-        <div class="row-info">
-          <b>تجاهل الملفات الصغيرة الأقل من</b>
-          <span>لن يتم اعتراض الملفات ذات الحجم الأقل من هذه القيمة (بالكيلوبايت)</span>
-        </div>
-        <input type="number" id="minSizeKB" min="0" style="width: 100px;">
-      </div>
-      <div class="row">
-        <div class="row-info">
-          <b>منفذ الاتصال بالتطبيق (Port)</b>
-          <span>المنفذ الافتراضي للربط المحلي ببرنامج Zero Download</span>
-        </div>
-        <input type="number" id="port" min="1024" max="65535" style="width: 100px;">
-      </div>
-    </div>
-
-    <div class="actions">
-      <button class="btn btn-primary" id="saveBtn">حفظ التغييرات ✔</button>
-    </div>
+  <h2><img src="icons/icon48.png" alt="">Zero Download ظ¤ Settings</h2>
+  <div class="card">
+    <label><input type="checkbox" id="intercept"> Send browser downloads to Zero Download</label>
+    <label>Ignore files smaller than <input type="number" id="minSize" min="0"> KB</label>
+    <label>App port <input type="number" id="port" min="1024" max="65535"></label>
+    <label>Size of the "Download this video" button
+      <select id="bubbleSize">
+        <option value="small">Small</option>
+        <option value="normal">Normal</option>
+        <option value="large">Large</option>
+      </select>
+    </label>
   </div>
-
-  <div class="toast" id="toast">تم حفظ جميع الإعدادات بنجاح! ✔</div>
-
+  <div class="saved" id="saved"></div>
   <script src="options.js"></script>
 </body>
 </html>
+

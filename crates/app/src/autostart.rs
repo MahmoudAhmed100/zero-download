@@ -1,5 +1,18 @@
-//! "Start with Windows": a value under HKCU\...\Run that starts the app in
-//! the background (next to the clock) when the user signs in.
+//! "Start with Windows": written to the user's registry (HKCU\Run),
+//! so no admin rights are asked for.
+
+pub fn is_enabled() -> bool {
+    imp::is_enabled()
+}
+
+pub fn set(enabled: bool) -> bool {
+    imp::set(enabled)
+}
+
+#[allow(dead_code)]
+pub fn installed_by_setup() -> bool {
+    imp::installed_by_setup()
+}
 
 #[cfg(windows)]
 mod imp {
@@ -11,7 +24,7 @@ mod imp {
     const CREATE_NO_WINDOW: u32 = 0x0800_0000;
 
     fn reg(args: &[&str]) -> bool {
-        Command::new("reg")
+        Command::new(swiftget_engine::system::windows_tool("reg.exe"))
             .args(args)
             .creation_flags(CREATE_NO_WINDOW)
             .output()
@@ -25,16 +38,21 @@ mod imp {
 
     /// Installed with the setup program (which asked about autostart itself).
     pub fn installed_by_setup() -> bool {
-        reg(&["query", r"HKCU\Software\Zero\ZeroDownload", "/v", "Installed"]) || reg(&["query", r"HKCU\Software\Ezoo\EzooDownload", "/v", "Installed"])
+        reg(&["query", r"HKCU\Software\Zero\ZeroDownload", "/v", "Installed"])
+            || reg(&["query", r"HKCU\Software\Ezoo\EzooDownload", "/v", "Installed"])
     }
 
     pub fn set(enabled: bool) -> bool {
         if enabled {
-            let Ok(exe) = std::env::current_exe() else { return false };
-            let value = format!("\"{}\" --background", exe.display());
-            reg(&["add", KEY, "/v", NAME, "/t", "REG_SZ", "/d", &value, "/f"])
+            let exe = match std::env::current_exe() {
+                Ok(p) => p.display().to_string(),
+                Err(_) => return false,
+            };
+            // starts minimized next to the clock
+            let val = format!("\"{exe}\" --background");
+            reg(&["add", KEY, "/v", NAME, "/t", "REG_SZ", "/d", &val, "/f"])
         } else {
-            !is_enabled() || reg(&["delete", KEY, "/v", NAME, "/f"])
+            reg(&["delete", KEY, "/v", NAME, "/f"])
         }
     }
 }
@@ -44,12 +62,10 @@ mod imp {
     pub fn is_enabled() -> bool {
         false
     }
-    pub fn set(_enabled: bool) -> bool {
-        false
-    }
     pub fn installed_by_setup() -> bool {
         false
     }
+    pub fn set(_: bool) -> bool {
+        false
+    }
 }
-
-pub use imp::{installed_by_setup, is_enabled, set};

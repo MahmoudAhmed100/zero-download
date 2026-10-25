@@ -1,7 +1,7 @@
-{
+﻿{
   "manifest_version": 3,
   "name": "Zero Download",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Zero Download extension.",
   "permissions": [
     "downloads",
@@ -58,3 +58,4 @@
     }
   }
 }
+

@@ -1,5 +1,6 @@
-//! Site Grabber and "Download all links" (both use the same window).
+﻿//! Site Grabber and "Download all links" (both use the same window).
 
+use crate::open_window;
 use crate::*;
 use std::sync::atomic::{AtomicBool, Ordering};
 use swiftget_engine::grabber::{self, FoundFile, GrabOptions, GrabProgress};
@@ -126,12 +127,12 @@ fn reset(ui: &Ui, d: &GrabberDialog, links_mode: bool) {
 pub(crate) fn open_grabber(ui: &Ui) {
     let Some(d) = ui.grabber.upgrade() else { return };
     if d.window().is_visible() && !d.get_links_mode() {
-        let _ = d.show();
+        open_window!(d);
         return;
     }
     reset(ui, &d, false);
     show(ui);
-    let _ = d.show();
+    open_window!(d);
 }
 
 /// "Download all links with Zero Download" from the browser.
@@ -156,8 +157,7 @@ pub(crate) fn open_links(ui: &Ui, l: api::LinksRequest) {
     d.set_start_url(l.page.clone().into());
     show(ui);
     bring_to_front(&ui.ctx);
-    let _ = d.show();
-    to_front!(d);
+    open_window!(d);
 }
 
 /// New files from the explorer, and its counters (10 times a second).
@@ -182,9 +182,9 @@ pub(crate) fn poll(ui: &Ui) {
     if let Some(p) = progress {
         let current = p.current.lock().map(|c| c.clone()).unwrap_or_default();
         let text = tf(
-            "{} of {} pages explored  ·  {} files found",
+            "{} of {} pages explored  ┬╖  {} files found",
             &[&p.pages_done.load(Ordering::Relaxed), &p.pages_queued.load(Ordering::Relaxed), &p.files.load(Ordering::Relaxed)],
-        ) + &if finished { t("  ·  done") } else { format!("  ·  {current}") };
+        ) + &if finished { t("  ┬╖  done") } else { format!("  ┬╖  {current}") };
         d.set_progress_text(text.into());
     }
     if finished {
@@ -252,7 +252,7 @@ pub(crate) fn wire(ui: &Ui) {
             }
             show(&ui);
             d.set_exploring(true);
-            d.set_progress_text(t("Starting…").into());
+            d.set_progress_text(t("Startingظخ").into());
             let client = ui.ctx.mgr.client();
             ui.ctx.rt.spawn(async move {
                 let sink = incoming.clone();
@@ -368,3 +368,4 @@ pub(crate) fn wire(ui: &Ui) {
         });
     }
 }
+

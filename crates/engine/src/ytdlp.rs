@@ -1,4 +1,4 @@
-//! Video links from any website through yt-dlp.
+﻿//! Video links from any website through yt-dlp.
 //!
 //! yt-dlp knows how to find the real video files on more than 1800 sites
 //! (YouTube, Facebook, Instagram, TikTok, X/Twitter, Vimeo, Dailymotion...)
@@ -71,9 +71,11 @@ struct Fmt {
     size: u64,
     abr: f64,
     note: String,
-    is_original: bool,
     hls: bool,
     headers: Vec<(String, String)>,
+    /// sound track ranking: the video's own language first, translated
+    /// ("dubbed", often made automatically) tracks last
+    audio_rank: i64,
 }
 
 impl Fmt {
@@ -139,14 +141,6 @@ fn parse_one(f: &Value) -> Option<Fmt> {
     if ext == "mhtml" {
         return None;
     }
-    let note = f["format_note"].as_str().unwrap_or("").to_string();
-    let note_lower = note.to_ascii_lowercase();
-    let lang = f["language"].as_str().map(|s| s.to_string());
-    let lang_pref = f["language_preference"].as_i64().unwrap_or(0);
-    let is_original = note_lower.contains("original")
-        || lang.as_deref() == Some("original")
-        || (lang_pref >= 0 && !note_lower.contains("dubbed") && !note_lower.contains("dubb"));
-
     Some(Fmt {
         url: f["url"].as_str()?.to_string(),
         ext,
@@ -156,11 +150,33 @@ fn parse_one(f: &Value) -> Option<Fmt> {
         fps: as_u64(&f["fps"]).unwrap_or(0),
         size: as_u64(&f["filesize"]).or_else(|| as_u64(&f["filesize_approx"])).unwrap_or(0),
         abr: f["abr"].as_f64().or_else(|| f["tbr"].as_f64()).unwrap_or(0.0),
-        note,
-        is_original,
+        note: f["format_note"].as_str().unwrap_or("").to_string(),
         hls,
         headers: headers_of(f),
+        audio_rank: audio_rank(f),
     })
+}
+
+/// Videos can carry several sound tracks in different languages; yt-dlp marks
+/// the original one (language_preference, "original" / "default" in the
+/// note) and translated ones ("dubbed"). Higher = better.
+fn audio_rank(f: &Value) -> i64 {
+    let note = format!(
+        "{} {}",
+        f["format_note"].as_str().unwrap_or(""),
+        f["format_id"].as_str().unwrap_or("")
+    )
+    .to_ascii_lowercase();
+    let mut rank = f["language_preference"].as_i64().unwrap_or(0);
+    if note.contains("original") {
+        rank += 100;
+    } else if note.contains("default") {
+        rank += 50;
+    }
+    if note.contains("dubbed") || note.contains("descriptive") {
+        rank -= 100;
+    }
+    rank
 }
 
 fn parse_formats(info: &Value) -> Vec<Fmt> {
@@ -225,11 +241,11 @@ pub fn build_options(full: &Value) -> YtInfo {
         .iter()
         .filter(|f| f.has_audio() && !f.has_video() && !f.hls)
         .collect();
+    // the original language first, then the best quality
     audios.sort_by(|a, b| {
-        b.is_original
-            .cmp(&a.is_original)
+        b.audio_rank
+            .cmp(&a.audio_rank)
             .then(b.abr.partial_cmp(&a.abr).unwrap_or(std::cmp::Ordering::Equal))
-            .then(b.size.cmp(&a.size))
     });
     let best_audio = |container: &str| -> Option<&Fmt> {
         audios
@@ -261,7 +277,7 @@ pub fn build_options(full: &Value) -> YtInfo {
             }
             let ext = if v.hls { "ts" } else { container };
             options.push(YtOption {
-                label: format!("{q} · {}", ext.to_uppercase()),
+                label: format!("{q} ┬╖ {}", ext.to_uppercase()),
                 sub: fmt_size(v.size),
                 key,
                 quality: q,
@@ -289,7 +305,7 @@ pub fn build_options(full: &Value) -> YtInfo {
         };
         let size = if v.size > 0 && audio.size > 0 { v.size + audio.size } else { 0 };
         options.push(YtOption {
-            label: format!("{q} · {}{}", ext.to_uppercase(), v.codec_tag()),
+            label: format!("{q} ┬╖ {}{}", ext.to_uppercase(), v.codec_tag()),
             sub: fmt_size(size),
             key,
             quality: q,
@@ -306,9 +322,9 @@ pub fn build_options(full: &Value) -> YtInfo {
         options.push(YtOption {
             key: format!("audio|{}", ext.to_uppercase()),
             label: if kbps > 0 {
-                format!("Audio only · {} {kbps}k", ext.to_uppercase())
+                format!("Audio only ┬╖ {} {kbps}k", ext.to_uppercase())
             } else {
-                format!("Audio only · {}", ext.to_uppercase())
+                format!("Audio only ┬╖ {}", ext.to_uppercase())
             },
             sub: fmt_size(a.size),
             quality: "audio".into(),
@@ -362,13 +378,53 @@ pub fn netscape_cookies(cookies: &[BrowserCookie]) -> String {
     out
 }
 
+/// The arguments for looking at one page. `--ignore-config`: settings files
+/// of yt-dlp on the computer (which could add `--exec` and the like) are not
+/// read; `--`: the address can never be taken for an option.
+fn resolve_args(page_url: &str, cookie_file: Option<&Path>) -> Vec<std::ffi::OsString> {
+    let mut a: Vec<std::ffi::OsString> = ["--ignore-config", "-J", "--no-playlist", "--no-warnings", "--no-progress", "--socket-timeout", "20"]
+        .iter()
+        .map(Into::into)
+        .collect();
+    if let Some(c) = cookie_file {
+        a.push("--cookies".into());
+        a.push(c.into());
+    }
+    a.push("--".into());
+    a.push(page_url.into());
+    a
+}
+
+fn playlist_args(url: &str) -> Vec<std::ffi::OsString> {
+    ["--ignore-config", "-J", "--flat-playlist", "--yes-playlist", "--no-warnings", "--socket-timeout", "20", "--", url]
+        .iter()
+        .map(Into::into)
+        .collect()
+}
+
+/// A new, private file for the browser's cookies (never one that exists).
+fn cookie_file(cookies: &[BrowserCookie]) -> anyhow::Result<std::path::PathBuf> {
+    use std::io::Write;
+    static N: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+    let nanos = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).map(|d| d.as_nanos()).unwrap_or(0);
+    for _ in 0..5 {
+        let n = N.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        let path = std::env::temp_dir().join(format!("zero-cookies-{}-{nanos:x}-{n}.txt", std::process::id()));
+        match std::fs::OpenOptions::new().write(true).create_new(true).open(&path) {
+            Ok(mut f) => {
+                f.write_all(netscape_cookies(cookies).as_bytes())?;
+                return Ok(path);
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => continue,
+            Err(e) => return Err(e.into()),
+        }
+    }
+    bail!("could not make a cookie file")
+}
+
 fn run_ytdlp(tool: &Path, page_url: &str, cookie_file: Option<&Path>) -> anyhow::Result<Value> {
     let mut cmd = Command::new(tool);
-    cmd.args(["-J", "--no-playlist", "--no-warnings", "--no-progress", "--socket-timeout", "20", "--audio-multistreams"]);
-    if let Some(c) = cookie_file {
-        cmd.arg("--cookies").arg(c);
-    }
-    cmd.arg("--").arg(page_url);
+    cmd.args(resolve_args(page_url, cookie_file));
     hide_window(&mut cmd);
     let out = cmd.output().context("could not start yt-dlp")?;
     if !out.status.success() {
@@ -401,13 +457,12 @@ fn needs_login(msg: &str) -> bool {
 /// age-limited YouTube videos, ...).
 pub fn resolve(page_url: &str, cookies: Option<&[BrowserCookie]>) -> anyhow::Result<YtInfo> {
     let tool = find_tool("yt-dlp")
-        .ok_or_else(|| anyhow!("yt-dlp.exe is missing. Zero Download gets it by itself in a minute (internet needed), then try again"))?;
+        .ok_or_else(|| anyhow!("yt-dlp.exe is missing. Ezoo Download gets it by itself in a minute (internet needed), then try again"))?;
     let json = match run_ytdlp(&tool, page_url, None) {
         Ok(j) => j,
         Err(e) => match cookies.filter(|c| !c.is_empty()) {
             Some(list) if needs_login(&e.to_string()) => {
-                let file = std::env::temp_dir().join(format!("zero-cookies-{}.txt", std::process::id()));
-                std::fs::write(&file, netscape_cookies(list))?;
+                let file = cookie_file(list)?;
                 let r = run_ytdlp(&tool, page_url, Some(&file));
                 let _ = std::fs::remove_file(&file);
                 r?
@@ -451,8 +506,7 @@ pub struct PlaylistInfo {
 pub fn playlist(url: &str) -> anyhow::Result<PlaylistInfo> {
     let tool = find_tool("yt-dlp").ok_or_else(|| anyhow!("yt-dlp.exe was not found next to ZeroDownload.exe"))?;
     let mut cmd = Command::new(&tool);
-    cmd.args(["-J", "--flat-playlist", "--yes-playlist", "--no-warnings", "--socket-timeout", "20", "--"]);
-    cmd.arg(url);
+    cmd.args(playlist_args(url));
     hide_window(&mut cmd);
     let out = cmd.output().context("could not start yt-dlp")?;
     if !out.status.success() {
@@ -527,7 +581,7 @@ pub fn pick_option(options: &[YtOption], wanted: &str) -> Option<YtOption> {
 pub fn update_now() -> anyhow::Result<String> {
     let tool = find_tool("yt-dlp").ok_or_else(|| anyhow!("yt-dlp.exe was not found next to ZeroDownload.exe"))?;
     let mut cmd = Command::new(&tool);
-    cmd.arg("-U");
+    cmd.args(["--ignore-config", "-U"]);
     hide_window(&mut cmd);
     let out = cmd.output().context("could not start yt-dlp")?;
     let text = format!("{}\n{}", String::from_utf8_lossy(&out.stdout), String::from_utf8_lossy(&out.stderr));
@@ -558,7 +612,7 @@ pub fn update_if_due(data_dir: &Path) {
         return; // installed elsewhere (e.g. winget): leave updates to that
     }
     let mut cmd = Command::new(&tool);
-    cmd.arg("-U");
+    cmd.args(["--ignore-config", "-U"]);
     hide_window(&mut cmd);
     if cmd.output().map(|o| o.status.success()).unwrap_or(false) {
         let _ = std::fs::write(&stamp, b"ok");
@@ -592,6 +646,25 @@ mod tests {
     }
 
     #[test]
+    fn original_sound_track_wins_over_dubbed() {
+        let info = serde_json::json!({
+            "title": "t", "extractor_key": "Youtube",
+            "formats": [
+                {"format_id": "140-0", "protocol": "https", "ext": "m4a", "vcodec": "none", "acodec": "mp4a.40.2", "abr": 130.0,
+                 "language": "en", "language_preference": -1, "format_note": "English (United States) - dubbed-auto, medium", "url": "https://gv/en"},
+                {"format_id": "140-1", "protocol": "https", "ext": "m4a", "vcodec": "none", "acodec": "mp4a.40.2", "abr": 129.0,
+                 "language": "ar", "language_preference": 10, "format_note": "Arabic original (default), medium", "url": "https://gv/ar"},
+                {"format_id": "137", "protocol": "https", "ext": "mp4", "vcodec": "avc1.640028", "acodec": "none", "height": 1080, "url": "https://gv/137"}
+            ]
+        });
+        let r = build_options(&info);
+        let best = r.options.iter().find(|o| o.key.starts_with("1080p")).unwrap();
+        assert_eq!(best.audio_url.as_deref(), Some("https://gv/ar"));
+        let audio = r.options.iter().find(|o| o.key.starts_with("audio|")).unwrap();
+        assert_eq!(audio.video_url, "https://gv/ar");
+    }
+
+    #[test]
     fn youtube_choices() {
         let info = build_options(&youtube_sample());
         assert_eq!(info.title, "Cool video");
@@ -603,7 +676,7 @@ mod tests {
         assert_eq!(mp4.audio_url.as_deref(), Some("https://gv/140"));
         assert_eq!(mp4.size, 94000);
         assert_eq!(info.options[0].audio_url.as_deref(), Some("https://gv/251"));
-        assert_eq!(info.options.last().unwrap().label, "Audio only · M4A 130k");
+        assert_eq!(info.options.last().unwrap().label, "Audio only ┬╖ M4A 130k");
     }
 
     #[test]
@@ -672,6 +745,34 @@ mod tests {
     }
 
     #[test]
+    fn yt_dlp_settings_files_and_options_are_never_used() {
+        let a: Vec<String> = resolve_args("-x --exec calc", Some(Path::new("c.txt"))).iter().map(|x| x.to_string_lossy().into_owned()).collect();
+        assert_eq!(a[0], "--ignore-config");
+        // the address comes after "--": yt-dlp can't read it as an option
+        assert_eq!(&a[a.len() - 2..], ["--", "-x --exec calc"]);
+        let p: Vec<String> = playlist_args("-o x").iter().map(|x| x.to_string_lossy().into_owned()).collect();
+        assert_eq!(p[0], "--ignore-config");
+        assert_eq!(&p[p.len() - 2..], ["--", "-o x"]);
+    }
+
+    #[test]
+    fn cookie_files_are_new_every_time() {
+        let list = vec![BrowserCookie {
+            domain: ".example.com".into(),
+            name: "a".into(),
+            value: "b".into(),
+            path: "/".into(),
+            secure: true,
+            expiration_date: None,
+        }];
+        let (a, b) = (cookie_file(&list).unwrap(), cookie_file(&list).unwrap());
+        assert_ne!(a, b);
+        assert!(std::fs::read_to_string(&a).unwrap().contains("example.com"));
+        let _ = std::fs::remove_file(a);
+        let _ = std::fs::remove_file(b);
+    }
+
+    #[test]
     fn cookie_file_format() {
         let list = vec![
             BrowserCookie { domain: ".instagram.com".into(), name: "sessionid".into(), value: "abc".into(), path: "/".into(), secure: true, expiration_date: Some(1900000000.5) },
@@ -684,3 +785,4 @@ mod tests {
         assert!(needs_login("ERROR: [Instagram] abc: Requested content is not available, rate-limit reached or login required"));
     }
 }
+

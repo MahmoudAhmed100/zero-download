@@ -1,6 +1,7 @@
 //! "Download a playlist": every video of a playlist in one go, in
 //! the quality you choose, into its own queue and folder.
 
+use crate::open_window;
 use crate::*;
 
 use crate::i18n::{t, tf};
@@ -18,7 +19,7 @@ pub(crate) fn open(ui: &Ui) {
         }
         d.set_message(SharedString::new());
     }
-    let _ = d.show();
+    open_window!(d);
     d.window().set_minimized(false);
 }
 

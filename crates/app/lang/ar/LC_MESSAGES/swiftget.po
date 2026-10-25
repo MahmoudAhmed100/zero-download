@@ -1,4 +1,4 @@
-msgid ""
+﻿msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language: ar\n"
@@ -78,6 +78,42 @@ msgstr "الخصائص…"
 
 msgid "Zero Download"
 msgstr "Zero Download"
+
+msgid "File Name"
+msgstr "اسم الملف"
+
+msgid "Q"
+msgstr "ق"
+
+msgid "Size"
+msgstr "الحجم"
+
+msgid "Status"
+msgstr "الحالة"
+
+msgid "Time left"
+msgstr "الوقت المتبقي"
+
+msgid "Transfer rate"
+msgstr "سرعة النقل"
+
+msgid "Last Try Date"
+msgstr "آخر محاولة"
+
+msgid "Description"
+msgstr "الوصف"
+
+msgid "Date Added"
+msgstr "تاريخ الإضافة"
+
+msgid "Save To"
+msgstr "الحفظ في"
+
+msgid "Referer"
+msgstr "المُحيل (Referer)"
+
+msgid "Parent Web Page"
+msgstr "صفحة الويب الأصلية"
 
 msgid "Tasks"
 msgstr "المهام"
@@ -199,29 +235,11 @@ msgstr "حسب ترتيب الإضافة"
 msgid "File name"
 msgstr "اسم الملف"
 
-msgid "Size"
-msgstr "الحجم"
-
-msgid "Status"
-msgstr "الحالة"
-
-msgid "Time left"
-msgstr "الوقت المتبقي"
-
-msgid "Transfer rate"
-msgstr "سرعة النقل"
-
 msgid "Last try date"
 msgstr "تاريخ آخر محاولة"
 
-msgid "Description"
-msgstr "الوصف"
-
 msgid "Save to"
 msgstr "الحفظ في"
-
-msgid "Referer"
-msgstr "المُحيل (Referer)"
 
 msgid "Parent web page"
 msgstr "صفحة الويب الأصلية"
@@ -256,6 +274,24 @@ msgstr "أزرق المحيط"
 msgid "Midnight purple"
 msgstr "بنفسجي ليلي"
 
+msgid "Forest green"
+msgstr "أخضر الغابة"
+
+msgid "Black"
+msgstr "أسود"
+
+msgid "Sunset"
+msgstr "الغروب"
+
+msgid "Teal night"
+msgstr "ليل فيروزي"
+
+msgid "Rose"
+msgstr "وردي"
+
+msgid "Appearance…"
+msgstr "المظهر…"
+
 msgid "Help"
 msgstr "مساعدة"
 
@@ -270,9 +306,6 @@ msgstr "البحث عن تحديثات"
 
 msgid "Check for updates (video downloader)"
 msgstr "البحث عن تحديثات (أداة الفيديو)"
-
-msgid "Tell a friend"
-msgstr "أخبر صديقاً"
 
 msgid "About Zero Download"
 msgstr "حول Zero Download"
@@ -348,24 +381,6 @@ msgstr "قائمة جديدة"
 
 msgid "Edit"
 msgstr "تعديل"
-
-msgid "File Name"
-msgstr "اسم الملف"
-
-msgid "Q"
-msgstr "ق"
-
-msgid "Last Try Date"
-msgstr "آخر محاولة"
-
-msgid "Date Added"
-msgstr "تاريخ الإضافة"
-
-msgid "Save To"
-msgstr "الحفظ في"
-
-msgid "Parent Web Page"
-msgstr "صفحة الويب الأصلية"
 
 msgid "Nothing matches “{}”."
 msgstr "لا يوجد ما يطابق “{}”."
@@ -919,6 +934,33 @@ msgstr "حسابات المواقع"
 msgid "Sounds"
 msgstr "الأصوات"
 
+msgid "Appearance"
+msgstr "المظهر"
+
+msgid "Window opacity"
+msgstr "شفافية النافذة"
+
+msgid "Text size"
+msgstr "حجم الخط"
+
+msgid "Font"
+msgstr "الخط"
+
+msgid "Default (Segoe UI)"
+msgstr "الافتراضي (Segoe UI)"
+
+msgid "Background picture"
+msgstr "صورة الخلفية"
+
+msgid "none (the theme's colors)"
+msgstr "بدون (ألوان المظهر)"
+
+msgid "Browse…"
+msgstr "استعراض…"
+
+msgid "Picture visibility"
+msgstr "وضوح الصورة"
+
 msgid "Launch Zero Download on Windows startup"
 msgstr "تشغيل Zero Download مع بدء ويندوز"
 
@@ -999,9 +1041,6 @@ msgstr "أصغر صوت (كيلوبايت)"
 
 msgid "Main download folder"
 msgstr "مجلد التحميل الرئيسي"
-
-msgid "Browse…"
-msgstr "استعراض…"
 
 msgid "Sort files into folders by category (Video, Music, Programs, Compressed, Documents, Images…)"
 msgstr "ترتيب الملفات في مجلدات حسب التصنيف (فيديو، موسيقى، برامج، مضغوطة، مستندات، صور…)"
@@ -1258,20 +1297,15 @@ msgstr "نسخ مسار المجلد"
 msgid "Version {}"
 msgstr "الإصدار {}"
 
-msgid "Developed by Mahmoud"
-msgstr "برمجة وتطوير: Mahmoud"
+msgid "Coded by Ahmed Ezzat"
+msgstr "Coded by Ahmed Ezzat"
 
-msgid "Preview video"
-msgstr "معاينة وتشغيل الفيديو"
+msgid "Like Zero Download? You can support its development:"
+msgstr "أعجبك Zero Download؟ يمكنك دعم تطويره:"
 
-msgid "Download subtitles (Arabic / English)"
-msgstr "تحميل الترجمة (عربي / إنجليزي)"
+msgid "Support with PayPal"
+msgstr "ادعم عبر PayPal"
 
-msgid "Preview"
-msgstr "معاينة"
+msgid "Hide"
+msgstr "إخفاء"
 
-msgid "Check file (SHA-256 / MD5)"
-msgstr "فحص سلامة الملف (SHA-256 / MD5)"
-
-msgid "Scan with Windows Defender"
-msgstr "فحص الفيروسات (Windows Defender)"

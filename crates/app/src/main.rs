@@ -17,6 +17,7 @@ mod scheduler;
 mod sound;
 mod tray;
 mod update;
+mod winfx;
 
 use slint::{ComponentHandle, Model, ModelRc, SharedString, Timer, TimerMode, VecModel, Weak};
 use std::cell::{Cell, RefCell};
@@ -140,6 +141,9 @@ pub(crate) struct Ui {
     playlist: Weak<PlaylistDialog>,
     playlist_rows: Rc<VecModel<LinkRow>>,
     browsers: Weak<BrowserDialog>,
+    updater: Weak<UpdateDialog>,
+    /// the download list's columns (order + widths) as the header shows them
+    columns_model: Rc<VecModel<ColDef>>,
     browser_list: Rc<RefCell<Vec<browser::Browser>>>,
 }
 
@@ -185,6 +189,7 @@ fn main() -> anyhow::Result<()> {
     let refresh_dlg = RefreshDialog::new()?;
     let playlist_dlg = PlaylistDialog::new()?;
     let browsers_dlg = BrowserDialog::new()?;
+    let updater_dlg = UpdateDialog::new()?;
     let about_dlg = AboutDialog::new()?;
     {
         about_dlg.on_open_link(|u| {
@@ -239,9 +244,12 @@ fn main() -> anyhow::Result<()> {
         playlist: playlist_dlg.as_weak(),
         playlist_rows: Rc::new(VecModel::default()),
         browsers: browsers_dlg.as_weak(),
+        updater: updater_dlg.as_weak(),
+        columns_model: Rc::new(VecModel::default()),
         browser_list: Rc::new(RefCell::new(Vec::new())),
     };
     main.set_rows(ModelRc::from(ui.rows.clone()));
+    main.set_columns(ModelRc::from(ui.columns_model.clone()));
     main.set_queues(ModelRc::from(ui.queues.clone()));
     main.set_categories(ModelRc::from(ui.cats.clone()));
     // Arabic or English (Options > General > Language, View > Language)
@@ -378,7 +386,15 @@ fn main() -> anyhow::Result<()> {
     let power_timer = Timer::default();
     {
         let ui = ui.clone();
-        power_timer.start(TimerMode::Repeated, Duration::from_secs(1), move || extra::tick_countdown(&ui));
+        power_timer.start(TimerMode::Repeated, Duration::from_secs(1), move || {
+            extra::tick_countdown(&ui);
+            // the window may have been shown again from the icon next to the clock
+            if let Some(m) = ui.ctx.main.upgrade() {
+                if m.window().is_visible() {
+                    winfx::set_opacity(m.window(), ui.ctx.mgr.settings().opacity);
+                }
+            }
+        });
     }
     refresh(&ui);
 
@@ -392,8 +408,25 @@ fn main() -> anyhow::Result<()> {
             slint::CloseRequestResponse::HideWindow
         });
     }
+    // after an update: what is new, once, in the language of the program
+    {
+        let mut s = mgr.settings();
+        let now = env!("CARGO_PKG_VERSION");
+        if s.last_version != now {
+            // an empty last_version on a copy used before = an update from 1.0.3
+            let updated = if s.last_version.is_empty() { s.extension_prompted } else { true };
+            s.last_version = now.into();
+            let _ = mgr.set_settings(s);
+            if updated {
+                Timer::single_shot(Duration::from_millis(1500), extra::whats_new);
+            }
+        }
+    }
     if !(background && has_tray) {
         main.show()?;
+        // the main window: in the middle of the screen, and it can be maximized
+        winfx::place(main.as_weak(), true);
+        winfx::set_opacity(main.window(), mgr.settings().opacity);
         let mut s = mgr.settings();
         if !s.extension_prompted {
             // first start: help adding the browser extension
@@ -453,8 +486,10 @@ fn wire_main(ui: &Ui) {
             for &t in &targets {
                 ui.ctx.mgr.start(t);
             }
-            if targets.len() == 1 {
-                show_progress_for_start(&ui, targets[0]);
+            if targets.len() <= 8 {
+                for &t in &targets {
+                    show_progress_for_start(&ui, t);
+                }
             }
             refresh(&ui);
         });
@@ -559,12 +594,6 @@ fn wire_main(ui: &Ui) {
             s.theme = m.clamp(0, 8) as u32;
             let _ = ui.ctx.mgr.set_settings(s);
             apply_theme(&ui, m);
-        });
-    }
-    {
-        let ui = ui.clone();
-        main.on_set_opacity(move |op| {
-            apply_opacity(&ui, op);
         });
     }
     {
@@ -694,6 +723,54 @@ fn wire_main(ui: &Ui) {
         });
     }
     {
+        // the header: drag an edge to resize a column (live), let go to keep it
+        let ui = ui.clone();
+        main.on_column_resized(move |i, w| {
+            if let Some(mut c) = ui.columns_model.row_data(i.max(0) as usize) {
+                c.width = w.clamp(36.0, 2000.0);
+                ui.columns_model.set_row_data(i as usize, c);
+            }
+        });
+    }
+    {
+        let ui = ui.clone();
+        main.on_columns_changed(move || save_columns(&ui));
+    }
+    {
+        // the header: a title dragged onto another place moves the column there
+        let ui = ui.clone();
+        main.on_column_dropped(move |from, x| {
+            let widths: Vec<f32> = (0..ui.columns_model.row_count()).filter_map(|i| ui.columns_model.row_data(i)).map(|c| c.width).collect();
+            let to = column_at(&widths, x);
+            let from = from.max(0) as usize;
+            if from < widths.len() && to != from {
+                if let Some(c) = ui.columns_model.row_data(from) {
+                    ui.columns_model.remove(from);
+                    ui.columns_model.insert(to.min(ui.columns_model.row_count()), c);
+                    save_columns(&ui);
+                }
+            }
+        });
+    }
+    {
+        let ui = ui.clone();
+        main.on_row_drag_out(move |id| {
+            // a finished file pulled out of the list: Windows takes it from here
+            let Some(v) = ui.ctx.mgr.get(id as u64) else { return };
+            if v.status != Status::Completed || !v.save_path.is_file() {
+                return;
+            }
+            let Some(m) = ui.ctx.main.upgrade() else { return };
+            winfx::drag_file_out(m.window(), &v.save_path);
+            // the mouse was let go outside the list: the row must know too
+            m.window().dispatch_event(slint::platform::WindowEvent::PointerReleased {
+                position: slint::LogicalPosition::new(0.0, 0.0),
+                button: slint::platform::PointerEventButton::Left,
+            });
+            m.window().dispatch_event(slint::platform::WindowEvent::PointerExited);
+        });
+    }
+    {
         let ui = ui.clone();
         main.on_select_all(move || {
             let ids = visible_ids(&ui);
@@ -769,19 +846,10 @@ fn wire_main(ui: &Ui) {
         let ui = ui.clone();
         main.on_browsers(move || browser::open(&ui));
     }
-    main.on_tell_friend(|| {
-        let text = "Zero Download\nFacebook: https://www.facebook.com/share/19gJCRExaT";
-        if let Ok(mut c) = arboard::Clipboard::new() {
-            let _ = c.set_text(text);
-        }
-        message(&t("A short message about Zero Download was copied to the clipboard.\nPaste it in a chat or an e-mail to a friend."));
-    });
     let (tools_client, tools_rt, tools_dir) = (mgr.client(), ui.ctx.rt.clone(), default_data_dir());
     main.on_update_tools(move || {
         // ffmpeg too, right now (removing the stamps makes it check)
-        for f in ["ffmpeg-checked"] {
-            let _ = std::fs::remove_file(tools_dir.join(f));
-        }
+        let _ = std::fs::remove_file(tools_dir.join("ffmpeg-checked"));
         tools_rt.spawn(swiftget_engine::tools::update_all(tools_client.clone(), tools_dir.clone()));
         std::thread::spawn(|| {
             let text = match swiftget_engine::ytdlp::update_now() {
@@ -794,8 +862,18 @@ fn wire_main(ui: &Ui) {
             let _ = slint::invoke_from_event_loop(move || message(&text));
         });
     });
-    let uctx = ui.ctx.clone();
-    main.on_check_app_update(move || update::check_now(&uctx));
+    {
+        let ui2 = ui.clone();
+        main.on_check_app_update(move || update::check_now(&ui2));
+    }
+    if let Some(d) = ui.updater.upgrade() {
+        let w = d.as_weak();
+        d.on_close_window(move || {
+            if let Some(d) = w.upgrade() {
+                let _ = d.hide();
+            }
+        });
+    }
     main.on_about(about);
     main.on_quit(|| {
         let _ = slint::quit_event_loop();
@@ -874,7 +952,17 @@ fn targets(ui: &Ui, id: u64) -> Vec<u64> {
 /// Resume / stop / redownload / delete / copy several downloads at once.
 fn multi_action(ui: &Ui, ids: &[u64], action: &str) {
     match action {
-        "resume" => ids.iter().for_each(|&i| ui.ctx.mgr.start(i)),
+        "resume" => {
+            for &i in ids.iter() {
+                ui.ctx.mgr.start(i);
+            }
+            // a progress window for each (not for a long list at once)
+            if ids.len() <= 8 {
+                for &i in ids.iter() {
+                    show_progress_for_start(ui, i);
+                }
+            }
+        }
         "stop" => ids.iter().for_each(|&i| ui.ctx.mgr.pause(i)),
         "restart" => {
             if ask(&tf("Download these {} files again from the beginning?", &[&ids.len()])) {
@@ -907,8 +995,7 @@ fn about() {
     ABOUT.with(|a| {
         if let Some(d) = a.borrow().as_ref().and_then(|w| w.upgrade()) {
             d.set_version(env!("CARGO_PKG_VERSION").into());
-            let _ = d.show();
-            to_front!(d);
+            open_window!(d);
         }
     });
 }
@@ -1346,8 +1433,7 @@ pub(crate) fn show_complete(ui: &Ui, id: u64) {
         d.set_kind(kind_for(&v.file_name).into());
         d.set_ext(filename::extension(&v.file_name).to_uppercase().into());
         d.set_dont_show(false);
-        let _ = d.show();
-        to_front!(d);
+        open_window!(d);
     }
 }
 
@@ -1365,79 +1451,11 @@ pub(crate) fn modal_open() -> bool {
 }
 
 /// Marks a message box as open for as long as it lives.
-#[cfg(windows)]
-pub fn bring_active_windows_to_front() {
-    unsafe {
-        use windows_sys::Win32::Foundation::{BOOL, HWND, LPARAM};
-        use windows_sys::Win32::System::Threading::GetCurrentProcessId;
-        use windows_sys::Win32::UI::WindowsAndMessaging::*;
-
-        unsafe extern "system" fn enum_proc(hwnd: HWND, _lparam: LPARAM) -> BOOL {
-            let mut proc_id = 0u32;
-            GetWindowThreadProcessId(hwnd, &mut proc_id);
-            if proc_id == GetCurrentProcessId() && IsWindowVisible(hwnd) != 0 {
-                SetWindowPos(
-                    hwnd,
-                    HWND_TOP,
-                    0,
-                    0,
-                    0,
-                    0,
-                    SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW,
-                );
-                SetForegroundWindow(hwnd);
-                BringWindowToTop(hwnd);
-            }
-            1
-        }
-
-        EnumWindows(Some(enum_proc), 0);
-    }
-}
-
-#[cfg(not(windows))]
-pub fn bring_active_windows_to_front() {}
-
-#[cfg(windows)]
-pub fn set_process_window_opacity(opacity: f32) {
-    let alpha = (opacity.clamp(0.5, 1.0) * 255.0) as u8;
-    unsafe {
-        use windows_sys::Win32::Foundation::{BOOL, HWND, LPARAM};
-        use windows_sys::Win32::System::Threading::GetCurrentProcessId;
-        use windows_sys::Win32::UI::WindowsAndMessaging::*;
-
-        unsafe extern "system" fn enum_opacity(hwnd: HWND, lparam: LPARAM) -> BOOL {
-            let mut proc_id = 0u32;
-            GetWindowThreadProcessId(hwnd, &mut proc_id);
-            if proc_id == GetCurrentProcessId() && IsWindowVisible(hwnd) != 0 {
-                let ex_style = GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
-                if (ex_style as u32 & WS_EX_LAYERED) == 0 {
-                    SetWindowLongPtrW(
-                        hwnd,
-                        GWL_EXSTYLE,
-                        (ex_style as usize | WS_EX_LAYERED as usize) as isize,
-                    );
-                }
-                SetLayeredWindowAttributes(hwnd, 0, lparam as u8, LWA_ALPHA);
-            }
-            1
-        }
-
-        EnumWindows(Some(enum_opacity), alpha as LPARAM);
-    }
-}
-
-#[cfg(not(windows))]
-pub fn set_process_window_opacity(_opacity: f32) {}
-
 pub(crate) struct ModalGuard(bool);
 
 impl ModalGuard {
     pub(crate) fn new() -> ModalGuard {
-        {
-        bring_active_windows_to_front();
         ModalGuard(MODAL.with(|m| m.replace(true)))
-    }
     }
 }
 
@@ -1464,9 +1482,6 @@ pub(crate) fn ask(text: &str) -> bool {
 
 fn is_http_url(t: &str) -> Option<String> {
     let t = t.trim();
-    if t.starts_with("magnet:?") {
-        return Some(t.to_string());
-    }
     (t.starts_with("http://") || t.starts_with("https://"))
         .then(|| t.to_string())
         .filter(|s| !s.contains(char::is_whitespace))
@@ -1530,7 +1545,6 @@ macro_rules! to_front {
         let w = &$w;
         w.window().set_minimized(false);
         w.set_front(true);
-        bring_active_windows_to_front();
         let weak = w.as_weak();
         slint::Timer::single_shot(std::time::Duration::from_millis(1800), move || {
             if let Some(w) = weak.upgrade() {
@@ -1541,14 +1555,34 @@ macro_rules! to_front {
 }
 pub(crate) use to_front;
 
+/// Open a window: the first time it is shown (again) it goes to
+/// the middle of the screen and can't be maximized (only resized from its
+/// edges); then it comes in front of the main window.
+macro_rules! open_window {
+    ($w:expr) => {{
+        let was_open = $w.window().is_visible();
+        let _ = $w.show();
+        if !was_open {
+            $crate::winfx::place($w.as_weak(), false);
+        }
+        $crate::to_front!($w);
+    }};
+}
+pub(crate) use open_window;
+
 pub(crate) fn bring_to_front(ctx: &Ctx) {
     if let Some(w) = ctx.main.upgrade() {
+        // the main window keeps its maximize button (open_window! is for the others)
+        let was_open = w.window().is_visible();
         let _ = w.show();
+        if !was_open {
+            winfx::place(w.as_weak(), true);
+        }
         to_front!(w);
     }
 }
 
-/// Switch the whole program to "ar" or "en" right away.
+/// Switch the whole program to another language right away.
 pub(crate) fn set_language(ui: &Ui, lang: &str) {
     i18n::apply(lang);
     if let Some(m) = ui.ctx.main.upgrade() {
@@ -1557,45 +1591,72 @@ pub(crate) fn set_language(ui: &Ui, lang: &str) {
     refresh(ui);
 }
 
-/// Set the theme on every open window (each window has its own copy).
-pub(crate) fn apply_opacity(ui: &Ui, opacity: f32) {
-    let op = opacity.clamp(0.5, 1.0);
-    set_process_window_opacity(op);
-    macro_rules! set_op {
-        ($($w:expr),*) => { $( if let Some(w) = $w.upgrade() { w.global::<Theme>().set_opacity(op); } )* };
-    }
-    set_op!(
-        ui.ctx.main,
-        ui.ctx.add,
-        ui.batch,
-        ui.settings_dlg,
-        ui.complete,
-        ui.columns,
-        ui.category,
-        ui.find,
-        ui.props,
-        ui.dup,
-        ui.countdown,
-        ui.sched,
-        ui.grabber,
-        ui.tips,
-        ui.refresh_dlg,
-        ui.playlist,
-        ui.browsers
-    );
-    ABOUT.with(|a| {
-        if let Some(d) = a.borrow().as_ref().and_then(|w| w.upgrade()) {
-            d.global::<Theme>().set_opacity(op);
+/// Fonts of Options > Appearance > Font ("" = Windows' own).
+pub(crate) const FONTS: [&str; 7] = ["", "Tahoma", "Arial", "Calibri", "Verdana", "Times New Roman", "Courier New"];
+
+/// Everything that decides how the windows look.
+#[derive(Clone, Debug, PartialEq)]
+pub(crate) struct Look {
+    pub mode: i32,
+    /// 0.8 ..= 1.5
+    pub scale: f32,
+    pub family: String,
+    /// picture behind the main window ("" = none)
+    pub background: String,
+    /// 0.1 ..= 0.8: how much of the picture shows through
+    pub strength: f32,
+}
+
+impl Look {
+    pub(crate) fn of(s: &Settings) -> Look {
+        Look {
+            mode: s.theme.min(8) as i32,
+            scale: s.font_scale.clamp(80, 150) as f32 / 100.0,
+            family: if FONTS.contains(&s.font_family.as_str()) { s.font_family.clone() } else { String::new() },
+            background: s.background_image.clone(),
+            strength: s.background_strength.clamp(10, 80) as f32 / 100.0,
         }
-    });
-    for (d, _) in ui.progress.borrow().values() {
-        d.global::<Theme>().set_opacity(op);
     }
 }
 
+thread_local! {
+    // the picture behind the main window, loaded once per file
+    static BACKGROUND: RefCell<(String, Option<slint::Image>)> = const { RefCell::new((String::new(), None)) };
+}
+
+/// The picture of `path` (a png / jpg the user chose); None when it can't be read.
+fn background_image(path: &str) -> Option<slint::Image> {
+    if path.trim().is_empty() {
+        return None;
+    }
+    BACKGROUND.with(|b| {
+        let mut b = b.borrow_mut();
+        if b.0 != path {
+            // a picture is at most a few MB; anything huge is not loaded
+            let ok = std::fs::metadata(path).map(|m| m.is_file() && m.len() <= 40 << 20).unwrap_or(false);
+            *b = (path.to_string(), if ok { slint::Image::load_from_path(Path::new(path)).ok() } else { None });
+        }
+        b.1.clone()
+    })
+}
+
+/// Set the theme on every open window (each window has its own copy).
 pub(crate) fn apply_theme(ui: &Ui, mode: i32) {
+    let mut look = Look::of(&ui.ctx.mgr.settings());
+    look.mode = mode;
+    apply_look(ui, &look);
+}
+
+fn set_theme_of(t: Theme<'_>, look: &Look) {
+    t.set_mode(look.mode);
+    t.set_font_scale(look.scale);
+    t.set_font_family(look.family.clone().into());
+}
+
+/// Show `look` on every window right away.
+pub(crate) fn apply_look(ui: &Ui, look: &Look) {
     macro_rules! set {
-        ($($w:expr),*) => { $( if let Some(w) = $w.upgrade() { w.global::<Theme>().set_mode(mode); } )* };
+        ($($w:expr),*) => { $( if let Some(w) = $w.upgrade() { set_theme_of(w.global::<Theme>(), look); } )* };
     }
     set!(
         ui.ctx.main,
@@ -1614,15 +1675,30 @@ pub(crate) fn apply_theme(ui: &Ui, mode: i32) {
         ui.tips,
         ui.refresh_dlg,
         ui.playlist,
-        ui.browsers
+        ui.browsers,
+        ui.updater
     );
     ABOUT.with(|a| {
         if let Some(d) = a.borrow().as_ref().and_then(|w| w.upgrade()) {
-            d.global::<Theme>().set_mode(mode);
+            set_theme_of(d.global::<Theme>(), look);
         }
     });
     for (d, _) in ui.progress.borrow().values() {
-        d.global::<Theme>().set_mode(mode);
+        set_theme_of(d.global::<Theme>(), look);
+    }
+    // the main window only: the picture behind it
+    if let Some(m) = ui.ctx.main.upgrade() {
+        match background_image(&look.background) {
+            Some(img) => {
+                m.set_bg_image(img);
+                m.set_has_bg_image(true);
+                m.global::<Theme>().set_glass(look.strength);
+            }
+            None => {
+                m.set_has_bg_image(false);
+                m.global::<Theme>().set_glass(0.0);
+            }
+        }
     }
 }
 
@@ -1643,6 +1719,39 @@ pub(crate) fn cols_from(s: &Settings) -> Cols {
     }
 }
 
+/// Which column a point `x` of the header is over (the header starts with
+/// 6 px of padding and the 32 px file type column).
+pub(crate) fn column_at(widths: &[f32], x: f32) -> usize {
+    let mut left = 6.0 + 32.0;
+    for (i, w) in widths.iter().enumerate() {
+        if x < left + w {
+            return i;
+        }
+        left += w;
+    }
+    widths.len().saturating_sub(1)
+}
+
+/// Keep the header's column order and widths in the settings.
+fn save_columns(ui: &Ui) {
+    let cols: Vec<ColDef> = (0..ui.columns_model.row_count()).filter_map(|i| ui.columns_model.row_data(i)).collect();
+    let mut s = ui.ctx.mgr.settings();
+    let mut order: Vec<String> = cols.iter().map(|c| c.key.to_string()).collect();
+    // hidden columns keep their place at the end
+    let rest: Vec<String> =
+        s.column_order.iter().cloned().chain(swiftget_engine::config::ALL_COLUMNS.iter().map(|k| k.to_string())).collect();
+    for k in rest {
+        if !order.contains(&k) {
+            order.push(k);
+        }
+    }
+    s.column_order = order;
+    for c in &cols {
+        s.column_widths.insert(c.key.to_string(), c.width.round().clamp(36.0, 2000.0) as u32);
+    }
+    let _ = ui.ctx.mgr.set_settings(s);
+}
+
 /// Look of the main window from the settings (columns, toolbar, sorting).
 pub(crate) fn apply_view_settings(ui: &Ui, s: &Settings) {
     if let Some(m) = ui.ctx.main.upgrade() {
@@ -1650,6 +1759,9 @@ pub(crate) fn apply_view_settings(ui: &Ui, s: &Settings) {
         m.set_sort_by(s.sort_by.clone().into());
         m.set_sort_desc(s.sort_desc);
         m.set_cols(cols_from(s));
+        let defs: Vec<ColDef> =
+            s.column_layout().into_iter().map(|(key, w)| ColDef { key: key.into(), width: w as f32 }).collect();
+        ui.columns_model.set_vec(defs);
         m.set_toolbar_small(s.toolbar_small);
     }
 }
@@ -1666,7 +1778,7 @@ fn open_batch(ui: &Ui, text: String) {
     d.set_start_now(true);
     d.set_message(SharedString::new());
     d.set_preview(SharedString::new());
-    let _ = d.show();
+    open_window!(d);
 }
 
 fn close_complete(ui: &Ui) {
@@ -1757,8 +1869,7 @@ pub(crate) fn open_add_dialog(ctx: &Ctx, url: String, headers: RequestHeaders, n
     d.set_can_use_browser(false);
     d.set_info_error(false);
     d.set_probing(false);
-    let _ = d.show();
-    to_front!(d);
+    open_window!(d);
     // it already downloads while the window is open
     if !url.is_empty() && s.start_while_info && ctx.mgr.find_url(&url).is_none() {
         let path = PathBuf::from(d.get_save_as().as_str());
@@ -2049,24 +2160,25 @@ pub(crate) fn show_progress_for_start(ui: &Ui, id: u64) {
 }
 
 
-pub(crate) fn is_media_type(name: &str) -> bool {
+fn is_media_type(name: &str) -> bool {
+    let ext = swiftget_engine::filename::extension(name).to_ascii_lowercase();
     matches!(
-        filename::extension(name).as_str(),
-        "mp4" | "mkv" | "avi" | "mov" | "wmv" | "flv" | "webm" | "m4v" | "ts" | "3gp" | "mpg" | "mpeg" | "vob"
-            | "mp3" | "wav" | "flac" | "aac" | "ogg" | "m4a" | "wma" | "opus"
+        ext.as_str(),
+        "mp4" | "mkv" | "webm" | "avi" | "mov" | "flv" | "wmv" | "ts" | "m4v" | "mp3" | "m4a" | "aac" | "wav" | "flac" | "ogg" | "opus"
     )
 }
 
-pub(crate) fn find_vlc() -> Option<PathBuf> {
+fn find_vlc() -> Option<std::path::PathBuf> {
     #[cfg(windows)]
     {
-        for p in [
+        let standard = [
             r"C:\Program Files\VideoLAN\VLC\vlc.exe",
             r"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe",
-        ] {
-            let path = PathBuf::from(p);
-            if path.exists() {
-                return Some(path);
+        ];
+        for path in standard {
+            let p = std::path::PathBuf::from(path);
+            if p.is_file() {
+                return Some(p);
             }
         }
     }
@@ -2116,7 +2228,7 @@ pub(crate) fn preview_download(ui: &Ui, id: u64) {
     }
 
     // Fallback: create safe preview copy in temp with correct media extension
-    let ext = filename::extension(&v.file_name);
+    let ext = swiftget_engine::filename::extension(&v.file_name);
     let preview_dir = std::env::temp_dir().join("ZeroDownload_Preview");
     let _ = std::fs::create_dir_all(&preview_dir);
     let preview_path = preview_dir.join(format!("preview_{}_{}.{}", id, std::process::id(), ext));
@@ -2208,6 +2320,23 @@ fn row_action(ui: &Ui, id: u64, action: &str) {
         "sha256" => {
             let path = v.save_path.clone();
             let name = v.file_name.clone();
+            std::thread::spawn(move || {
+                let text = match sha256_of(&path) {
+                    Ok(hash) => {
+                        let shown = tf("SHA-256 of {}:\n\n{}\n\n(copied to the clipboard)", &[&name, &hash]);
+                        if let Ok(mut c) = arboard::Clipboard::new() {
+                            let _ = c.set_text(hash);
+                        }
+                        shown
+                    }
+                    Err(e) => tf("Could not read the file: {}", &[&e]),
+                };
+                let _ = slint::invoke_from_event_loop(move || message(&text));
+            });
+        }
+        "sha256" => {
+            let path = v.save_path.clone();
+            let name = v.file_name.clone();
             let clip_text = arboard::Clipboard::new().ok().and_then(|mut c| c.get_text().ok());
             std::thread::spawn(move || {
                 let text = match swiftget_engine::security::compute_checksums(&path, clip_text.as_deref()) {
@@ -2262,11 +2391,26 @@ fn row_action(ui: &Ui, id: u64, action: &str) {
     }
 }
 
+fn sha256_of(path: &Path) -> std::io::Result<String> {
+    use sha2::{Digest, Sha256};
+    use std::io::Read;
+    let mut f = std::fs::File::open(path)?;
+    let mut hasher = Sha256::new();
+    let mut buf = vec![0u8; 1 << 20];
+    loop {
+        let n = f.read(&mut buf)?;
+        if n == 0 {
+            break;
+        }
+        hasher.update(&buf[..n]);
+    }
+    Ok(hasher.finalize().iter().map(|b| format!("{b:02x}")).collect())
+}
 
 pub(crate) fn open_with(path: &Path) {
     #[cfg(windows)]
     {
-        let _ = std::process::Command::new("rundll32.exe")
+        let _ = std::process::Command::new(swiftget_engine::system::windows_tool("rundll32.exe"))
             .arg("shell32.dll,OpenAs_RunDLL")
             .arg(path)
             .spawn();
@@ -2350,7 +2494,7 @@ pub(crate) fn reveal_in_folder(v: &DownloadView) {
     {
         use std::os::windows::process::CommandExt;
         if v.status == Status::Completed && v.save_path.exists() {
-            let _ = std::process::Command::new("explorer")
+            let _ = std::process::Command::new(swiftget_engine::system::windows_tool("explorer.exe"))
                 .raw_arg(format!("/select,\"{}\"", v.save_path.display()))
                 .spawn();
             return;
@@ -2632,13 +2776,13 @@ pub(crate) fn open_progress(ui: &Ui, id: u64) {
     let Some(v) = ui.ctx.mgr.get(id) else { return };
     if let Some((d, segs)) = ui.progress.borrow().get(&id) {
         fill_details(d, segs, &v);
-        let _ = d.show();
+        open_window!(d);
         d.window().set_minimized(false);
         return;
     }
     let Ok(d) = DetailsDialog::new() else { return };
     let settings = ui.ctx.mgr.settings();
-    d.global::<Theme>().set_mode(settings.theme as i32);
+    set_theme_of(d.global::<Theme>(), &Look::of(&settings));
     // the tabs' controls are set once, so typing in them isn't overwritten
     d.set_limit_on(v.speed_limit_kb.is_some());
     d.set_limit_kb(v.speed_limit_kb.unwrap_or(500).min(1_000_000) as i32);
@@ -2677,12 +2821,6 @@ pub(crate) fn open_progress(ui: &Ui, id: u64) {
         d.on_resume(move || mgr.start(id));
     }
     {
-        let ui = ui.clone();
-        d.on_preview(move || {
-            preview_download(&ui, id);
-        });
-    }
-    {
         // "Cancel": stop the download and close the window
         let (mgr, map) = (ui.ctx.mgr.clone(), ui.progress.clone());
         d.on_cancel_download(move || {
@@ -2695,8 +2833,12 @@ pub(crate) fn open_progress(ui: &Ui, id: u64) {
         d.on_close_window(move || close_progress(&map, id));
     }
     {
-        let map = ui.progress.clone();
+        // the window's X stops the download
+        let (map, mgr) = (ui.progress.clone(), ui.ctx.mgr.clone());
         d.window().on_close_requested(move || {
+            if mgr.get(id).is_some_and(|v| v.status != Status::Completed) {
+                mgr.pause(id);
+            }
             let map = map.clone();
             // drop the window after this event has been handled
             slint::Timer::single_shot(Duration::from_millis(1), move || {
@@ -2708,8 +2850,7 @@ pub(crate) fn open_progress(ui: &Ui, id: u64) {
     let segs = Rc::new(VecModel::<SegView>::default());
     d.set_segs(ModelRc::from(segs.clone()));
     fill_details(&d, &segs, &v);
-    let _ = d.show();
-    to_front!(d);
+    open_window!(d);
     ui.progress.borrow_mut().insert(id, (d, segs));
 }
 
@@ -2732,10 +2873,30 @@ fn update_progress_windows(ui: &Ui) {
             Some(v) => {
                 if let Some((d, segs)) = ui.progress.borrow().get(&id) {
                     fill_details(d, segs, &v);
+                    // also on the window's taskbar button (seen when it is minimized)
+                    winfx::taskbar_progress(d.window(), taskbar_state(&v));
                 }
             }
             None => close_progress(&ui.progress, id),
         }
+    }
+}
+
+/// The progress of `v` as the taskbar shows it.
+fn taskbar_state(v: &DownloadView) -> winfx::TaskbarProgress {
+    use winfx::TaskbarProgress as P;
+    let amount = match v.total_size {
+        Some(t) if t > 0 => Some((v.downloaded.min(t), t)),
+        _ if v.parts_total > 0 => Some((v.parts_done.min(v.parts_total) as u64, v.parts_total as u64)),
+        _ => None,
+    };
+    match (v.status, amount) {
+        (Status::Failed, Some((d, t))) => P::Error(d, t),
+        (Status::Failed, None) => P::Error(1, 1),
+        (Status::Paused | Status::Queued, Some((d, t))) => P::Paused(d, t),
+        (Status::Paused | Status::Queued, None) => P::Off,
+        (_, Some((d, t))) => P::Normal(d, t),
+        (_, None) => P::Busy,
     }
 }
 
@@ -2805,6 +2966,15 @@ fn fill_details(d: &DetailsDialog, model: &VecModel<SegView>, v: &DownloadView) 
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn header_points_to_columns() {
+        let w = [280.0, 30.0, 82.0];
+        assert_eq!(super::column_at(&w, 10.0), 0);
+        assert_eq!(super::column_at(&w, 38.0 + 279.0), 0);
+        assert_eq!(super::column_at(&w, 38.0 + 281.0), 1);
+        assert_eq!(super::column_at(&w, 5000.0), 2);
+    }
+
     #[test]
     fn batch_patterns() {
         let l = expand_pattern("https://example.com/img*.jpg", false, "8", "10", 2).unwrap();
