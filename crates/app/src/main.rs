@@ -595,6 +595,7 @@ fn wire_main(ui: &Ui) {
             let _ = ui.ctx.mgr.set_settings(s);
             apply_theme(&ui, m);
         });
+    }
     {
         let ui = ui.clone();
         main.on_set_opacity(move |op| {
@@ -604,7 +605,6 @@ fn wire_main(ui: &Ui) {
             let _ = ui.ctx.mgr.set_settings(s);
             apply_opacity(&ui, op);
         });
-    }
     }
     {
         let ui = ui.clone();
